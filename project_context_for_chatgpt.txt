@@ -1,0 +1,3609 @@
+# Project: Managed Capture 3D Platform
+# Description: Source code export for review
+
+================================================================================
+FILE: App.tsx
+================================================================================
+import React, { Suspense, lazy } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
+import { ThemeProvider } from './contexts/ThemeContext';
+import ScrollToTop from './components/ScrollToTop';
+
+// Lazy load pages for better performance
+const Home = lazy(() => import('./pages/Home'));
+const Industry = lazy(() => import('./pages/Industry'));
+const Gallery = lazy(() => import('./pages/Gallery'));
+const RequestForm = lazy(() => import('./pages/RequestForm'));
+const Login = lazy(() => import('./pages/Login'));
+const Portal = lazy(() => import('./pages/Portal'));
+const HowItWorks = lazy(() => import('./pages/HowItWorks'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Loading component
+const LoadingFallback: React.FC = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-slate-600 dark:text-slate-400">Loading...</p>
+    </div>
+  </div>
+);
+
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <ErrorBoundary>
+        <Router>
+          <ScrollToTop />
+          <Layout>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/industries" element={<Navigate to="/" replace />} />
+                <Route path="/industries/:type" element={<Industry />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/request" element={<RequestForm />} />
+                <Route path="/security" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Trust & Security</h1></div>} />
+                <Route path="/privacy" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Privacy Policy</h1></div>} />
+                <Route path="/terms" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Terms of Service</h1></div>} />
+
+                {/* App / Auth Routes */}
+                <Route path="/app/login" element={<Login />} />
+
+                {/* Simulated Protected Routes */}
+                <Route path="/app/dashboard" element={<Portal role="employee" />} />
+                <Route path="/portal/dashboard" element={<Portal role="customer" />} />
+
+                {/* 404 Catch all */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </Layout>
+        </Router>
+      </ErrorBoundary>
+    </ThemeProvider>
+  );
+};
+
+export default App;
+
+================================================================================
+FILE: constants.tsx
+================================================================================
+import React from 'react';
+import { Industry, IndustryConfig } from './types';
+import { Utensils, Landmark, ShoppingBag, Box, Scan, Globe } from 'lucide-react';
+
+export const NAV_ITEMS = [
+  { label: 'Industries', path: '/industries' },
+  { label: 'Gallery', path: '/gallery' },
+  { label: 'How it Works', path: '/how-it-works' },
+  { label: 'Pricing', path: '/pricing' },
+];
+
+export const INDUSTRIES: Record<string, IndustryConfig> = {
+  restaurants: {
+    id: 'restaurants',
+    title: 'Turn your signature items into interactive 3D',
+    subtitle: 'Managed capture by employees + web/AR-ready delivery for menus and marketing.',
+    heroImage: 'https://picsum.photos/seed/restaurant_hero/1200/600',
+    demoImage: 'https://picsum.photos/seed/burger_3d/800/600',
+    outcomes: [
+      'Increase appetite appeal with realistic 3D food models',
+      'Integrate directly into digital menus and delivery apps',
+      'Generate QR codes for table-side AR experiences'
+    ],
+    permissions: [
+      'Edit title/description/tags',
+      'Create/revoke share links',
+      'Generate QR codes',
+      'Download delivered bundles'
+    ]
+  },
+  museums: {
+    id: 'museums',
+    title: 'Digitize collections with managed capture',
+    subtitle: 'Expert handling, access controls, and dedicated staff for sensitive artifacts.',
+    heroImage: 'https://picsum.photos/seed/museum_hero/1200/600',
+    demoImage: 'https://picsum.photos/seed/vase_3d/800/600',
+    outcomes: [
+      'Preserve fragile artifacts digitally',
+      'Expand accessibility to global audiences',
+      'Strict access controls (Public, Unlisted, Restricted)'
+    ],
+    permissions: [
+      'Edit metadata (Accession ID)',
+      'Approve/reject with comments',
+      'Share links with password/expiry',
+      'Downloads OFF by default'
+    ]
+  },
+  ecommerce: {
+    id: 'ecommerce',
+    title: 'Managed 3D capture for high-conversion product pages',
+    subtitle: 'Fast-loading 3D models that reduce returns and increase engagement.',
+    heroImage: 'https://picsum.photos/seed/shoe_hero/1200/600',
+    demoImage: 'https://picsum.photos/seed/sneaker_3d/800/600',
+    outcomes: [
+      'Boost conversion rates by up to 40%',
+      'Reduce return rates with accurate visualization',
+      'AR-ready formats for iOS and Android'
+    ],
+    permissions: [
+      'Edit SKU/Metadata',
+      'Download exports (GLB/USDZ)',
+      'Configure embeds',
+      'Campaign QR codes'
+    ]
+  }
+};
+
+export const HOW_IT_WORKS_STEPS = [
+  {
+    title: 'Intake',
+    desc: 'Submit your request details and logistics preferences.',
+    icon: <Box className="w-6 h-6" />
+  },
+  {
+    title: 'Employee Capture',
+    desc: 'Our trained experts arrive on-site or receive your shipment.',
+    icon: <Scan className="w-6 h-6" />
+  },
+  {
+    title: 'Processing & QA',
+    desc: 'Assets are processed into optimized 3D web formats.',
+    icon: <Globe className="w-6 h-6" />
+  },
+  {
+    title: 'Review & Publish',
+    desc: 'Approve assets in the portal and publish instantly.',
+    icon: <ShoppingBag className="w-6 h-6" />
+  }
+];
+
+
+================================================================================
+FILE: CONTRIBUTING.md
+================================================================================
+# Contributing to Managed Capture 3D
+
+Thank you for your interest in contributing to the Managed Capture 3D platform! This document outlines the process for contributing to the project.
+
+## Code of Conduct
+
+Please be respectful and considerate of others when contributing to this project. We want to maintain a welcoming and inclusive environment for everyone.
+
+## Getting Started
+
+1.  **Fork the repository** on GitHub.
+2.  **Clone the project** to your local machine.
+3.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+4.  **Create a new branch** for your feature or bug fix:
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+
+## Development Workflow
+
+- **Run development server**: `npm run dev`
+- **Lint code**: `npm run lint` (if available) or ensure no errors in console.
+- **Build**: `npm run build` to verify production build works.
+
+## Pull Request Process
+
+1.  Ensure your code follows the existing style and conventions.
+2.  Update documentation if necessary.
+3.  Push your changes to your fork.
+4.  Submit a Pull Request to the `main` branch.
+5.  Provide a clear description of your changes and the problem they solve.
+
+## Code Style
+
+- Use TypeScript key features (interfaces, types) where possible.
+- Use Tailwind CSS for styling.
+- Follow the component structure in `components/`.
+
+## Reporting Issues
+
+If you find a bug or have a feature request, please open an issue in the repository with details about the problem or idea.
+
+Thank you for contributing!
+
+
+================================================================================
+FILE: index.css
+================================================================================
+/* Enhanced Managed Capture 3D Styles */
+
+/* =================================
+   CSS Custom Properties (Variables)
+   ================================= */
+
+:root {
+  /* Brand Colors */
+  --brand-50: #f0f9ff;
+  --brand-100: #e0f2fe;
+  --brand-500: #0ea5e9;
+  --brand-600: #0284c7;
+  --brand-700: #0369a1;
+  --brand-900: #0c4a6e;
+  
+  /* Accent Colors */
+  --accent-orange: #ff6b35;
+  --accent-purple: #7c3aed;
+  --accent-green: #10b981;
+  
+  /* Neutrals */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-500: #64748b;
+  --slate-900: #0f172a;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =================================
+   Base Styles
+   ================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  color: var(--slate-900);
+  background-color: white;
+}
+
+/* =================================
+   Typography
+   ================================= */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+h3 {
+  font-size: clamp(1.25rem, 3vw, 1.875rem);
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* =================================
+   Utilities
+   ================================= */
+
+.gradient-mesh {
+  background: 
+    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(255, 107, 53, 0.1) 0px, transparent 50%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--accent-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-effect-dark {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* =================================
+   Animations
+   ================================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+/* =================================
+   Component Specific Styles
+   ================================= */
+
+/* Industry Cards */
+.industry-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.industry-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 0%, var(--brand-500) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.industry-card:hover::before {
+  opacity: 0.05;
+}
+
+.industry-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-700) 100%);
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-xl);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    var(--brand-900) 0%, 
+    var(--accent-purple) 100%);
+  opacity: 0.9;
+}
+
+/* Gallery Grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
+
+/* Loading Skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--slate-100) 0%,
+    var(--slate-200) 50%,
+    var(--slate-100) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Form Inputs */
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  transition: all var(--transition-base);
+  background: white;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.input-field:disabled {
+  background: var(--slate-50);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--slate-200);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-500), var(--brand-600));
+  border-radius: 999px;
+  transition: width var(--transition-slow);
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+/* =================================
+   Accessibility
+   ================================= */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus-visible:focus {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn-primary {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =================================
+   Dark Mode
+   ================================= */
+
+.dark {
+  --slate-50: #0f172a;
+  --slate-100: #1e293b;
+  --slate-500: #94a3b8;
+  --slate-900: #f8fafc;
+}
+
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* Dark mode specific adjustments */
+.dark .glass-effect {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    #1e293b 0%,
+    #334155 50%,
+    #1e293b 100%
+  );
+}
+
+.dark .input-field {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.dark .input-field:focus {
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+.dark .input-field:disabled {
+  background: #0f172a;
+}
+
+/* =================================
+   Print Styles
+   ================================= */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+  
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+}
+
+/* =================================
+   Responsive Design
+   ================================= */
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  .btn-primary {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* =================================
+   Performance Optimizations
+   ================================= */
+
+/* Use GPU acceleration for animations */
+.accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Contain layout shifts */
+.layout-contained {
+  contain: layout;
+}
+
+/* Optimize repaints */
+.paint-optimized {
+  contain: paint;
+}
+
+
+================================================================================
+FILE: index.html
+================================================================================
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0284c7" />
+    
+    <title>Managed Capture 3D - Professional Photogrammetry Services</title>
+    <meta name="description" content="Professional 3D capture services for enterprise. We digitize the physical world with expert photogrammetry for restaurants, museums, and e-commerce." />
+    <meta name="keywords" content="3D capture, photogrammetry, 3D scanning, AR, VR, restaurant menus, museum digitization, e-commerce 3D" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Managed Capture 3D - Professional Photogrammetry Services" />
+    <meta property="og:description" content="Professional 3D capture services for enterprise. We digitize the physical world with expert photogrammetry." />
+    <meta property="og:image" content="/og-image.jpg" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Managed Capture 3D" />
+    <meta name="twitter:description" content="Professional 3D capture services for enterprise" />
+    <meta name="twitter:image" content="/og-image.jpg" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Distinctive typography -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                200: '#bae6fd',
+                300: '#7dd3fc',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1',
+                800: '#075985',
+                900: '#0c4a6e',
+              },
+              accent: {
+                orange: '#ff6b35',
+                purple: '#7c3aed',
+                green: '#10b981',
+              }
+            },
+            fontFamily: {
+              sans: ['DM Sans', 'system-ui', 'sans-serif'],
+              display: ['Syne', 'system-ui', 'sans-serif'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.6s ease-out forwards',
+              'slide-up': 'slideUp 0.8s ease-out forwards',
+              'float': 'float 6s ease-in-out infinite',
+              'shimmer': 'shimmer 2s infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(30px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              shimmer: {
+                '0%': { backgroundPosition: '-1000px 0' },
+                '100%': { backgroundPosition: '1000px 0' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
+
+================================================================================
+FILE: index.tsx
+================================================================================
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error("Could not find root element to mount to");
+}
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+================================================================================
+FILE: metadata.json
+================================================================================
+{
+  "name": "Managed Capture 3D Platform",
+  "description": "A B2B platform for managed 3D capture services catering to Restaurants, Museums, and E-commerce industries.",
+  "requestFramePermissions": []
+}
+
+================================================================================
+FILE: package.json
+================================================================================
+{
+  "name": "managed-capture-3d-platform",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.0",
+    "lucide-react": "^0.563.0",
+    "react": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
+
+
+================================================================================
+FILE: README.md
+================================================================================
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
+
+# Managed Capture 3D Platform
+
+> Professional 3D capture services for enterprise. We digitize the physical world.
+
+A modern, full-featured web application for managing professional 3D photogrammetry services.  Built with React, TypeScript, and Vite.
+
+## ✨ Features
+
+- **🎨 Modern UI/UX** - Beautiful, responsive design with smooth animations
+- **🌙 Dark Mode** - Full dark mode support with persistent user preference
+- **⚡ Performance** - Lazy loading routes, code splitting, and optimized bundle size
+- **📱 Responsive** - Mobile-first design that works on all devices
+- **♿ Accessible** - WCAG compliant with keyboard navigation and screen reader support
+- **🎯 Industry-Specific** - Tailored solutions for restaurants, museums, and e-commerce
+- **💼 Enterprise Ready** - Error boundaries, TypeScript, and production-ready code
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+
+### Installation
+
+1. **Clone or download the project**
+   ```bash
+   git clone <repository-url>
+   cd managed-capture-3d-platform
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Then edit `.env.local` and add your Gemini API key:
+   ```
+   GEMINI_API_KEY=your_actual_api_key_here
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to `http://localhost:5173`
+
+## 📁 Project Structure
+
+```
+managed-capture-3d-platform/
+├── components/          # Reusable UI components
+│   ├── Button.tsx      # Button component with variants
+│   ├── Card.tsx        # Card component with hover effects
+│   ├── DarkModeToggle.tsx
+│   ├── ErrorBoundary.tsx
+│   ├── Layout.tsx      # Main layout with header/footer
+│   └── Toast.tsx       # Toast notifications
+├── contexts/           # React contexts
+│   └── ThemeContext.tsx # Dark mode theme management
+├── hooks/              # Custom React hooks
+│   └── useToast.tsx    # Toast notification hook
+├── pages/              # Page components (routes)
+│   ├── Home.tsx
+│   ├── Industry.tsx
+│   ├── Gallery.tsx
+│   ├── RequestForm.tsx
+│   ├── Login.tsx
+│   ├── Portal.tsx
+│   ├── HowItWorks.tsx
+│   ├── Pricing.tsx
+│   └── NotFound.tsx
+├── App.tsx             # Main app with routing
+├── constants.tsx       # Shared constants
+├── types.ts            # TypeScript types
+├── index.css           # Global styles
+└── index.html          # HTML entry point
+```
+
+## 🎨 Available Routes
+
+- `/` - Home page with hero, industries, and features
+- `/industries/:type` - Industry-specific pages (restaurants, museums, ecommerce)
+- `/gallery` - 3D model gallery
+- `/how-it-works` - Detailed process timeline
+- `/pricing` - Pricing tiers with FAQ
+- `/request` - Capture request form
+- `/app/login` - Login page
+- `/app/dashboard` - Employee dashboard
+- `/portal/dashboard` - Customer portal
+- `*` - Custom 404 page
+
+## 🛠️ Available Scripts
+
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 🌙 Dark Mode
+
+The application includes a fully functional dark mode with:
+- System preference detection
+- Manual toggle in header
+- localStorage persistence
+- Smooth theme transitions
+- Complete dark mode styling across all components
+
+## 📦 Key Dependencies
+
+- **React 19** - UI library
+- **React Router 7** - Client-side routing
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Utility-first CSS (via CDN)
+- **Lucide React** - Icon library
+
+## 🎯 Production Deployment
+
+1. **Build the project**
+   ```bash
+   npm run build
+   ```
+
+2. **The `dist/` folder** contains the production-ready files
+
+3. **Deploy** to your favorite hosting service:
+   - Netlify (includes `netlify.toml`)
+   - Vercel
+   - GitHub Pages
+   - Any static hosting service
+
+## 🔧 Troubleshooting
+
+### Development Server Won't Start
+- Ensure Node.js v18+ is installed: `node --version`
+- Delete `node_modules` and reinstall: `rm -rf node_modules && npm install`
+- Clear Vite cache: `rm -rf node_modules/.vite`
+
+### Dark Mode Not Persisting
+- Check browser localStorage is enabled
+- Clear browser cache and try again
+
+### Build Errors
+- Ensure all dependencies are installed: `npm install`
+- Check for TypeScript errors: `npx tsc --noEmit`
+
+## 📝 Environment Variables
+
+Create a `.env.local` file based on `.env.example`:
+
+```bash
+# Gemini API Key for AI features
+GEMINI_API_KEY=your_api_key_here
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🔗 Links
+
+- [View in AI Studio](https://ai.studio/apps/drive/1zW4-d6ryX0ZZ-C4BSoSOeJETd9oGOPXF)
+- [Report Issues](https://github.com/your-repo/issues)
+- [Documentation](https://github.com/your-repo/wiki)
+
+---
+
+<div align="center">
+Made with ❤️ by the Managed Capture Team
+</div>
+
+
+================================================================================
+FILE: start_app.bat
+================================================================================
+@echo off
+echo Starting Managed Capture 3D Platform...
+cmd /c "npm install && npm run dev"
+pause
+
+
+================================================================================
+FILE: tsconfig.json
+================================================================================
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "module": "ESNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ],
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  }
+}
+
+================================================================================
+FILE: types.ts
+================================================================================
+export enum Industry {
+  Restaurant = 'Restaurant',
+  Museum = 'Museum',
+  Ecommerce = 'Ecommerce',
+  General = 'General'
+}
+
+export enum ProjectStatus {
+  Intake = 'Intake',
+  Capture = 'Capture',
+  Processing = 'Processing',
+  QA = 'QA',
+  ReadyForReview = 'Ready for Review',
+  Published = 'Published'
+}
+
+export interface NavItem {
+  label: string;
+  path: string;
+}
+
+export interface IndustryConfig {
+  id: string;
+  title: string;
+  subtitle: string;
+  heroImage: string;
+  outcomes: string[];
+  permissions: string[];
+  demoImage: string;
+}
+
+export interface RequestFormState {
+  industry: Industry | '';
+  quantity_range: string;
+  object_size_range: string;
+  materials: string[];
+  location_mode: 'on_site' | 'ship_in' | '';
+  country: string;
+  preferred_window: string;
+  deliverables: string[];
+  museum_access_control?: string;
+  handling_sensitivity?: string;
+  contact: {
+    full_name: string;
+    email: string;
+    company: string;
+  };
+}
+
+================================================================================
+FILE: vite.config.ts
+================================================================================
+import path from 'path';
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, '.', '');
+  return {
+    base: './',
+    server: {
+      port: 3000,
+      host: '0.0.0.0',
+    },
+    plugins: [react()],
+    define: {
+      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
+      }
+    }
+  };
+});
+
+
+================================================================================
+FILE: components\Accordion.tsx
+================================================================================
+import React, { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import Card from './Card';
+
+interface AccordionItemProps {
+    title: string;
+    content: React.ReactNode;
+    isOpen: boolean;
+    onToggle: () => void;
+    className?: string;
+}
+
+export const AccordionItem: React.FC<AccordionItemProps> = ({
+    title,
+    content,
+    isOpen,
+    onToggle,
+    className = '',
+}) => {
+    return (
+        <Card hover={false} className={`overflow-hidden ${className}`}>
+            <button
+                onClick={onToggle}
+                className="w-full p-6 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-inset"
+                aria-expanded={isOpen}
+            >
+                <span className="font-semibold text-slate-900 dark:text-white pr-4 text-lg">
+                    {title}
+                </span>
+                {isOpen ? (
+                    <ChevronUp className="w-5 h-5 text-brand-600 dark:text-brand-400 flex-shrink-0 transition-transform duration-300" />
+                ) : (
+                    <ChevronDown className="w-5 h-5 text-brand-600 dark:text-brand-400 flex-shrink-0 transition-transform duration-300" />
+                )}
+            </button>
+            <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+            >
+                <div className="px-6 pb-6 text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/50 pt-4">
+                    {content}
+                </div>
+            </div>
+        </Card>
+    );
+};
+
+interface AccordionProps {
+    items: {
+        title: string;
+        content: React.ReactNode;
+    }[];
+    allowMultiple?: boolean;
+    className?: string;
+}
+
+const Accordion: React.FC<AccordionProps> = ({
+    items,
+    allowMultiple = false,
+    className = '',
+}) => {
+    const [openIndexes, setOpenIndexes] = useState<number[]>([]);
+
+    const handleToggle = (index: number) => {
+        if (allowMultiple) {
+            setOpenIndexes((prev) =>
+                prev.includes(index)
+                    ? prev.filter((i) => i !== index)
+                    : [...prev, index]
+            );
+        } else {
+            setOpenIndexes((prev) => (prev.includes(index) ? [] : [index]));
+        }
+    };
+
+    return (
+        <div className={`space-y-4 ${className}`}>
+            {items.map((item, index) => (
+                <AccordionItem
+                    key={index}
+                    title={item.title}
+                    content={item.content}
+                    isOpen={openIndexes.includes(index)}
+                    onToggle={() => handleToggle(index)}
+                />
+            ))}
+        </div>
+    );
+};
+
+export default Accordion;
+
+
+================================================================================
+FILE: components\Button.tsx
+================================================================================
+import React from 'react';
+import { Loader2 } from 'lucide-react';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: ButtonVariant;
+    size?: ButtonSize;
+    loading?: boolean;
+    children: React.ReactNode;
+    className?: string;
+}
+
+const Button: React.FC<ButtonProps> = ({
+    variant = 'primary',
+    size = 'md',
+    loading = false,
+    children,
+    className = '',
+    disabled,
+    ...props
+}) => {
+    const baseStyles = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+
+    const variantStyles = {
+        primary: 'bg-gradient-to-r from-brand-600 to-brand-700 text-white hover:from-brand-500 hover:to-brand-600 hover:shadow-lg hover:-translate-y-0.5 focus:ring-brand-500',
+        secondary: 'bg-slate-800 text-white border border-slate-700 hover:bg-slate-700 hover:shadow-lg hover:-translate-y-0.5 focus:ring-slate-500 dark:bg-slate-700 dark:border-slate-600',
+        outline: 'bg-transparent border-2 border-brand-600 text-brand-600 hover:bg-brand-50 hover:shadow-md focus:ring-brand-500 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-950',
+        ghost: 'bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-500 dark:text-slate-300 dark:hover:bg-slate-800',
+    };
+
+    const sizeStyles = {
+        sm: 'px-4 py-2 text-sm',
+        md: 'px-6 py-3 text-base',
+        lg: 'px-8 py-4 text-lg',
+    };
+
+    return (
+        <button
+            className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+            disabled={disabled || loading}
+            {...props}
+        >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {children}
+        </button>
+    );
+};
+
+export default Button;
+
+
+================================================================================
+FILE: components\Card.tsx
+================================================================================
+import React from 'react';
+
+interface CardProps {
+    children: React.ReactNode;
+    className?: string;
+    hover?: boolean;
+    onClick?: () => void;
+}
+
+const Card: React.FC<CardProps> = ({
+    children,
+    className = '',
+    hover = true,
+    onClick
+}) => {
+    const baseStyles = 'rounded-2xl bg-white border border-slate-100 transition-all duration-300 dark:bg-slate-800 dark:border-slate-700';
+    const hoverStyles = hover ? 'hover:shadow-xl hover:-translate-y-1 hover:border-brand-200 dark:hover:border-brand-700' : '';
+    const clickableStyles = onClick ? 'cursor-pointer' : '';
+
+    return (
+        <div
+            className={`${baseStyles} ${hoverStyles} ${clickableStyles} ${className}`}
+            onClick={onClick}
+        >
+            {children}
+        </div>
+    );
+};
+
+export default Card;
+
+
+================================================================================
+FILE: components\DarkModeToggle.tsx
+================================================================================
+import React from 'react';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
+
+const DarkModeToggle: React.FC = () => {
+    const { theme, toggleTheme } = useTheme();
+
+    return (
+        <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300"
+            aria-label="Toggle dark mode"
+        >
+            {theme === 'light' ? (
+                <Moon className="w-5 h-5" />
+            ) : (
+                <Sun className="w-5 h-5" />
+            )}
+        </button>
+    );
+};
+
+export default DarkModeToggle;
+
+
+================================================================================
+FILE: components\ErrorBoundary.tsx
+================================================================================
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle } from 'lucide-react';
+
+interface Props {
+    children: ReactNode;
+}
+
+interface State {
+    hasError: boolean;
+    error: Error | null;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+    public state: State = {
+        hasError: false,
+        error: null,
+    };
+
+    static getDerivedStateFromError(error: Error): State {
+        return {
+            hasError: true,
+            error,
+        };
+    }
+
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.error('Error caught by boundary:', error, errorInfo);
+    }
+
+    handleReset = () => {
+        this.setState({
+            hasError: false,
+            error: null,
+        });
+    };
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
+                    <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 text-center">
+                        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+                            Oops! Something went wrong
+                        </h1>
+                        <p className="text-slate-600 dark:text-slate-400 mb-6">
+                            We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.
+                        </p>
+                        {this.state.error && (
+                            <details className="mb-6 text-left">
+                                <summary className="cursor-pointer text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+                                    Error details
+                                </summary>
+                                <pre className="mt-2 p-4 bg-slate-100 dark:bg-slate-900 rounded-lg text-xs overflow-auto text-red-600 dark:text-red-400">
+                                    {this.state.error.toString()}
+                                </pre>
+                            </details>
+                        )}
+                        <div className="flex gap-4">
+                            <button
+                                onClick={this.handleReset}
+                                className="flex-1 px-6 py-3 bg-brand-600 text-white rounded-full font-semibold hover:bg-brand-500 transition-colors"
+                            >
+                                Try Again
+                            </button>
+                            <button
+                                onClick={() => window.location.href = '/'}
+                                className="flex-1 px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-full font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                            >
+                                Go Home
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
+export default ErrorBoundary;
+
+
+================================================================================
+FILE: components\Gatekeeper.tsx
+================================================================================
+import React, { useState, useEffect } from 'react';
+import { Lock, ArrowRight } from 'lucide-react';
+
+interface GatekeeperProps {
+    children: React.ReactNode;
+}
+
+const PASSWORD = '123456';
+const SESSION_KEY = 'site_public_access';
+
+const Gatekeeper: React.FC<GatekeeperProps> = ({ children }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [input, setInput] = useState('');
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const hasAccess = sessionStorage.getItem(SESSION_KEY);
+        if (hasAccess === 'true') {
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (input === PASSWORD) {
+            sessionStorage.setItem(SESSION_KEY, 'true');
+            setIsAuthenticated(true);
+            setError(false);
+        } else {
+            setError(true);
+            setInput('');
+        }
+    };
+
+    if (isAuthenticated) {
+        return <>{children}</>;
+    }
+
+    return (
+        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 border border-slate-700">
+                <div className="flex justify-center mb-6">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-800">
+                        <Lock className="w-8 h-8" />
+                    </div>
+                </div>
+
+                <h1 className="text-2xl font-bold text-center text-slate-900 mb-2">
+                    Protected Site
+                </h1>
+                <p className="text-center text-slate-500 mb-8">
+                    Please enter the access password to view this website.
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <input
+                            type="password"
+                            value={input}
+                            onChange={(e) => {
+                                setInput(e.target.value);
+                                setError(false);
+                            }}
+                            className={`w-full p-4 text-center text-lg tracking-widest border rounded-lg outline-none transition-all ${error
+                                    ? 'border-red-500 bg-red-50 focus:ring-2 focus:ring-red-200'
+                                    : 'border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200'
+                                }`}
+                            placeholder="Enter Password"
+                            autoFocus
+                        />
+                        {error && (
+                            <p className="text-red-500 text-sm text-center mt-2">
+                                Incorrect password. Please try again.
+                            </p>
+                        )}
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
+                    >
+                        Enter Site <ArrowRight className="w-4 h-4" />
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default Gatekeeper;
+
+
+================================================================================
+FILE: components\Layout.tsx
+================================================================================
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { NAV_ITEMS } from '../constants';
+import { Menu, X, Box, Lock, ShieldCheck } from 'lucide-react';
+import DarkModeToggle from './DarkModeToggle';
+
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Don't show public nav on app routes
+  const isAppRoute = location.pathname.startsWith('/app') || location.pathname.startsWith('/portal');
+
+  if (isAppRoute) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2 font-bold text-xl text-slate-900 dark:text-white">
+            <Box className="w-8 h-8 text-brand-600 dark:text-brand-400" />
+            <span>Managed Capture</span>
+          </Link>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+            <Link to="/app/login" className="text-sm font-medium text-slate-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400">
+              Log in
+            </Link>
+            <DarkModeToggle />
+            <Link
+              to="/request"
+              className="px-4 py-2 rounded-full bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors"
+            >
+              Request Capture
+            </Link>
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center gap-2">
+            <DarkModeToggle />
+            <button
+              className="p-2 text-slate-600 dark:text-slate-300"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Nav */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+            <div className="flex flex-col p-4 space-y-4">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-base font-medium text-slate-600 dark:text-slate-300"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div className="h-px bg-slate-100 dark:bg-slate-700 my-2" />
+              <Link to="/app/login" className="text-base font-medium text-slate-900 dark:text-white">
+                Log in
+              </Link>
+              <Link
+                to="/request"
+                className="text-base font-medium text-brand-600 dark:text-brand-400"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Request Capture
+              </Link>
+            </div>
+          </div>
+        )}
+      </header>
+
+      <main className="flex-grow">
+        {children}
+      </main>
+
+      <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 font-bold text-xl text-white">
+                <Box className="w-6 h-6 text-brand-500 dark:text-brand-400" />
+                <span>Managed Capture</span>
+              </div>
+              <p className="text-sm text-slate-400">
+                Professional 3D capture services for enterprise. We digitize the physical world.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Industries</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link to="/industries/restaurants" className="hover:text-white transition-colors">Restaurants</Link></li>
+                <li><Link to="/industries/museums" className="hover:text-white transition-colors">Museums</Link></li>
+                <li><Link to="/industries/ecommerce" className="hover:text-white transition-colors">E-commerce</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Support</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link to="/how-it-works" className="hover:text-white transition-colors">How it Works</Link></li>
+                <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><Link to="/security" className="hover:text-white transition-colors">Trust Center</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+                <li><div className="flex items-center gap-2 mt-4"><ShieldCheck className="w-4 h-4" /> SOC 2 Compliant</div></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 dark:border-slate-700 mt-12 pt-8 text-center text-sm text-slate-500">
+            © 2026 Managed Capture 3D Platform. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Layout;
+
+================================================================================
+FILE: components\ScrollToTop.tsx
+================================================================================
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
+const ScrollToTop = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+};
+
+export default ScrollToTop;
+
+
+================================================================================
+FILE: components\Toast.tsx
+================================================================================
+import React from 'react';
+import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { Toast as ToastType } from '../hooks/useToast';
+
+interface ToastProps {
+    toast: ToastType;
+    onClose: (id: string) => void;
+}
+
+const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
+    const icons = {
+        success: <CheckCircle className="w-5 h-5" />,
+        error: <XCircle className="w-5 h-5" />,
+        warning: <AlertTriangle className="w-5 h-5" />,
+        info: <Info className="w-5 h-5" />,
+    };
+
+    const colors = {
+        success: 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200',
+        error: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200',
+        warning: 'bg-orange-50 border-orange-200 text-orange-800 dark:bg-orange-900/20 dark:border-orange-800 dark:text-orange-200',
+        info: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-200',
+    };
+
+    return (
+        <div className={`flex items-center gap-3 p-4 rounded-lg border shadow-lg ${colors[toast.type]} animate-slide-in-right`}>
+            <div className="flex-shrink-0">
+                {icons[toast.type]}
+            </div>
+            <p className="flex-1 text-sm font-medium">{toast.message}</p>
+            <button
+                onClick={() => onClose(toast.id)}
+                className="flex-shrink-0 hover:opacity-70 transition-opacity"
+            >
+                <X className="w-4 h-4" />
+            </button>
+        </div>
+    );
+};
+
+interface ToastContainerProps {
+    toasts: ToastType[];
+    onClose: (id: string) => void;
+}
+
+export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onClose }) => {
+    return (
+        <div className="fixed top-4 right-4 z-50 space-y-3 max-w-md">
+            {toasts.map(toast => (
+                <Toast key={toast.id} toast={toast} onClose={onClose} />
+            ))}
+        </div>
+    );
+};
+
+export default Toast;
+
+
+================================================================================
+FILE: contexts\ThemeContext.tsx
+================================================================================
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
+type Theme = 'light' | 'dark';
+
+interface ThemeContextType {
+    theme: Theme;
+    toggleTheme: () => void;
+    setTheme: (theme: Theme) => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [theme, setThemeState] = useState<Theme>(() => {
+        // Check localStorage first
+        const stored = localStorage.getItem('theme') as Theme | null;
+        if (stored) return stored;
+
+        // Check system preference
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+        }
+
+        return 'light';
+    });
+
+    useEffect(() => {
+        // Apply theme to document
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Save to localStorage
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setThemeState(prev => prev === 'light' ? 'dark' : 'light');
+    };
+
+    const setTheme = (newTheme: Theme) => {
+        setThemeState(newTheme);
+    };
+
+    return (
+        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+            {children}
+        </ThemeContext.Provider>
+    );
+};
+
+export const useTheme = () => {
+    const context = useContext(ThemeContext);
+    if (context === undefined) {
+        throw new Error('useTheme must be used within a ThemeProvider');
+    }
+    return context;
+};
+
+
+================================================================================
+FILE: hooks\useToast.tsx
+================================================================================
+import { useState, useCallback } from 'react';
+
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
+
+export interface Toast {
+    id: string;
+    type: ToastType;
+    message: string;
+    duration?: number;
+}
+
+export const useToast = () => {
+    const [toasts, setToasts] = useState<Toast[]>([]);
+
+    const addToast = useCallback((message: string, type: ToastType = 'info', duration: number = 3000) => {
+        const id = Math.random().toString(36).substr(2, 9);
+        const newToast: Toast = { id, type, message, duration };
+
+        setToasts(prev => [...prev, newToast]);
+
+        if (duration > 0) {
+            setTimeout(() => {
+                removeToast(id);
+            }, duration);
+        }
+
+        return id;
+    }, []);
+
+    const removeToast = useCallback((id: string) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, []);
+
+    const success = useCallback((message: string, duration?: number) => {
+        return addToast(message, 'success', duration);
+    }, [addToast]);
+
+    const error = useCallback((message: string, duration?: number) => {
+        return addToast(message, 'error', duration);
+    }, [addToast]);
+
+    const warning = useCallback((message: string, duration?: number) => {
+        return addToast(message, 'warning', duration);
+    }, [addToast]);
+
+    const info = useCallback((message: string, duration?: number) => {
+        return addToast(message, 'info', duration);
+    }, [addToast]);
+
+    return {
+        toasts,
+        addToast,
+        removeToast,
+        success,
+        error,
+        warning,
+        info,
+    };
+};
+
+
+================================================================================
+FILE: pages\Gallery.tsx
+================================================================================
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Industry } from '../types';
+import { Box, PlayCircle } from 'lucide-react';
+
+const MOCK_MODELS = [
+  { id: 1, title: 'Signature Burger', industry: Industry.Restaurant, img: 'https://picsum.photos/seed/burger/400/400' },
+  { id: 2, title: 'Ancient Vase', industry: Industry.Museum, img: 'https://picsum.photos/seed/vase/400/400' },
+  { id: 3, title: 'Running Shoe', industry: Industry.Ecommerce, img: 'https://picsum.photos/seed/shoe/400/400' },
+  { id: 4, title: 'Espresso Machine', industry: Industry.Ecommerce, img: 'https://picsum.photos/seed/coffee/400/400' },
+  { id: 5, title: 'Cocktail', industry: Industry.Restaurant, img: 'https://picsum.photos/seed/drink/400/400' },
+  { id: 6, title: 'Fossil Specimen', industry: Industry.Museum, img: 'https://picsum.photos/seed/fossil/400/400' },
+];
+
+const Gallery: React.FC = () => {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialFilter = params.get('industry');
+
+  const [filter, setFilter] = useState<string>(initialFilter ? 
+    (initialFilter === 'restaurants' ? Industry.Restaurant : 
+     initialFilter === 'museums' ? Industry.Museum : 
+     initialFilter === 'ecommerce' ? Industry.Ecommerce : 'All') 
+    : 'All');
+
+  const filteredModels = filter === 'All' 
+    ? MOCK_MODELS 
+    : MOCK_MODELS.filter(m => m.industry === filter);
+
+  return (
+    <div className="bg-slate-50 min-h-screen py-16">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">Capture Gallery</h1>
+          <p className="text-slate-600">Explore high-fidelity 3D assets captured by our team.</p>
+        </div>
+
+        {/* Filters */}
+        <div className="flex justify-center gap-2 mb-12 flex-wrap">
+          {['All', Industry.Restaurant, Industry.Museum, Industry.Ecommerce].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-6 py-2 rounded-full font-medium transition-colors ${
+                filter === f 
+                  ? 'bg-brand-600 text-white' 
+                  : 'bg-white text-slate-600 border border-slate-200 hover:border-brand-300'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredModels.map((model) => (
+            <div key={model.id} className="group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all cursor-pointer">
+              <div className="relative aspect-square bg-slate-100">
+                <img src={model.img} alt={model.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <PlayCircle className="w-16 h-16 text-white" />
+                </div>
+                <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 rounded-full text-xs font-bold text-slate-900 shadow-sm">
+                  {model.industry}
+                </div>
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-slate-900">{model.title}</h3>
+                <div className="flex items-center text-xs text-slate-500 mt-2 gap-2">
+                  <Box className="w-3 h-3" />
+                  <span>3D Model • AR Ready</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Gallery;
+
+================================================================================
+FILE: pages\Home.tsx
+================================================================================
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, CheckCircle, Box, Utensils, Landmark, ShoppingBag } from 'lucide-react';
+import { HOW_IT_WORKS_STEPS } from '../constants';
+import Accordion from '../components/Accordion';
+
+const Home: React.FC = () => {
+  return (
+    <div>
+      {/* Hero */}
+      <section className="relative bg-slate-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/hero_bg/1600/900')] bg-cover bg-center opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/50"></div>
+
+        <div className="relative container mx-auto px-4 py-24 md:py-32 max-w-5xl text-center">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+            We send experts to capture your objects in 3D
+          </h1>
+          <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
+            Get web and AR-ready 3D models delivered by our managed service.
+            Publish instantly via links, embeds, and QR codes.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/request"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-600 font-bold text-lg hover:bg-brand-500 transition-all flex items-center justify-center gap-2"
+            >
+              Request Capture <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              to="/gallery"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-800 border border-slate-700 font-bold text-lg hover:bg-slate-700 transition-all"
+            >
+              See Demos
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Industries */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Tailored for your industry</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Our capture pipelines are optimized for the specific needs of different sectors.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Link to="/industries/restaurants" className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-200 hover:shadow-xl transition-all">
+              <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mb-6 group-hover:scale-110 transition-transform">
+                <Utensils className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Restaurants</h3>
+              <p className="text-slate-600 mb-4">
+                Interactive menus and 3D food delivery assets.
+              </p>
+              <span className="text-brand-600 font-semibold text-sm flex items-center gap-1">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </span>
+            </Link>
+
+            <Link to="/industries/museums" className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-200 hover:shadow-xl transition-all">
+              <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                <Landmark className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Museums</h3>
+              <p className="text-slate-600 mb-4">
+                Archival quality digitization with access control.
+              </p>
+              <span className="text-brand-600 font-semibold text-sm flex items-center gap-1">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </span>
+            </Link>
+
+            <Link to="/industries/ecommerce" className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-200 hover:shadow-xl transition-all">
+              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform">
+                <ShoppingBag className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">E-commerce</h3>
+              <p className="text-slate-600 mb-4">
+                High-fidelity product models for increased conversion.
+              </p>
+              <span className="text-brand-600 font-semibold text-sm flex items-center gap-1">
+                Learn more <ArrowRight className="w-4 h-4" />
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works */}
+      <section className="py-20 bg-slate-50 border-y border-slate-200">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Managed Capture Process</h2>
+            <p className="text-slate-600">We handle the complexity of 3D creation.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {HOW_IT_WORKS_STEPS.map((step, idx) => (
+              <div key={idx} className="relative">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-brand-600 mb-6">
+                    {step.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{step.title}</h3>
+                  <p className="text-sm text-slate-600">{step.desc}</p>
+                </div>
+                {idx < HOW_IT_WORKS_STEPS.length - 1 && (
+                  <div className="hidden lg:block absolute top-8 left-1/2 w-full h-px bg-slate-300 -z-10"></div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
+            Common Questions
+          </h2>
+          <Accordion
+            items={[
+              {
+                title: "How does the capture process work?",
+                content: <p>We handle everything from logistics to processing. You simply request a capture, our team comes to your location (or you ship items to us), we scan your objects, and deliver web-ready 3D models within days.</p>
+              },
+              {
+                title: "What is the quality of the 3D models?",
+                content: <p>We provide high-fidelity, photorealistic 3D models optimized for web and AR. Our pipelines use advanced photogrammetry and laser scanning to ensure sub-millimeter accuracy and realistic textures.</p>
+              },
+              {
+                title: "Do I need an app to view the models?",
+                content: <p>No app required! Our 3D viewer runs directly in any modern web browser. For AR experiences on mobile, it uses native iOS (QuickLook) and Android (Scene Viewer) capabilities.</p>
+              },
+              {
+                title: "Can I integrate this into my existing website?",
+                content: <p>Yes, we provide a simple generic embed code (iframe) or a React component that you can drop into any website. It works with Shopify, WordPress, Squarespace, and custom stacks.</p>
+              }
+            ]}
+          />
+          <div className="mt-10 text-center">
+            <Link to="/pricing" className="text-brand-600 dark:text-brand-400 font-semibold hover:underline">
+              See more FAQs on our Pricing page
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4 flex flex-col items-center">
+          <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-6">Trusted by industry leaders</p>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+            {/* Mock Logos */}
+            <div className="text-2xl font-bold font-serif">Louvre<span className="text-brand-600">Digital</span></div>
+            <div className="text-2xl font-bold font-sans tracking-tighter">NIKE<span className="italic font-light">LAB</span></div>
+            <div className="text-2xl font-bold font-mono">UBER<span className="text-green-600">EATS</span></div>
+            <div className="text-2xl font-bold">Shopify<span className="font-light">Plus</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Home;
+
+================================================================================
+FILE: pages\HowItWorks.tsx
+================================================================================
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, CheckCircle, FileQuestion } from 'lucide-react';
+import { HOW_IT_WORKS_STEPS } from '../constants';
+import Button from '../components/Button';
+import Card from '../components/Card';
+
+const HowItWorks: React.FC = () => {
+    return (
+        <div className="min-h-screen bg-white dark:bg-slate-900">
+            {/* Hero Section */}
+            <section className="relative bg-gradient-to-br from-slate-900 to-brand-900 dark:from-slate-950 dark:to-brand-950 text-white py-20">
+                <div className="container mx-auto px-4 max-w-4xl text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                        How Our Managed 3D Capture Works
+                    </h1>
+                    <p className="text-xl text-slate-300 mb-8">
+                        From request to delivery, we handle every step of the 3D capture process
+                    </p>
+                </div>
+            </section>
+
+            {/* Process Steps */}
+            <section className="py-20 bg-slate-50 dark:bg-slate-800">
+                <div className="container mx-auto px-4 max-w-6xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {HOW_IT_WORKS_STEPS.map((step, idx) => (
+                            <Card key={idx} hover={false} className="p-6">
+                                <div className="flex flex-col items-center text-center">
+                                    <div className="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6">
+                                        {step.icon}
+                                    </div>
+                                    <div className="text-sm font-bold text-brand-600 dark:text-brand-400 mb-2">
+                                        Step {idx + 1}
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+                                        {step.title}
+                                    </h3>
+                                    <p className="text-slate-600 dark:text-slate-400">{step.desc}</p>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Detailed Timeline */}
+            <section className="py-20 bg-white dark:bg-slate-900">
+                <div className="container mx-auto px-4 max-w-4xl">
+                    <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-16">
+                        Typical Timeline
+                    </h2>
+
+                    <div className="space-y-8">
+                        <TimelineItem
+                            day="Day 1"
+                            title="Submit Request"
+                            description="Fill out our simple form with details about your objects and requirements."
+                            icon={<FileQuestion className="w-6 h-6" />}
+                        />
+                        <TimelineItem
+                            day="Day 2-3"
+                            title="Scheduling & Prep"
+                            description="We coordinate logistics and prepare our equipment based on your specific needs."
+                        />
+                        <TimelineItem
+                            day="Day 4"
+                            title="On-Site Capture"
+                            description="Our expert team arrives and captures your objects using professional equipment."
+                        />
+                        <TimelineItem
+                            day="Day 5-7"
+                            title="Processing & Quality Check"
+                            description="We process the raw data into web-ready 3D models and ensure quality standards."
+                        />
+                        <TimelineItem
+                            day="Day 8"
+                            title="Delivery"
+                            description="Receive your 3D models with embeddable links, QR codes, and AR capabilities."
+                            icon={<CheckCircle className="w-6 h-6" />}
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-20 bg-gradient-to-br from-brand-600 to-brand-700 dark:from-brand-700 dark:to-brand-800 text-white">
+                <div className="container mx-auto px-4 text-center max-w-2xl">
+                    <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
+                    <p className="text-xl mb-8 text-brand-100">
+                        Submit a capture request and we'll handle the rest
+                    </p>
+                    <Link to="/request">
+                        <Button variant="secondary" size="lg">
+                            Request Capture <ArrowRight className="w-5 h-5" />
+                        </Button>
+                    </Link>
+                </div>
+            </section>
+        </div>
+    );
+};
+
+interface TimelineItemProps {
+    day: string;
+    title: string;
+    description: string;
+    icon?: React.ReactNode;
+}
+
+const TimelineItem: React.FC<TimelineItemProps> = ({ day, title, description, icon }) => {
+    return (
+        <div className="flex gap-6">
+            <div className="flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-brand-600 dark:text-brand-400 flex-shrink-0">
+                    {icon || <div className="w-3 h-3 rounded-full bg-brand-600 dark:bg-brand-400" />}
+                </div>
+                <div className="w-0.5 h-full bg-slate-200 dark:bg-slate-700 mt-2" />
+            </div>
+            <div className="flex-1 pb-8">
+                <div className="text-sm font-bold text-brand-600 dark:text-brand-400 mb-1">{day}</div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{title}</h3>
+                <p className="text-slate-600 dark:text-slate-400">{description}</p>
+            </div>
+        </div>
+    );
+};
+
+export default HowItWorks;
+
+
+================================================================================
+FILE: pages\Industry.tsx
+================================================================================
+import React from 'react';
+import { useParams, Link, Navigate } from 'react-router-dom';
+import { INDUSTRIES } from '../constants';
+import { Check, Shield, ArrowRight } from 'lucide-react';
+
+const Industry: React.FC = () => {
+  const { type } = useParams<{ type: string }>();
+  const config = type ? INDUSTRIES[type] : null;
+
+  if (!config) {
+    return <Navigate to="/industries" replace />;
+  }
+
+  return (
+    <div>
+      {/* Industry Hero */}
+      <section className="bg-slate-900 text-white py-20">
+        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <div className="inline-block px-3 py-1 rounded-full bg-brand-900/50 text-brand-200 text-sm font-semibold mb-6 border border-brand-700">
+              For {config.id.charAt(0).toUpperCase() + config.id.slice(1)}
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{config.title}</h1>
+            <p className="text-lg text-slate-300 mb-8">{config.subtitle}</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link 
+                to={`/request?industry=${config.id}`}
+                className="px-6 py-3 rounded-lg bg-brand-600 font-bold hover:bg-brand-500 transition-colors text-center"
+              >
+                Request Capture
+              </Link>
+              <Link 
+                to={`/gallery?industry=${config.id}`}
+                className="px-6 py-3 rounded-lg bg-white/10 border border-white/20 font-bold hover:bg-white/20 transition-colors text-center"
+              >
+                See Examples
+              </Link>
+            </div>
+          </div>
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700">
+            <img src={config.heroImage} alt={config.title} className="w-full h-auto object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Outcomes */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900">Why Managed Capture?</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {config.outcomes.map((outcome, idx) => (
+              <div key={idx} className="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-4">
+                  <Check className="w-5 h-5" />
+                </div>
+                <p className="font-semibold text-slate-800 text-lg">{outcome}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Permissions / Features */}
+      <section className="py-20 bg-slate-50 border-t border-slate-200">
+        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-16 items-center">
+          <div className="order-2 md:order-1 relative">
+             <img src={config.demoImage} alt="Demo 3D Model" className="rounded-xl shadow-lg" />
+             <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-xl border border-slate-100 max-w-xs">
+                <div className="text-sm font-bold text-slate-900 mb-1">Interactive Viewer</div>
+                <div className="text-xs text-slate-500">Customers can rotate, zoom, and explore every detail.</div>
+             </div>
+          </div>
+          <div className="order-1 md:order-2">
+            <h2 className="text-3xl font-bold text-slate-900 mb-6">What your team can do</h2>
+            <p className="text-slate-600 mb-8">
+              We manage the capture, you control the distribution. Our portal gives you specific permissions tailored to the {config.id} workflow.
+            </p>
+            <ul className="space-y-4">
+              {config.permissions.map((perm, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-brand-600 mt-1 flex-shrink-0" />
+                  <span className="text-slate-700">{perm}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-10">
+              <Link to="/request" className="text-brand-600 font-bold hover:text-brand-700 flex items-center gap-2">
+                Start a project <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* FAQ Placeholder */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            <details className="group border border-slate-200 rounded-lg open:bg-slate-50">
+              <summary className="flex cursor-pointer items-center justify-between p-4 font-medium text-slate-900">
+                How long does capture take?
+              </summary>
+              <div className="p-4 pt-0 text-slate-600">
+                On-site capture typically takes 1-2 hours per 10 objects. Processing and QA take 3-5 business days.
+              </div>
+            </details>
+            <details className="group border border-slate-200 rounded-lg open:bg-slate-50">
+              <summary className="flex cursor-pointer items-center justify-between p-4 font-medium text-slate-900">
+                Do I need to prepare the objects?
+              </summary>
+              <div className="p-4 pt-0 text-slate-600">
+                Yes, items should be clean and staged. For reflective items, our team will bring specialized scanning sprays if permitted.
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Industry;
+
+================================================================================
+FILE: pages\Login.tsx
+================================================================================
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Box, ArrowRight } from 'lucide-react';
+
+const Login: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState<'customer' | 'employee'>('customer');
+  const navigate = useNavigate();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate login
+    if (role === 'employee') {
+      navigate('/app/dashboard');
+    } else {
+      navigate('/portal/dashboard');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-8 border border-slate-200">
+        <div className="flex justify-center mb-8">
+          <Link to="/" className="w-12 h-12 bg-brand-600 rounded-xl flex items-center justify-center text-white hover:bg-brand-700 transition-colors">
+            <Box className="w-8 h-8" />
+          </Link>
+        </div>
+        <h1 className="text-2xl font-bold text-center text-slate-900 mb-2">Welcome Back</h1>
+        <p className="text-center text-slate-500 mb-8">Sign in to the Managed Capture Platform</p>
+
+        {/* Role Toggle */}
+        <div className="bg-slate-100 p-1 rounded-lg flex mb-6">
+          <button
+            type="button"
+            onClick={() => setRole('customer')}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'customer' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}
+          >
+            Customer
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole('employee')}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'employee' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}
+          >
+            Employee
+          </button>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+            <input
+              type="email"
+              required
+              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+              placeholder="name@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <input
+              type="password"
+              required
+              className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors flex items-center justify-center gap-2"
+          >
+            Sign In <ArrowRight className="w-4 h-4" />
+          </button>
+        </form>
+
+        <div className="mt-6 text-center text-sm text-slate-500">
+          {role === 'customer' ? (
+            <p>No account? Contact your project manager for an invite.</p>
+          ) : (
+            <p>Employee access only. Unauthorized access is prohibited.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+
+================================================================================
+FILE: pages\NotFound.tsx
+================================================================================
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Search } from 'lucide-react';
+import Button from '../components/Button';
+
+const NotFound: React.FC = () => {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4">
+            <div className="max-w-2xl w-full text-center">
+                {/* 404 Number */}
+                <div className="mb-8">
+                    <h1 className="text-[180px] font-bold text-gradient leading-none">404</h1>
+                </div>
+
+                {/* Message */}
+                <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+                    Page Not Found
+                </h2>
+                <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
+                    Oops! The page you're looking for doesn't exist. It might have been moved or deleted.
+                </p>
+
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+                    <Link to="/">
+                        <Button variant="primary" size="lg">
+                            Go Home <ArrowRight className="w-5 h-5" />
+                        </Button>
+                    </Link>
+                    <Link to="/gallery">
+                        <Button variant="secondary" size="lg">
+                            View Gallery
+                        </Button>
+                    </Link>
+                </div>
+
+                {/* Helpful Links */}
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-8">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                        Looking for something specific?
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+                        <Link to="/industries/restaurants" className="text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 font-medium">
+                            Restaurants
+                        </Link>
+                        <span className="text-slate-300 dark:text-slate-700">•</span>
+                        <Link to="/industries/museums" className="text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 font-medium">
+                            Museums
+                        </Link>
+                        <span className="text-slate-300 dark:text-slate-700">•</span>
+                        <Link to="/industries/ecommerce" className="text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 font-medium">
+                            E-commerce
+                        </Link>
+                        <span className="text-slate-300 dark:text-slate-700">•</span>
+                        <Link to="/request" className="text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 font-medium">
+                            Request Capture
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default NotFound;
+
+
+================================================================================
+FILE: pages\Portal.tsx
+================================================================================
+import React, { useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
+import { Box, Users, FileBox, LogOut, Settings, Plus, Download, Share2, Eye } from 'lucide-react';
+import { ProjectStatus } from '../types';
+
+// Mock Data
+const PROJECTS = [
+  { id: 'PRJ-001', name: 'Summer Menu Update', client: 'Bistro 55', status: ProjectStatus.Published, items: 12 },
+  { id: 'PRJ-002', name: 'Fall Collection', client: 'Style Co', status: ProjectStatus.Processing, items: 45 },
+  { id: 'PRJ-003', name: 'Ancient Egypt Exhibit', client: 'History Museum', status: ProjectStatus.QA, items: 8 },
+];
+
+const ASSETS = [
+  { id: 'AST-101', name: 'Cheeseburger Deluxe', thumb: 'https://picsum.photos/seed/burger/100/100', status: 'Published' },
+  { id: 'AST-102', name: 'Fries Basket', thumb: 'https://picsum.photos/seed/fries/100/100', status: 'Published' },
+  { id: 'AST-103', name: 'Milkshake', thumb: 'https://picsum.photos/seed/shake/100/100', status: 'In Review' },
+];
+
+const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'customers' | 'assets'>('dashboard');
+
+  return (
+    <div className="flex min-h-screen bg-slate-50">
+      {/* Sidebar */}
+      <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col fixed h-full">
+        <div className="p-6">
+          <Link to="/" className="flex items-center gap-2 font-bold text-white text-lg">
+            <Box className="w-6 h-6 text-brand-500" />
+            <span>{role === 'employee' ? 'Console' : 'Portal'}</span>
+          </Link>
+        </div>
+        
+        <nav className="flex-1 px-4 space-y-2">
+          <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'dashboard' ? 'bg-brand-600 text-white' : 'hover:bg-slate-800'}`}
+          >
+            <Box className="w-5 h-5" /> Dashboard
+          </button>
+          
+          {role === 'employee' && (
+            <button 
+              onClick={() => setActiveTab('customers')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'customers' ? 'bg-brand-600 text-white' : 'hover:bg-slate-800'}`}
+            >
+              <Users className="w-5 h-5" /> Customers
+            </button>
+          )}
+
+          <button 
+            onClick={() => setActiveTab('projects')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'projects' ? 'bg-brand-600 text-white' : 'hover:bg-slate-800'}`}
+          >
+            <FileBox className="w-5 h-5" /> Projects
+          </button>
+        </nav>
+
+        <div className="p-4 border-t border-slate-800">
+           <button className="flex items-center gap-3 px-4 py-3 text-sm text-slate-400 hover:text-white w-full">
+             <Settings className="w-5 h-5" /> Settings
+           </button>
+           <Link to="/" className="flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 w-full">
+             <LogOut className="w-5 h-5" /> Sign Out
+           </Link>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 ml-64 p-8">
+        <header className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </h1>
+            <p className="text-slate-500">Welcome back, {role === 'employee' ? 'Admin' : 'Client'}.</p>
+          </div>
+          {role === 'employee' && (
+             <button className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-brand-700 flex items-center gap-2">
+               <Plus className="w-4 h-4" /> New Project
+             </button>
+          )}
+        </header>
+
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8">
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div className="text-slate-500 text-sm font-medium mb-2">Active Projects</div>
+                <div className="text-3xl font-bold text-slate-900">12</div>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div className="text-slate-500 text-sm font-medium mb-2">Assets in Review</div>
+                <div className="text-3xl font-bold text-orange-600">5</div>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div className="text-slate-500 text-sm font-medium mb-2">Published Assets</div>
+                <div className="text-3xl font-bold text-green-600">148</div>
+              </div>
+            </div>
+
+            {/* Recent Assets (Mock Library) */}
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 mb-4">Recent Assets</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                 {ASSETS.map(asset => (
+                   <div key={asset.id} className="bg-white rounded-lg border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                     <div className="aspect-square bg-slate-100 relative">
+                       <img src={asset.thumb} alt={asset.name} className="w-full h-full object-cover" />
+                       <span className={`absolute top-2 right-2 px-2 py-1 text-xs font-bold rounded bg-white/90 ${asset.status === 'Published' ? 'text-green-600' : 'text-orange-600'}`}>
+                         {asset.status}
+                       </span>
+                     </div>
+                     <div className="p-4">
+                       <h3 className="font-bold text-slate-900 text-sm mb-3">{asset.name}</h3>
+                       <div className="flex justify-between">
+                         <button className="p-2 text-slate-500 hover:bg-slate-50 rounded" title="View">
+                           <Eye className="w-4 h-4" />
+                         </button>
+                         {role === 'customer' && (
+                           <>
+                             <button className="p-2 text-slate-500 hover:bg-slate-50 rounded" title="Download">
+                               <Download className="w-4 h-4" />
+                             </button>
+                             <button className="p-2 text-slate-500 hover:bg-slate-50 rounded" title="Share">
+                               <Share2 className="w-4 h-4" />
+                             </button>
+                           </>
+                         )}
+                       </div>
+                     </div>
+                   </div>
+                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Projects Table */}
+        {(activeTab === 'projects' || activeTab === 'customers') && (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="p-4 text-xs font-bold text-slate-500 uppercase">ID</th>
+                  <th className="p-4 text-xs font-bold text-slate-500 uppercase">Project Name</th>
+                  <th className="p-4 text-xs font-bold text-slate-500 uppercase">Client</th>
+                  <th className="p-4 text-xs font-bold text-slate-500 uppercase">Status</th>
+                  <th className="p-4 text-xs font-bold text-slate-500 uppercase">Items</th>
+                  <th className="p-4 text-xs font-bold text-slate-500 uppercase">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {PROJECTS.map(p => (
+                  <tr key={p.id} className="hover:bg-slate-50">
+                    <td className="p-4 text-sm text-slate-500 font-mono">{p.id}</td>
+                    <td className="p-4 text-sm font-bold text-slate-900">{p.name}</td>
+                    <td className="p-4 text-sm text-slate-600">{p.client}</td>
+                    <td className="p-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        p.status === ProjectStatus.Published ? 'bg-green-100 text-green-800' :
+                        p.status === ProjectStatus.Processing ? 'bg-blue-100 text-blue-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {p.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-sm text-slate-600">{p.items}</td>
+                    <td className="p-4">
+                      <button className="text-brand-600 hover:text-brand-800 text-sm font-bold">Manage</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default Portal;
+
+================================================================================
+FILE: pages\Pricing.tsx
+================================================================================
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Check, X, ArrowRight } from 'lucide-react';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import Accordion from '../components/Accordion';
+
+interface PricingTier {
+    name: string;
+    price: string;
+    description: string;
+    features: string[];
+    notIncluded?: string[];
+    highlighted?: boolean;
+}
+
+const PRICING_TIERS: PricingTier[] = [
+    {
+        name: 'Starter',
+        price: '$299',
+        description: 'Perfect for small projects and testing',
+        features: [
+            'Up to 5 objects captured',
+            '1 on-site visit',
+            'Basic 3D models (web-ready)',
+            'Embed codes & QR codes',
+            'Email support',
+            '48-hour turnaround',
+        ],
+        notIncluded: ['AR capabilities', 'Custom branding', 'Priority support'],
+    },
+    {
+        name: 'Professional',
+        price: '$899',
+        description: 'Most popular for businesses',
+        features: [
+            'Up to 20 objects captured',
+            '2 on-site visits',
+            'High-fidelity 3D models',
+            'AR-ready assets',
+            'Embed codes & QR codes',
+            'Custom branding',
+            'Priority email support',
+            '24-hour turnaround',
+        ],
+        highlighted: true,
+    },
+    {
+        name: 'Enterprise',
+        price: 'Custom',
+        description: 'For large-scale projects',
+        features: [
+            'Unlimited objects',
+            'Multiple on-site visits',
+            'Premium 3D models',
+            'AR & VR capabilities',
+            'White-label solution',
+            'API access',
+            'Dedicated account manager',
+            'Custom integrations',
+            '12-hour turnaround',
+        ],
+    },
+];
+
+const FAQ_ITEMS = [
+    {
+        question: 'What types of objects can you capture?',
+        answer: 'We can capture virtually any physical object, from small items like jewelry to large installations like sculptures. The only limitations are accessibility and size constraints for our equipment.',
+    },
+    {
+        question: 'How long does the capture process take?',
+        answer: 'The on-site capture typically takes 1-4 hours depending on the number and complexity of objects. Total turnaround from request to delivery ranges from 24-48 hours depending on your plan.',
+    },
+    {
+        question: 'Can I use the 3D models on my own website?',
+        answer: 'Absolutely! You receive embed codes, direct links, and downloadable assets that you can use on any website or platform. We also provide AR-ready formats for mobile experiences.',
+    },
+    {
+        question: 'Do you travel internationally?',
+        answer: 'Yes, for Enterprise plans we can arrange international capture sessions. Contact us for pricing and logistics details.',
+    },
+    {
+        question: 'What if I need revisions?',
+        answer: 'All plans include one round of revisions. Additional revisions can be purchased separately. Enterprise plans include unlimited revisions.',
+    },
+];
+
+const Pricing: React.FC = () => {
+
+    return (
+        <div className="min-h-screen bg-white dark:bg-slate-900">
+            {/* Hero */}
+            <section className="relative bg-gradient-to-br from-slate-900 to-brand-900 dark:from-slate-950 dark:to-brand-950 text-white py-20">
+                <div className="container mx-auto px-4 max-w-4xl text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                        Simple, Transparent Pricing
+                    </h1>
+                    <p className="text-xl text-slate-300">
+                        Choose the plan that fits your needs. No hidden fees.
+                    </p>
+                </div>
+            </section>
+
+            {/* Pricing Tiers */}
+            <section className="py-20 bg-slate-50 dark:bg-slate-800">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {PRICING_TIERS.map((tier, idx) => (
+                            <Card
+                                key={idx}
+                                hover={false}
+                                className={`p-8 relative ${tier.highlighted
+                                    ? 'ring-2 ring-brand-500 dark:ring-brand-400 scale-105'
+                                    : ''
+                                    }`}
+                            >
+                                {tier.highlighted && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-600 text-white px-4 py-1 rounded-full text-sm font-bold">
+                                        Most Popular
+                                    </div>
+                                )}
+
+                                <div className="text-center mb-8">
+                                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                                        {tier.name}
+                                    </h3>
+                                    <p className="text-slate-600 dark:text-slate-400 mb-4">
+                                        {tier.description}
+                                    </p>
+                                    <div className="text-4xl font-bold text-brand-600 dark:text-brand-400">
+                                        {tier.price}
+                                        {tier.price !== 'Custom' && (
+                                            <span className="text-lg text-slate-500 dark:text-slate-400 font-normal">
+                                                /project
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <ul className="space-y-3 mb-8">
+                                    {tier.features.map((feature, fIdx) => (
+                                        <li key={fIdx} className="flex items-start gap-3">
+                                            <Check className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                                            <span className="text-slate-700 dark:text-slate-300">{feature}</span>
+                                        </li>
+                                    ))}
+                                    {tier.notIncluded?.map((feature, fIdx) => (
+                                        <li key={`not-${fIdx}`} className="flex items-start gap-3 opacity-50">
+                                            <X className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />
+                                            <span className="text-slate-500 dark:text-slate-400">{feature}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <Link to="/request" className="block">
+                                    <Button
+                                        variant={tier.highlighted ? 'primary' : 'outline'}
+                                        className="w-full"
+                                    >
+                                        {tier.price === 'Custom' ? 'Contact Sales' : 'Get Started'}
+                                        <ArrowRight className="w-5 h-5" />
+                                    </Button>
+                                </Link>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ */}
+            <section className="py-20 bg-white dark:bg-slate-900">
+                <div className="container mx-auto px-4 max-w-3xl">
+                    <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
+                        Frequently Asked Questions
+                    </h2>
+
+                    <Accordion
+                        items={FAQ_ITEMS.map(item => ({
+                            title: item.question,
+                            content: <p>{item.answer}</p>
+                        }))}
+                    />
+                </div>
+            </section>
+
+            {/* CTA */}
+            <section className="py-20 bg-gradient-to-br from-brand-600 to-brand-700 dark:from-brand-700 dark:to-brand-800 text-white">
+                <div className="container mx-auto px-4 text-center max-w-2xl">
+                    <h2 className="text-3xl font-bold mb-6">Still Have Questions?</h2>
+                    <p className="text-xl mb-8 text-brand-100">
+                        Our team is here to help you find the perfect solution
+                    </p>
+                    <Link to="/request">
+                        <Button variant="secondary" size="lg">
+                            Contact Us <ArrowRight className="w-5 h-5" />
+                        </Button>
+                    </Link>
+                </div>
+            </section>
+        </div>
+    );
+};
+
+export default Pricing;
+
+
+================================================================================
+FILE: pages\RequestForm.tsx
+================================================================================
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Industry, RequestFormState } from '../types';
+import { Check, ChevronRight, ChevronLeft, AlertCircle } from 'lucide-react';
+
+const INITIAL_STATE: RequestFormState = {
+  industry: '',
+  quantity_range: '',
+  object_size_range: '',
+  materials: [],
+  location_mode: '',
+  country: '',
+  preferred_window: '',
+  deliverables: [],
+  contact: { full_name: '', email: '', company: '' }
+};
+
+const RequestForm: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<RequestFormState>(INITIAL_STATE);
+  const [submitted, setSubmitted] = useState(false);
+
+  // Initialize industry from URL param
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const ind = params.get('industry');
+    if (ind) {
+      // Normalize simple strings to Enum if matches
+      if (ind === 'restaurants') setFormData(prev => ({ ...prev, industry: Industry.Restaurant }));
+      else if (ind === 'museums') setFormData(prev => ({ ...prev, industry: Industry.Museum }));
+      else if (ind === 'ecommerce') setFormData(prev => ({ ...prev, industry: Industry.Ecommerce }));
+    }
+  }, [location.search]);
+
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const updateContact = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, contact: { ...prev.contact, [field]: value } }));
+  };
+
+  const toggleArrayField = (field: 'materials' | 'deliverables', value: string) => {
+    setFormData(prev => {
+      const arr = prev[field];
+      if (arr.includes(value)) {
+        return { ...prev, [field]: arr.filter(i => i !== value) };
+      } else {
+        return { ...prev, [field]: [...arr, value] };
+      }
+    });
+  };
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const validateStep = (currentStep: number): boolean => {
+    const newErrors: { [key: string]: string } = {};
+    let isValid = true;
+
+    if (currentStep === 1) {
+      if (!formData.industry) {
+        newErrors.industry = 'Please select an industry to continue.';
+        isValid = false;
+      }
+    }
+
+    if (currentStep === 2) {
+      if (!formData.quantity_range) {
+        newErrors.quantity_range = 'Please select a quantity range.';
+        isValid = false;
+      }
+      if (!formData.object_size_range) {
+        newErrors.object_size_range = 'Please select an approximate size.';
+        isValid = false;
+      }
+    }
+
+    if (currentStep === 3) {
+      if (!formData.location_mode) {
+        newErrors.location_mode = 'Please select a capture location preference.';
+        isValid = false;
+      }
+      if (!formData.country.trim()) {
+        newErrors.country = 'Please enter your country.';
+        isValid = false;
+      }
+    }
+
+    if (currentStep === 4) {
+      if (formData.deliverables.length === 0) {
+        newErrors.deliverables = 'Please select at least one deliverable.';
+        isValid = false;
+      }
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setStep(prev => prev + 1);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate Step 5
+    const newErrors: { [key: string]: string } = {};
+    let isValid = true;
+
+    if (!formData.contact.full_name.trim()) {
+      newErrors.full_name = 'Full name is required.';
+      isValid = false;
+    }
+    if (!formData.contact.email.trim()) {
+      newErrors.email = 'Email is required.';
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact.email)) {
+      newErrors.email = 'Please enter a valid email address.';
+      isValid = false;
+    }
+    if (!formData.contact.company.trim()) {
+      newErrors.company = 'Company name is required.';
+      isValid = false;
+    }
+
+    if (!isValid) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      setSubmitted(true);
+      window.scrollTo(0, 0);
+    }, 1000);
+  };
+
+  if (submitted) {
+    return (
+      <div className="container mx-auto px-4 py-24 text-center max-w-2xl">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+          <Check className="w-10 h-10" />
+        </div>
+        <h1 className="text-3xl font-bold text-slate-900 mb-4">Request Received</h1>
+        <p className="text-slate-600 text-lg mb-8">
+          Thank you, {formData.contact.full_name}. We have received your capture request for {formData.industry}.
+          Our operations team will review your requirements and contact you at {formData.contact.email} within 24 hours.
+        </p>
+        <button
+          onClick={() => navigate('/')}
+          className="px-8 py-3 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700"
+        >
+          Return Home
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-12">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <div className="mb-8">
+          <div className="flex items-center justify-between text-sm font-medium text-slate-500 mb-2">
+            <span>Step {step} of 5</span>
+            <span>{Math.round((step / 5) * 100)}% Complete</span>
+          </div>
+          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+            <div
+              className="bg-brand-600 h-full transition-all duration-300 ease-out"
+              style={{ width: `${(step / 5) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+          <form onSubmit={handleSubmit}>
+            {/* Step 1: Industry */}
+            {step === 1 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900">Which industry describes you best?</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[Industry.Restaurant, Industry.Museum, Industry.Ecommerce].map((ind) => (
+                    <button
+                      key={ind}
+                      type="button"
+                      onClick={() => updateField('industry', ind)}
+                      className={`p-6 rounded-xl border-2 text-left transition-all ${formData.industry === ind
+                        ? 'border-brand-600 bg-brand-50'
+                        : 'border-slate-200 hover:border-brand-300'
+                        }`}
+                    >
+                      <span className="font-bold text-lg block mb-1">{ind}</span>
+                      <span className="text-sm text-slate-500">
+                        {ind === Industry.Restaurant && "Menu items & food"}
+                        {ind === Industry.Museum && "Artifacts & collections"}
+                        {ind === Industry.Ecommerce && "Retail products"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                {errors.industry && (
+                  <p className="flex items-center text-red-600 text-sm mt-2">
+                    <AlertCircle className="w-4 h-4 mr-1" /> {errors.industry}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Step 2: Scope */}
+            {step === 2 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900">Project Scope</h2>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">How many items?</label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {['1-10', '11-50', '51-200', '200+'].map(opt => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => updateField('quantity_range', opt)}
+                        className={`py-3 px-4 rounded-lg border text-sm font-medium ${formData.quantity_range === opt ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                          }`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Approximate Size</label>
+                  <select
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+                    value={formData.object_size_range}
+                    onChange={(e) => updateField('object_size_range', e.target.value)}
+                  >
+                    <option value="">Select a size...</option>
+                    <option value="small">Small (Handheld / Jewelry)</option>
+                    <option value="medium">Medium (Tabletop / Shoes / Plates)</option>
+                    <option value="large">Large (Furniture / Statues)</option>
+                    <option value="oversized">Oversized (Vehicle / Room)</option>
+                  </select>
+                  {errors.object_size_range && <p className="text-red-600 text-sm mt-1">{errors.object_size_range}</p>}
+                </div>
+
+                {formData.industry === Industry.Museum && (
+                  <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                    <label className="block text-sm font-bold text-amber-900 mb-2">Handling Sensitivity</label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 text-amber-900">
+                        <input type="radio" name="sensitivity" value="standard" onChange={(e) => updateField('handling_sensitivity', e.target.value)} /> Standard
+                      </label>
+                      <label className="flex items-center gap-2 text-amber-900">
+                        <input type="radio" name="sensitivity" value="fragile" onChange={(e) => updateField('handling_sensitivity', e.target.value)} /> Fragile
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 3: Logistics */}
+            {step === 3 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900">Logistics</h2>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Capture Location</label>
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={() => updateField('location_mode', 'on_site')}
+                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold ${formData.location_mode === 'on_site' ? 'border-brand-600 bg-brand-50' : 'border-slate-200'
+                        }`}
+                    >
+                      On-site (We come to you)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateField('location_mode', 'ship_in')}
+                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold ${formData.location_mode === 'ship_in' ? 'border-brand-600 bg-brand-50' : 'border-slate-200'
+                        }`}
+                    >
+                      Ship-in (You send to us)
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Country</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. United States, France..."
+                    className="w-full p-3 border border-slate-300 rounded-lg"
+                    value={formData.country}
+                    onChange={(e) => updateField('country', e.target.value)}
+                  />
+                  {errors.country && <p className="text-red-600 text-sm mt-1">{errors.country}</p>}
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Deliverables */}
+            {step === 4 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900">Deliverables</h2>
+                <p className="text-slate-500">Select what you need delivered.</p>
+
+                <div className="grid grid-cols-1 gap-3">
+                  {[
+                    { id: 'hosted_viewer_link', label: 'Hosted Viewer Link (Web)' },
+                    { id: 'website_embed', label: 'Website Embed Code (iFrame)' },
+                    { id: 'ar_ios_usdz', label: 'AR File for iOS (.usdz)' },
+                    { id: 'ar_android_glb', label: 'AR File for Android (.glb)' },
+                    { id: 'downloads_bundle', label: 'Raw Asset Bundle' },
+                    { id: 'qr_codes', label: 'QR Codes' },
+                  ].map((item) => (
+                    <label key={item.id} className="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500"
+                        checked={formData.deliverables.includes(item.id)}
+                        onChange={() => toggleArrayField('deliverables', item.id)}
+                      />
+                      <span className="ml-3 font-medium text-slate-900">{item.label}</span>
+                    </label>
+                  ))}
+                </div>
+                {errors.deliverables && (
+                  <p className="flex items-center text-red-600 text-sm mt-2">
+                    <AlertCircle className="w-4 h-4 mr-1" /> {errors.deliverables}
+                  </p>
+                )}
+
+                {formData.industry === Industry.Museum && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Default Access Control</label>
+                    <select
+                      className="w-full p-3 border border-slate-300 rounded-lg"
+                      onChange={(e) => updateField('museum_access_control', e.target.value)}
+                    >
+                      <option value="public">Public (Searchable)</option>
+                      <option value="unlisted">Unlisted (Link only)</option>
+                      <option value="restricted">Restricted (Login required)</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 5: Contact */}
+            {step === 5 && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900">Final Step</h2>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 border border-slate-300 rounded-lg"
+                      value={formData.contact.full_name}
+                      onChange={(e) => updateContact('full_name', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Business Email</label>
+                    <input
+                      type="email"
+                      required
+                      className="w-full p-3 border border-slate-300 rounded-lg"
+                      value={formData.contact.email}
+                      onChange={(e) => updateContact('email', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Company / Organization</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 border border-slate-300 rounded-lg"
+                      value={formData.contact.company}
+                      onChange={(e) => updateContact('company', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2 text-sm text-slate-600 mt-4">
+                  <input type="checkbox" required className="mt-1" />
+                  <span>I agree to the Terms of Service and Privacy Policy. I understand this is a request for a quote and consultation.</span>
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Actions */}
+            <div className="flex justify-between items-center mt-8 pt-8 border-t border-slate-100">
+              {step > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep(s => s - 1)}
+                  className="flex items-center text-slate-600 hover:text-slate-900 font-medium"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" /> Back
+                </button>
+              ) : <div></div>}
+
+              {step < 5 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="flex items-center bg-brand-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors"
+                >
+                  Next Step <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="flex items-center bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors"
+                >
+                  Submit Request
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RequestForm;
+
