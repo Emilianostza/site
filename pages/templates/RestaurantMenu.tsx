@@ -3,11 +3,29 @@ import { useParams, Link } from 'react-router-dom';
 import { getProjects, getAssets } from '../../services/mockData';
 import { ArrowLeft, Box, ChefHat } from 'lucide-react';
 import { Project } from '../../types';
+import Modal from '../../components/Modal';
+import '@google/model-viewer';
+
+declare global {
+    namespace JSX {
+        interface IntrinsicElements {
+            'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+                src?: string;
+                alt?: string;
+                ar?: boolean;
+                'auto-rotate'?: boolean;
+                'camera-controls'?: boolean;
+                'shadow-intensity'?: string;
+            }, HTMLElement>;
+        }
+    }
+}
 
 const RestaurantMenu: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
+    const [selectedModel, setSelectedModel] = useState<{ url: string; name: string } | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,21 +53,24 @@ const RestaurantMenu: React.FC = () => {
             desc: "Wagyu beef, aged cheddar, truffle aioli on brioche.",
             price: "$24",
             image: "https://picsum.photos/seed/burger/400/300",
-            calories: "850 kcal"
+            calories: "850 kcal",
+            modelUrl: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" // Placeholder model
         },
         {
             name: "Truffle Fries",
             desc: "Hand-cut fries, parmesan dust, black truffle oil.",
             price: "$12",
             image: "https://picsum.photos/seed/fries/400/300",
-            calories: "450 kcal"
+            calories: "450 kcal",
+            modelUrl: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" // Placeholder model
         },
         {
             name: "Artisan Shake",
             desc: "Vanilla bean, salted caramel, gold leaf topping.",
             price: "$16",
             image: "https://picsum.photos/seed/shake/400/300",
-            calories: "600 kcal"
+            calories: "600 kcal",
+            modelUrl: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" // Placeholder model
         }
     ];
 
@@ -92,7 +113,10 @@ const RestaurantMenu: React.FC = () => {
                                     className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity scale-105 group-hover:scale-100 duration-700"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                    <button className="bg-amber-600 text-white px-6 py-2 rounded-full font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform shadow-lg">
+                                    <button
+                                        onClick={() => setSelectedModel({ url: item.modelUrl, name: item.name })}
+                                        className="bg-amber-600 text-white px-6 py-2 rounded-full font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform shadow-lg hover:bg-amber-500 transition-colors"
+                                    >
                                         <Box className="w-4 h-4" /> View in 3D
                                     </button>
                                 </div>
@@ -123,6 +147,32 @@ const RestaurantMenu: React.FC = () => {
             <footer className="mt-20 text-center text-stone-600 text-sm">
                 <p>Powered by Managed Capture 3D</p>
             </footer>
+
+            {/* 3D Model Modal */}
+            <Modal
+                isOpen={!!selectedModel}
+                onClose={() => setSelectedModel(null)}
+                title={selectedModel?.name || '3D View'}
+            >
+                <div className="w-full h-[60vh] bg-stone-900 rounded-lg overflow-hidden flex items-center justify-center text-stone-500">
+                    {selectedModel ? (
+                        <model-viewer
+                            src={selectedModel.url}
+                            alt={`3D model of ${selectedModel.name}`}
+                            auto-rotate
+                            camera-controls
+                            ar
+                            shadow-intensity="1"
+                            style={{ width: '100%', height: '100%' }}
+                        ></model-viewer>
+                    ) : (
+                        <p>No model selected</p>
+                    )}
+                </div>
+                <div className="mt-4 text-center text-stone-400 text-sm">
+                    <p>Use touch or mouse to rotate and zoom. Tap AR icon on mobile to view in your space.</p>
+                </div>
+            </Modal>
         </div>
     );
 };
