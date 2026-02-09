@@ -24,7 +24,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCreateProject = async (data: { name: string; client: string }) => {
+  const handleCreateProject = async (data: { name: string; client: string; address?: string; phone?: string }) => {
     await addProject({ ...data, type: 'standard' });
     const projData = await getProjects();
     setProjects(projData);
@@ -97,8 +97,8 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             <button
               onClick={() => setActiveTab('settings')}
               className={`flex items-center gap-2 font-medium transition-colors ${activeTab === 'settings'
-                  ? 'text-brand-600 dark:text-brand-400'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                ? 'text-brand-600 dark:text-brand-400'
+                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                 }`}
             >
               <SettingsIcon className="w-4 h-4" />

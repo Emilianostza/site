@@ -13,7 +13,7 @@ export const getProjects = async (): Promise<Project[]> => {
     return [...PROJECTS];
 };
 
-export const addProject = async (project: { name: string; client: string; type: ProjectType }): Promise<Project> => {
+export const addProject = async (project: { name: string; client: string; type: ProjectType; address?: string; phone?: string }): Promise<Project> => {
     await new Promise(resolve => setTimeout(resolve, 500));
     const newProject: Project = {
         id: `PRJ-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
@@ -21,7 +21,9 @@ export const addProject = async (project: { name: string; client: string; type: 
         client: project.client,
         status: ProjectStatus.Processing,
         items: 0,
-        type: project.type
+        type: project.type,
+        address: project.address,
+        phone: project.phone
     };
     PROJECTS.unshift(newProject);
     return newProject;

@@ -5,12 +5,14 @@ import { useToast } from '../../contexts/ToastContext';
 interface NewProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: { name: string; client: string; description: string; dueDate: string; priority: string }) => Promise<void>;
+    onSave: (data: { name: string; client: string; description: string; dueDate: string; priority: string; address: string; phone: string }) => Promise<void>;
 }
 
 export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onSave }) => {
     const [name, setName] = useState('');
     const [client, setClient] = useState('');
+    const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
     const [description, setDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [priority, setPriority] = useState('Medium');
@@ -25,10 +27,12 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
 
         setLoading(true);
         try {
-            await onSave({ name, client, description, dueDate, priority });
+            await onSave({ name, client, description, dueDate, priority, address, phone });
             success(`Project "${name}" created successfully`);
             setName('');
             setClient('');
+            setAddress('');
+            setPhone('');
             setDescription('');
             setDueDate('');
             setPriority('Medium');
@@ -75,6 +79,29 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
                             value={client}
                             onChange={(e) => setClient(e.target.value)}
                         />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Address</label>
+                            <input
+                                type="text"
+                                className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
+                                placeholder="123 Main St"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
+                            <input
+                                type="tel"
+                                className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
+                                placeholder="(555) 123-4567"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <div>

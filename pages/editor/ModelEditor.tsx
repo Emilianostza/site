@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
-    ArrowLeft, Save, Undo, Redo, Box, Layers, Sun,
-    Move, RotateCw, Scaling, Download, Share2, Settings,
-    Smartphone, RotateCcw, X, Copy, Check, Globe, QrCode
+    ArrowLeft, Save, Undo, Redo, Layers, Sun,
+    Move, Share2, Settings,
+    Smartphone, RotateCcw, X, Copy, Check, Globe
 } from 'lucide-react';
 import { AssetUploader } from '../../components/editor/AssetUploader';
 import { saveAsset } from '../../services/mockData';
@@ -25,6 +25,7 @@ const ModelEditor: React.FC = () => {
     const [copied, setCopied] = useState(false);
 
     // Model Properties
+    const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
     const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
     const [scale, setScale] = useState({ x: 1, y: 1, z: 1 });
 
@@ -45,7 +46,7 @@ const ModelEditor: React.FC = () => {
         }
     }, [assetId]);
 
-    const handleUpload = (url: string, file: File) => {
+    const handleUpload = (url: string) => {
         setModelSrc(url);
     };
 
@@ -82,6 +83,7 @@ const ModelEditor: React.FC = () => {
     };
 
     const handleReset = () => {
+        setPosition({ x: 0, y: 0, z: 0 });
         setRotation({ x: 0, y: 0, z: 0 });
         setScale({ x: 1, y: 1, z: 1 });
         setExposure(1.0);
@@ -192,8 +194,13 @@ const ModelEditor: React.FC = () => {
                     </div>
 
                     {/* 3D Model Viewer */}
-                    <div className="w-full h-full">
-                        {/* @ts-ignore - model-viewer custom element properties */}
+                    <div
+                        className="w-full h-full"
+                        style={{
+                            transform: `translate3d(${position.x}m, ${position.y}m, ${position.z}m)`
+                        }}
+                    >
+                        {/* @ts-ignore */}
                         <model-viewer
                             src={modelSrc}
                             alt="3D Asset Editor"
@@ -204,7 +211,7 @@ const ModelEditor: React.FC = () => {
                             auto-rotate={autoRotate ? 'true' : undefined}
                             ar
                             ar-modes="webxr scene-viewer quick-look"
-                            orientation={`${rotation.x}deg ${rotation.y}deg ${rotation.z}deg`}
+                            rotation={`${rotation.x}deg ${rotation.y}deg ${rotation.z}deg`}
                             scale={`${scale.x} ${scale.y} ${scale.z}`}
                             style={{ width: '100%', height: '100%' }}
                         ></model-viewer>
@@ -240,6 +247,47 @@ const ModelEditor: React.FC = () => {
                     <div className="p-6 space-y-8">
                         {activeTab === 'transform' && (
                             <>
+                                <div className="space-y-4">
+                                    <h3 className="text-xs font-bold text-stone-500 uppercase">Position (m)</h3>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <div className="bg-stone-950 p-2 rounded border border-stone-800 flex items-center gap-2">
+                                            <span className="text-red-500 text-xs font-bold">X</span>
+                                            <input
+                                                type="number" step="0.1"
+                                                className="bg-transparent w-full text-sm outline-none"
+                                                value={position.x}
+                                                onChange={(e) => setPosition({ ...position, x: parseFloat(e.target.value) || 0 })}
+                                            />
+                                        </div>
+                                        <div className="bg-stone-950 p-2 rounded border border-stone-800 flex items-center gap-2">
+                                            <span className="text-green-500 text-xs font-bold">Y</span>
+                                            <input
+                                                type="number" step="0.1"
+                                                className="bg-transparent w-full text-sm outline-none"
+                                                value={position.y}
+                                                onChange={(e) => setPosition({ ...position, y: parseFloat(e.target.value) || 0 })}
+                                            />
+                                        </div>
+                                        <div className="bg-stone-950 p-2 rounded border border-stone-800 flex items-center gap-2">
+                                            <span className="text-blue-500 text-xs font-bold">Z</span>
+                                            <input
+                                                type="number" step="0.1"
+                                                className="bg-transparent w-full text-sm outline-none"
+                                                value={position.z}
+                                                onChange={(e) => setPosition({ ...position, z: parseFloat(e.target.value) || 0 })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setPosition({ x: 0, y: 0, z: 0 })}
+                                            className="text-xs text-stone-500 underline hover:text-stone-300"
+                                        >
+                                            Reset Position
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <div className="space-y-4">
                                     <h3 className="text-xs font-bold text-stone-500 uppercase">Scale (Factor)</h3>
                                     <div className="grid grid-cols-3 gap-2">

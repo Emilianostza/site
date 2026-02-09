@@ -57,6 +57,8 @@ export interface Project {
   status: ProjectStatus;
   items: number;
   type?: ProjectType;
+  address?: string;
+  phone?: string;
 }
 
 export interface Asset {
