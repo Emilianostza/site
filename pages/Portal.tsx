@@ -7,6 +7,7 @@ import { ProjectTable } from '../components/portal/ProjectTable';
 import { AssetGrid } from '../components/portal/AssetGrid';
 import { ProjectProgress } from '../components/portal/ProjectProgress';
 import { ActivityFeed } from '../components/portal/ActivityFeed';
+import { Model3DViewer } from '../components/portal/Model3DViewer';
 import { getProjects, getAssets, addProject } from '../services/mockData';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
