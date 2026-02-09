@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS } from '../constants';
-import { Menu, X, Box, Lock, ShieldCheck } from 'lucide-react';
+import { Menu, X, Box, ShieldCheck } from 'lucide-react';
 import DarkModeToggle from './DarkModeToggle';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,13 +27,32 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-6">
             {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-              >
-                {item.label}
-              </Link>
+              <div key={item.path} className="relative group">
+                <Link
+                  to={item.path}
+                  className={`text-sm font-medium transition-colors py-2 block ${location.pathname.startsWith(item.path) && item.path !== '/industries' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400'}`}
+                  {...(location.pathname.startsWith(item.path) && item.path !== '/industries' ? { 'aria-current': 'page' as const } : {})}
+                >
+                  {item.label}
+                </Link>
+
+                {/* Dropdown Menu */}
+                {item.children && (
+                  <div className="absolute top-full left-0 w-48 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden py-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-brand-600 dark:hover:text-brand-400"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
             <Link to="/app/login" className="text-sm font-medium text-slate-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400">
               Log in
@@ -64,14 +83,30 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="md:hidden border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
             <div className="flex flex-col p-4 space-y-4">
               {NAV_ITEMS.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-base font-medium text-slate-600 dark:text-slate-300"
-                >
-                  {item.label}
-                </Link>
+                <div key={item.path}>
+                  <Link
+                    to={item.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`text-base font-medium block ${location.pathname.startsWith(item.path) && item.path !== '/industries' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 dark:text-slate-300'}`}
+                    {...(location.pathname.startsWith(item.path) && item.path !== '/industries' ? { 'aria-current': 'page' as const } : {})}
+                  >
+                    {item.label}
+                  </Link>
+                  {item.children && (
+                    <div className="pl-4 mt-2 space-y-2 border-l-2 border-slate-100 dark:border-slate-800 ml-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 block"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               <div className="h-px bg-slate-100 dark:bg-slate-700 my-2" />
               <Link to="/app/login" className="text-base font-medium text-slate-900 dark:text-white">

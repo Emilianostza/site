@@ -3,6 +3,8 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider, useToast } from './contexts/ToastContext';
+import { ToastContainer } from './components/Toast';
 import ScrollToTop from './components/ScrollToTop';
 
 // Lazy load pages for better performance
@@ -30,49 +32,62 @@ const LoadingFallback: React.FC = () => (
 
 import { CodeInspector } from './components/devtools/CodeInspector';
 
+const AppContent: React.FC = () => {
+  const { toasts, removeToast } = useToast();
+
+  return (
+    <>
+      <Router>
+        <ScrollToTop />
+        <CodeInspector />
+        <Layout>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/industries" element={<Navigate to="/" replace />} />
+              <Route path="/industries/:type" element={<Industry />} />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/request" element={<RequestForm />} />
+              <Route path="/security" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Trust & Security</h1></div>} />
+              <Route path="/privacy" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Privacy Policy</h1></div>} />
+              <Route path="/terms" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Terms of Service</h1></div>} />
+
+              {/* App / Auth Routes */}
+              <Route path="/app/login" element={<Login />} />
+
+              {/* Simulated Protected Routes */}
+              <Route path="/app/dashboard" element={<Portal role="employee" />} />
+              <Route path="/portal/dashboard" element={<Portal role="customer" />} />
+
+              {/* Templates */}
+              <Route path="/project/:id/menu" element={<RestaurantMenu />} />
+
+              {/* Editor */}
+              <Route path="/editor/:assetId" element={<ModelEditor />} />
+              <Route path="/app/editor/:assetId" element={<ModelEditor />} />
+
+              {/* 404 Catch all */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </Layout>
+      </Router>
+      <ToastContainer toasts={toasts} onClose={removeToast} />
+    </>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <ErrorBoundary>
-        <Router>
-          <ScrollToTop />
-          <CodeInspector />
-          <Layout>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/industries" element={<Navigate to="/" replace />} />
-                <Route path="/industries/:type" element={<Industry />} />
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/request" element={<RequestForm />} />
-                <Route path="/security" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Trust & Security</h1></div>} />
-                <Route path="/privacy" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Privacy Policy</h1></div>} />
-                <Route path="/terms" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Terms of Service</h1></div>} />
-
-                {/* App / Auth Routes */}
-                <Route path="/app/login" element={<Login />} />
-
-                {/* Simulated Protected Routes */}
-                <Route path="/app/dashboard" element={<Portal role="employee" />} />
-                <Route path="/portal/dashboard" element={<Portal role="customer" />} />
-
-                {/* Templates */}
-                <Route path="/project/:id/menu" element={<RestaurantMenu />} />
-
-                {/* Editor */}
-                <Route path="/editor/:assetId" element={<ModelEditor />} />
-                <Route path="/app/editor/:assetId" element={<ModelEditor />} />
-
-                {/* 404 Catch all */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </Layout>
-        </Router>
-      </ErrorBoundary>
+      <ToastProvider>
+        <ErrorBoundary>
+          <AppContent />
+        </ErrorBoundary>
+      </ToastProvider>
     </ThemeProvider>
   );
 };

@@ -31,6 +31,7 @@ const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
             <button
                 onClick={() => onClose(toast.id)}
                 className="flex-shrink-0 hover:opacity-70 transition-opacity"
+                aria-label="Close notification"
             >
                 <X className="w-4 h-4" />
             </button>

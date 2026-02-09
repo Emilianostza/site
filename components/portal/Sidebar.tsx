@@ -6,16 +6,34 @@ interface SidebarProps {
     role: 'employee' | 'customer';
     activeTab: 'dashboard' | 'projects' | 'customers';
     setActiveTab: (tab: 'dashboard' | 'projects' | 'customers') => void;
+    isOpen?: boolean;
+    onToggle?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ role, activeTab, setActiveTab }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ role, activeTab, setActiveTab, isOpen = true, onToggle }) => {
     return (
-        <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col fixed h-full z-10">
+        <>
+            {/* Mobile backdrop */}
+            {isOpen && onToggle && (
+                <div
+                    className="fixed inset-0 bg-black/50 md:hidden z-20"
+                    onClick={onToggle}
+                />
+            )}
+            <aside className={`w-64 bg-slate-900 text-slate-300 flex flex-col fixed h-full z-30 md:z-10 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
             <div className="p-6">
-                <Link to="/" className="flex items-center gap-2 font-bold text-white text-lg">
-                    <Box className="w-6 h-6 text-brand-500" />
-                    <span>{role === 'employee' ? 'Console' : 'Portal'}</span>
-                </Link>
+                <div className="flex items-center justify-between">
+                    <Link to="/" className="flex items-center gap-2 font-bold text-white text-lg">
+                        <Box className="w-6 h-6 text-brand-500" />
+                        <span>{role === 'employee' ? 'Console' : 'Portal'}</span>
+                    </Link>
+                    {onToggle && (
+                        <button onClick={onToggle} className="md:hidden text-slate-400 hover:text-white">
+                            <span className="sr-only">Close sidebar</span>
+                            ✕
+                        </button>
+                    )}
+                </div>
             </div>
 
             <nav className="flex-1 px-4 space-y-2">
@@ -52,5 +70,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, activeTab, setActiveTab 
                 </Link>
             </div>
         </aside>
+        </>
     );
 };

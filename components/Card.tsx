@@ -17,10 +17,18 @@ const Card: React.FC<CardProps> = ({
     const hoverStyles = hover ? 'hover:shadow-xl hover:-translate-y-1 hover:border-brand-200 dark:hover:border-brand-700' : '';
     const clickableStyles = onClick ? 'cursor-pointer' : '';
 
+    const handleKeyDown = onClick ? (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick();
+        }
+    } : undefined;
+
     return (
         <div
             className={`${baseStyles} ${hoverStyles} ${clickableStyles} ${className}`}
             onClick={onClick}
+            {...(onClick ? { role: 'button', tabIndex: 0, onKeyDown: handleKeyDown } : {})}
         >
             {children}
         </div>

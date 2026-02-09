@@ -9,7 +9,7 @@ const NotFound: React.FC = () => {
             <div className="max-w-2xl w-full text-center">
                 {/* 404 Number */}
                 <div className="mb-8">
-                    <h1 className="text-[180px] font-bold text-gradient leading-none">404</h1>
+                    <h1 className="text-[80px] sm:text-[120px] md:text-[180px] font-bold text-gradient leading-none">404</h1>
                 </div>
 
                 {/* Message */}

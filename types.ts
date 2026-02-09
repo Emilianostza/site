@@ -17,6 +17,7 @@ export enum ProjectStatus {
 export interface NavItem {
   label: string;
   path: string;
+  children?: NavItem[];
 }
 
 export interface IndustryConfig {
@@ -56,4 +57,11 @@ export interface Project {
   status: ProjectStatus;
   items: number;
   type?: ProjectType;
+}
+
+export interface Asset {
+  id: string;
+  name: string;
+  thumb: string;
+  status: 'Published' | 'In Review' | 'Processing';
 }

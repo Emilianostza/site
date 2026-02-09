@@ -77,7 +77,7 @@ const Accordion: React.FC<AccordionProps> = ({
         <div className={`space-y-4 ${className}`}>
             {items.map((item, index) => (
                 <AccordionItem
-                    key={index}
+                    key={item.title}
                     title={item.title}
                     content={item.content}
                     isOpen={openIndexes.includes(index)}

@@ -1,34 +1,33 @@
-import { Industry, ProjectStatus } from '../types';
+import { Asset, Project, ProjectStatus, ProjectType } from '../types';
 
 // Mutable store for the session
-let PROJECTS = [
-    { id: 'PRJ-001', name: 'Summer Menu Update', client: 'Bistro 55', status: ProjectStatus.Published, items: 12, type: 'restaurant_menu' as const },
-    { id: 'PRJ-002', name: 'Fall Collection', client: 'Style Co', status: ProjectStatus.Processing, items: 45, type: 'standard' as const },
-    { id: 'PRJ-003', name: 'Ancient Egypt Exhibit', client: 'History Museum', status: ProjectStatus.QA, items: 8, type: 'standard' as const },
+let PROJECTS: Project[] = [
+    { id: 'PRJ-001', name: 'Summer Menu Update', client: 'Bistro 55', status: ProjectStatus.Published, items: 12, type: 'restaurant_menu' },
+    { id: 'PRJ-002', name: 'Fall Collection', client: 'Style Co', status: ProjectStatus.Processing, items: 45, type: 'standard' },
+    { id: 'PRJ-003', name: 'Ancient Egypt Exhibit', client: 'History Museum', status: ProjectStatus.QA, items: 8, type: 'standard' },
 ];
 
-export const getProjects = async () => {
+export const getProjects = async (): Promise<Project[]> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     return [...PROJECTS];
 };
 
-export const addProject = async (project: { name: string; client: string; type: 'standard' | 'restaurant_menu' }) => {
+export const addProject = async (project: { name: string; client: string; type: ProjectType }): Promise<Project> => {
     await new Promise(resolve => setTimeout(resolve, 500));
-    const newProject = {
-        id: `PRJ-${Math.floor(Math.random() * 1000)}`,
+    const newProject: Project = {
+        id: `PRJ-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
         name: project.name,
         client: project.client,
         status: ProjectStatus.Processing,
         items: 0,
         type: project.type
     };
-    // @ts-ignore
     PROJECTS.unshift(newProject);
     return newProject;
 };
 
-export const getAssets = async () => {
+export const getAssets = async (): Promise<Asset[]> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     return [

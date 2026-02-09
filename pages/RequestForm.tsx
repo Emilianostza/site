@@ -165,34 +165,36 @@ const RequestForm: React.FC = () => {
 
   if (submitted) {
     return (
-      <div className="container mx-auto px-4 py-24 text-center max-w-2xl">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
-          <Check className="w-10 h-10" />
+      <div className="container mx-auto px-4 py-24 text-center max-w-2xl min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <div>
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 dark:text-green-400">
+            <Check className="w-10 h-10" />
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Request Received</h1>
+          <p className="text-slate-600 dark:text-slate-400 text-lg mb-8">
+            Thank you, {formData.contact.full_name}. We have received your capture request for {formData.industry}.
+            Our operations team will review your requirements and contact you at {formData.contact.email} within 24 hours.
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-8 py-3 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700"
+          >
+            Return Home
+          </button>
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-4">Request Received</h1>
-        <p className="text-slate-600 text-lg mb-8">
-          Thank you, {formData.contact.full_name}. We have received your capture request for {formData.industry}.
-          Our operations team will review your requirements and contact you at {formData.contact.email} within 24 hours.
-        </p>
-        <button
-          onClick={() => navigate('/')}
-          className="px-8 py-3 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700"
-        >
-          Return Home
-        </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12" data-component="Request Form" data-file="src/pages/RequestForm.tsx">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12" data-component="Request Form" data-file="src/pages/RequestForm.tsx">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="mb-8">
-          <div className="flex items-center justify-between text-sm font-medium text-slate-500 mb-2">
+          <div className="flex items-center justify-between text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
             <span>Step {step} of 5</span>
             <span>{Math.round((step / 5) * 100)}% Complete</span>
           </div>
-          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+          <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
             <div
               className="bg-brand-600 h-full transition-all duration-300 ease-out"
               style={{ width: `${(step / 5) * 100}%` }}
@@ -200,12 +202,12 @@ const RequestForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
           <form onSubmit={handleSubmit}>
             {/* Step 1: Industry */}
             {step === 1 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900">Which industry describes you best?</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Which industry describes you best?</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[Industry.Restaurant, Industry.Museum, Industry.Ecommerce].map((ind) => (
                     <button
@@ -213,12 +215,12 @@ const RequestForm: React.FC = () => {
                       type="button"
                       onClick={() => updateField('industry', ind)}
                       className={`p-6 rounded-xl border-2 text-left transition-all ${formData.industry === ind
-                        ? 'border-brand-600 bg-brand-50'
-                        : 'border-slate-200 hover:border-brand-300'
+                        ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20'
+                        : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-500'
                         }`}
                     >
-                      <span className="font-bold text-lg block mb-1">{ind}</span>
-                      <span className="text-sm text-slate-500">
+                      <span className="font-bold text-lg block mb-1 text-slate-900 dark:text-white">{ind}</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">
                         {ind === Industry.Restaurant && "Menu items & food"}
                         {ind === Industry.Museum && "Artifacts & collections"}
                         {ind === Industry.Ecommerce && "Retail products"}
@@ -237,17 +239,17 @@ const RequestForm: React.FC = () => {
             {/* Step 2: Scope */}
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900">Project Scope</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Project Scope</h2>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">How many items?</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">How many items?</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {['1-10', '11-50', '51-200', '200+'].map(opt => (
                       <button
                         key={opt}
                         type="button"
                         onClick={() => updateField('quantity_range', opt)}
-                        className={`py-3 px-4 rounded-lg border text-sm font-medium ${formData.quantity_range === opt ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                        className={`py-3 px-4 rounded-lg border text-sm font-medium ${formData.quantity_range === opt ? 'bg-brand-600 text-white border-brand-600' : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600'
                           }`}
                       >
                         {opt}
@@ -257,9 +259,9 @@ const RequestForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Approximate Size</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Approximate Size</label>
                   <select
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+                    className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                     value={formData.object_size_range}
                     onChange={(e) => updateField('object_size_range', e.target.value)}
                   >
@@ -291,15 +293,15 @@ const RequestForm: React.FC = () => {
             {/* Step 3: Logistics */}
             {step === 3 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900">Logistics</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Logistics</h2>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Capture Location</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Capture Location</label>
                   <div className="flex gap-4">
                     <button
                       type="button"
                       onClick={() => updateField('location_mode', 'on_site')}
-                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold ${formData.location_mode === 'on_site' ? 'border-brand-600 bg-brand-50' : 'border-slate-200'
+                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold text-slate-900 dark:text-white ${formData.location_mode === 'on_site' ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20' : 'border-slate-200 dark:border-slate-700'
                         }`}
                     >
                       On-site (We come to you)
@@ -307,7 +309,7 @@ const RequestForm: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => updateField('location_mode', 'ship_in')}
-                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold ${formData.location_mode === 'ship_in' ? 'border-brand-600 bg-brand-50' : 'border-slate-200'
+                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold text-slate-900 dark:text-white ${formData.location_mode === 'ship_in' ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20' : 'border-slate-200 dark:border-slate-700'
                         }`}
                     >
                       Ship-in (You send to us)
@@ -316,11 +318,11 @@ const RequestForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Country</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Country</label>
                   <input
                     type="text"
                     placeholder="e.g. United States, France..."
-                    className="w-full p-3 border border-slate-300 rounded-lg"
+                    className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                     value={formData.country}
                     onChange={(e) => updateField('country', e.target.value)}
                   />
@@ -332,8 +334,8 @@ const RequestForm: React.FC = () => {
             {/* Step 4: Deliverables */}
             {step === 4 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900">Deliverables</h2>
-                <p className="text-slate-500">Select what you need delivered.</p>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Deliverables</h2>
+                <p className="text-slate-500 dark:text-slate-400">Select what you need delivered.</p>
 
                 <div className="grid grid-cols-1 gap-3">
                   {[
@@ -344,14 +346,14 @@ const RequestForm: React.FC = () => {
                     { id: 'downloads_bundle', label: 'Raw Asset Bundle' },
                     { id: 'qr_codes', label: 'QR Codes' },
                   ].map((item) => (
-                    <label key={item.id} className="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer">
+                    <label key={item.id} className="flex items-center p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer">
                       <input
                         type="checkbox"
                         className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500"
                         checked={formData.deliverables.includes(item.id)}
                         onChange={() => toggleArrayField('deliverables', item.id)}
                       />
-                      <span className="ml-3 font-medium text-slate-900">{item.label}</span>
+                      <span className="ml-3 font-medium text-slate-900 dark:text-white">{item.label}</span>
                     </label>
                   ))}
                 </div>
@@ -380,42 +382,42 @@ const RequestForm: React.FC = () => {
             {/* Step 5: Contact */}
             {step === 5 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900">Final Step</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Final Step</h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                     <input
                       type="text"
                       required
-                      className="w-full p-3 border border-slate-300 rounded-lg"
+                      className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                       value={formData.contact.full_name}
                       onChange={(e) => updateContact('full_name', e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Business Email</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Business Email</label>
                     <input
                       type="email"
                       required
-                      className="w-full p-3 border border-slate-300 rounded-lg"
+                      className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                       value={formData.contact.email}
                       onChange={(e) => updateContact('email', e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Company / Organization</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Company / Organization</label>
                     <input
                       type="text"
                       required
-                      className="w-full p-3 border border-slate-300 rounded-lg"
+                      className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                       value={formData.contact.company}
                       onChange={(e) => updateContact('company', e.target.value)}
                     />
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2 text-sm text-slate-600 mt-4">
+                <div className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400 mt-4">
                   <input type="checkbox" required className="mt-1" />
                   <span>I agree to the Terms of Service and Privacy Policy. I understand this is a request for a quote and consultation.</span>
                 </div>
@@ -423,12 +425,12 @@ const RequestForm: React.FC = () => {
             )}
 
             {/* Navigation Actions */}
-            <div className="flex justify-between items-center mt-8 pt-8 border-t border-slate-100">
+            <div className="flex justify-between items-center mt-8 pt-8 border-t border-slate-100 dark:border-slate-700">
               {step > 1 ? (
                 <button
                   type="button"
                   onClick={() => setStep(s => s - 1)}
-                  className="flex items-center text-slate-600 hover:text-slate-900 font-medium"
+                  className="flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300 font-medium"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" /> Back
                 </button>

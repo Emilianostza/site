@@ -1,9 +1,17 @@
 import React from 'react';
 import { Industry, IndustryConfig } from './types';
-import { Utensils, Landmark, ShoppingBag, Box, Scan, Globe } from 'lucide-react';
+import { ShoppingBag, Box, Scan, Globe } from 'lucide-react';
 
 export const NAV_ITEMS = [
-  { label: 'Industries', path: '/industries' },
+  {
+    label: 'Industries',
+    path: '/industries',
+    children: [
+      { label: 'Restaurants', path: '/industries/restaurants' },
+      { label: 'Museums', path: '/industries/museums' },
+      { label: 'E-commerce', path: '/industries/ecommerce' },
+    ]
+  },
   { label: 'Gallery', path: '/gallery' },
   { label: 'How it Works', path: '/how-it-works' },
   { label: 'Pricing', path: '/pricing' },
