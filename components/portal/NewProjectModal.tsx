@@ -5,12 +5,15 @@ import { useToast } from '../../contexts/ToastContext';
 interface NewProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: { name: string; client: string }) => Promise<void>;
+    onSave: (data: { name: string; client: string; description: string; dueDate: string; priority: string }) => Promise<void>;
 }
 
 export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onSave }) => {
     const [name, setName] = useState('');
     const [client, setClient] = useState('');
+    const [description, setDescription] = useState('');
+    const [dueDate, setDueDate] = useState('');
+    const [priority, setPriority] = useState('Medium');
     const [loading, setLoading] = useState(false);
     const { success, error } = useToast();
 
@@ -22,10 +25,13 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
 
         setLoading(true);
         try {
-            await onSave({ name, client });
+            await onSave({ name, client, description, dueDate, priority });
             success(`Project "${name}" created successfully`);
             setName('');
             setClient('');
+            setDescription('');
+            setDueDate('');
+            setPriority('Medium');
             onClose();
         } catch (err) {
             error('Failed to create project');
@@ -69,6 +75,41 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
                             value={client}
                             onChange={(e) => setClient(e.target.value)}
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
+                        <textarea
+                            className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
+                            placeholder="Project details..."
+                            rows={3}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Due Date</label>
+                            <input
+                                type="date"
+                                className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                                value={dueDate}
+                                onChange={(e) => setDueDate(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Priority</label>
+                            <select
+                                className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                                value={priority}
+                                onChange={(e) => setPriority(e.target.value)}
+                            >
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="pt-4 flex justify-end gap-3">

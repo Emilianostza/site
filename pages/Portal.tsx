@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Box } from 'lucide-react';
+import { Plus, Box, Settings as SettingsIcon, User, Bell, Moon, Sun } from 'lucide-react';
 import { Asset, Project } from '../types';
 import { NewProjectModal } from '../components/portal/NewProjectModal';
 import { ProjectTable } from '../components/portal/ProjectTable';
@@ -8,12 +8,19 @@ import { AssetGrid } from '../components/portal/AssetGrid';
 import { ProjectProgress } from '../components/portal/ProjectProgress';
 import { ActivityFeed } from '../components/portal/ActivityFeed';
 import { getProjects, getAssets, addProject } from '../services/mockData';
+import DarkModeToggle from '../components/DarkModeToggle';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'customers'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'customers' | 'settings'>('dashboard');
   const [projects, setProjects] = useState<Project[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredAssets = assets.filter(asset =>
+    asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    asset.status.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -87,7 +94,14 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                 <Plus className="w-4 h-4" /> New Project
               </button>
             )}
-            <button className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium">
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`flex items-center gap-2 font-medium transition-colors ${activeTab === 'settings'
+                  ? 'text-brand-600 dark:text-brand-400'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+            >
+              <SettingsIcon className="w-4 h-4" />
               Settings
             </button>
             <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 font-medium no-underline">
@@ -168,8 +182,19 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
 
             {/* Recent Assets (Shared) */}
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Recent Assets</h2>
-              <AssetGrid assets={assets} role={role} />
+              <div className="flex justify-between items-end mb-6">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Assets</h2>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search scenes..."
+                    className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 w-64 text-slate-200"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+              <AssetGrid assets={filteredAssets} role={role} />
             </div>
           </div>
         )}
@@ -177,6 +202,96 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
         {/* Projects Table */}
         {(activeTab === 'projects' || activeTab === 'customers') && (
           <ProjectTable projects={projects} />
+        )}
+
+        {/* Settings View */}
+        {activeTab === 'settings' && (
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <User className="w-5 h-5 text-brand-600" />
+                  Profile Settings
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your account information and preferences.</p>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      defaultValue={role === 'employee' ? 'Admin User' : 'Valued Client'}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      defaultValue={role === 'employee' ? 'admin@example.com' : 'client@example.com'}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <SettingsIcon className="w-5 h-5 text-brand-600" />
+                  App Preferences
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Customize your dashboard experience.</p>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                      <Sun className="w-5 h-5 text-amber-500 hidden dark:block" />
+                      <Moon className="w-5 h-5 text-slate-500 dark:hidden" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-900 dark:text-white">Appearance</div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400">Toggle between light and dark themes</div>
+                    </div>
+                  </div>
+                  <DarkModeToggle />
+                </div>
+
+                <div className="border-t border-slate-100 dark:border-slate-700 my-4"></div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                      <Bell className="w-5 h-5 text-brand-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-900 dark:text-white">Notifications</div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400">Receive email updates about project status</div>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors mr-3"
+              >
+                Cancel
+              </button>
+              <button className="px-6 py-2 bg-brand-600 text-white rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">
+                Save Changes
+              </button>
+            </div>
+          </div>
         )}
       </main>
     </div>
