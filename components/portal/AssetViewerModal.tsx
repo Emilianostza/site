@@ -77,7 +77,7 @@ export const AssetViewerModal: React.FC<AssetViewerModalProps> = ({ isOpen, onCl
                         className="pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 transition-colors text-sm"
                         onClick={() => {
                             const viewer = document.querySelector('model-viewer') as any;
-                            if (viewer) viewer.cameraOrbit = '0deg 75deg 105%';
+                            if (viewer) viewer.cameraOrbit = '0deg 75deg 130%';
                         }}
                     >
                         <RotateCcw className="w-4 h-4" /> Reset

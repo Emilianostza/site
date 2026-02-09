@@ -268,7 +268,7 @@ const RestaurantMenu: React.FC = () => {
                             auto-rotate-delay="0"
                             rotation-per-second="30deg"
                             camera-controls
-                            camera-orbit="45deg 75deg 2m"
+                            camera-orbit="45deg 75deg 1.5m"
                             shadow-intensity="1.5"
                             shadow-softness="0.8"
                             exposure="0.8"
@@ -352,7 +352,7 @@ const RestaurantMenu: React.FC = () => {
                         <button
                             onClick={() => {
                                 const viewer = document.querySelector('model-viewer') as HTMLElement & { resetTurntableRotation?: () => void; cameraOrbit?: string };
-                                if (viewer) viewer.setAttribute('camera-orbit', '45deg 75deg 2m');
+                                if (viewer) viewer.setAttribute('camera-orbit', '45deg 75deg 1.5m');
                             }}
                             className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-stone-900/70 backdrop-blur-md border border-stone-800 text-stone-300 hover:text-white transition-colors text-sm"
                             aria-label="Reset camera"
