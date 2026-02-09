@@ -64,4 +64,7 @@ export interface Asset {
   name: string;
   thumb: string;
   status: 'Published' | 'In Review' | 'Processing';
+  type?: string;
+  size?: string;
+  updated?: string;
 }

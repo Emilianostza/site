@@ -1,19 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
     ArrowLeft, Save, Undo, Redo, Box, Layers, Sun,
-    Move, RotateCw, Scaling, Download, Share2, Settings
+    Move, RotateCw, Scaling, Download, Share2, Settings,
+    Smartphone, RotateCcw
 } from 'lucide-react';
+import { AssetUploader } from '../../components/editor/AssetUploader';
 
 const ModelEditor: React.FC = () => {
     const { assetId } = useParams<{ assetId: string }>();
-
-    // Mock State for UI interactivity
+    const [modelSrc, setModelSrc] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'transform' | 'materials' | 'lighting'>('transform');
-    const [rotation, setRotation] = useState({ x: 0, y: 45, z: 0 });
-    const [scale, setScale] = useState(1.2);
+
+    // Model Properties
+    const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
+    const [scale, setScale] = useState({ x: 1, y: 1, z: 1 });
+
+    // Environment Properties
     const [exposure, setExposure] = useState(1.0);
-    const [roughness, setRoughness] = useState(0.4);
+    const [shadowIntensity, setShadowIntensity] = useState(1.0);
+    const [autoRotate, setAutoRotate] = useState(false);
+
+    // Initialize
+    useEffect(() => {
+        // Load model-viewer
+        import('@google/model-viewer');
+
+        if (assetId && assetId !== 'new') {
+            // Mock loading existing asset
+            setModelSrc('https://modelviewer.dev/shared-assets/models/Astronaut.glb');
+        }
+    }, [assetId]);
+
+    const handleUpload = (url: string) => {
+        setModelSrc(url);
+    };
+
+    const handleReset = () => {
+        setRotation({ x: 0, y: 0, z: 0 });
+        setScale({ x: 1, y: 1, z: 1 });
+        setExposure(1.0);
+        setShadowIntensity(1.0);
+        const viewer = document.querySelector('model-viewer') as any;
+        if (viewer) viewer.cameraOrbit = '45deg 55deg 2.5m';
+    };
+
+    const handleActivateAR = () => {
+        const viewer = document.querySelector('model-viewer') as any;
+        if (viewer?.activateAR) viewer.activateAR();
+    };
+
+    // If no model is loaded, show uploader
+    if (!modelSrc) {
+        return (
+            <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center p-4">
+                <Link to="/app/dashboard" className="absolute top-8 left-8 text-stone-400 hover:text-white flex items-center gap-2">
+                    <ArrowLeft className="w-5 h-5" /> Back to Dashboard
+                </Link>
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold text-stone-100 mb-2">Create New AR Scene</h1>
+                    <p className="text-stone-400">Upload your 3D model to get started</p>
+                </div>
+                <AssetUploader onUpload={handleUpload} />
+            </div>
+        );
+    }
 
     return (
         <div className="flex h-screen bg-stone-950 text-stone-200 overflow-hidden font-sans" data-component="Model Editor" data-file="src/pages/editor/ModelEditor.tsx">
@@ -21,13 +72,15 @@ const ModelEditor: React.FC = () => {
             {/* Top Bar */}
             <header className="fixed top-0 w-full h-14 bg-stone-900 border-b border-stone-800 flex items-center justify-between px-4 z-50">
                 <div className="flex items-center gap-4">
-                    <Link to={`/project/PRJ-001/menu`} className="p-2 hover:bg-stone-800 rounded-md text-stone-400 hover:text-white transition-colors">
+                    <Link to={`/app/dashboard`} className="p-2 hover:bg-stone-800 rounded-md text-stone-400 hover:text-white transition-colors">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div className="h-6 w-px bg-stone-800"></div>
                     <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm tracking-wide text-stone-100">Signature Burger_v2.glb</span>
-                        <span className="text-xs bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded border border-amber-500/30">EDITING</span>
+                        <span className="font-bold text-sm tracking-wide text-stone-100">
+                            {assetId === 'new' ? 'Untitled Scene' : assetId}
+                        </span>
+                        <span className="text-xs bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded border border-amber-500/30">DRAFT</span>
                     </div>
                 </div>
 
@@ -36,7 +89,7 @@ const ModelEditor: React.FC = () => {
                     <button className="p-2 hover:bg-stone-800 rounded text-stone-400 hover:text-white" title="Redo"><Redo className="w-4 h-4" /></button>
                     <div className="h-6 w-px bg-stone-800 mx-2"></div>
                     <button className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors">
-                        <Save className="w-4 h-4" /> Save Changes
+                        <Save className="w-4 h-4" /> Save Scene
                     </button>
                     <button className="p-2 hover:bg-stone-800 rounded text-stone-400 hover:text-white">
                         <Share2 className="w-4 h-4" />
@@ -81,24 +134,38 @@ const ModelEditor: React.FC = () => {
                         style={{ backgroundImage: 'radial-gradient(#444 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
                     </div>
 
-                    {/* 3D Model Placeholder */}
-                    <div className="relative transform transition-transform duration-200" style={{ transform: `scale(${scale}) rotateY(${rotation.y}deg) rotateX(${rotation.x}deg)` }}>
-                        <img
-                            src="https://picsum.photos/seed/burger/600/600"
-                            alt="3D Model Preview"
-                            className="w-96 h-96 object-contain drop-shadow-2xl"
-                        />
-                        {/* Fake Interaction Helpers */}
-                        <div className="absolute -inset-4 border-2 border-amber-500/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                    {/* 3D Model Viewer */}
+                    <div className="w-full h-full">
+                        <model-viewer
+                            src={modelSrc}
+                            alt="3D Asset Editor"
+                            camera-controls
+                            interaction-prompt="none"
+                            shadow-intensity={shadowIntensity}
+                            exposure={exposure}
+                            auto-rotate={autoRotate}
+                            ar
+                            ar-modes="webxr scene-viewer quick-look"
+                            orientation={`${rotation.x}deg ${rotation.y}deg ${rotation.z}deg`}
+                            scale={`${scale.x} ${scale.y} ${scale.z}`}
+                            style={{ width: '100%', height: '100%' }}
+                        ></model-viewer>
                     </div>
 
-                    {/* Viewport HUD */}
-                    <div className="absolute top-4 right-4 bg-black/50 backdrop-blur px-3 py-1 rounded text-xs font-mono text-stone-400">
-                        {rotation.y.toFixed(1)}°
-                    </div>
-                    <div className="absolute bottom-4 left-4 flex gap-2">
-                        <button className="bg-black/50 backdrop-blur p-2 rounded hover:bg-black/70 text-stone-300"><RotateCw className="w-4 h-4" onClick={() => setRotation(p => ({ ...p, y: p.y + 45 }))} /></button>
-                        <button className="bg-black/50 backdrop-blur p-2 rounded hover:bg-black/70 text-stone-300"><Scaling className="w-4 h-4" onClick={() => setScale(p => p === 1 ? 1.5 : 1)} /></button>
+                    {/* Viewport Overlay Controls */}
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
+                        <button
+                            onClick={handleReset}
+                            className="bg-stone-900/80 backdrop-blur text-stone-300 px-4 py-2 rounded-full text-sm font-medium hover:bg-stone-800 border border-stone-700 flex items-center gap-2"
+                        >
+                            <RotateCcw className="w-4 h-4" /> Reset View
+                        </button>
+                        <button
+                            onClick={handleActivateAR}
+                            className="bg-amber-600/90 backdrop-blur text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-amber-500 shadow-lg shadow-amber-900/40 flex items-center gap-2"
+                        >
+                            <Smartphone className="w-4 h-4" /> Preview in AR
+                        </button>
                     </div>
                 </main>
 
@@ -116,20 +183,43 @@ const ModelEditor: React.FC = () => {
                         {activeTab === 'transform' && (
                             <>
                                 <div className="space-y-4">
-                                    <h3 className="text-xs font-bold text-stone-500 uppercase">Position</h3>
+                                    <h3 className="text-xs font-bold text-stone-500 uppercase">Scale (Factor)</h3>
                                     <div className="grid grid-cols-3 gap-2">
                                         <div className="bg-stone-950 p-2 rounded border border-stone-800 flex items-center gap-2">
                                             <span className="text-red-500 text-xs font-bold">X</span>
-                                            <input type="number" className="bg-transparent w-full text-sm outline-none" defaultValue="0.0" />
+                                            <input
+                                                type="number" step="0.1"
+                                                className="bg-transparent w-full text-sm outline-none"
+                                                value={scale.x}
+                                                onChange={(e) => setScale({ ...scale, x: parseFloat(e.target.value) })}
+                                            />
                                         </div>
                                         <div className="bg-stone-950 p-2 rounded border border-stone-800 flex items-center gap-2">
                                             <span className="text-green-500 text-xs font-bold">Y</span>
-                                            <input type="number" className="bg-transparent w-full text-sm outline-none" defaultValue="0.5" />
+                                            <input
+                                                type="number" step="0.1"
+                                                className="bg-transparent w-full text-sm outline-none"
+                                                value={scale.y}
+                                                onChange={(e) => setScale({ ...scale, y: parseFloat(e.target.value) })}
+                                            />
                                         </div>
                                         <div className="bg-stone-950 p-2 rounded border border-stone-800 flex items-center gap-2">
                                             <span className="text-blue-500 text-xs font-bold">Z</span>
-                                            <input type="number" className="bg-transparent w-full text-sm outline-none" defaultValue="0.0" />
+                                            <input
+                                                type="number" step="0.1"
+                                                className="bg-transparent w-full text-sm outline-none"
+                                                value={scale.z}
+                                                onChange={(e) => setScale({ ...scale, z: parseFloat(e.target.value) })}
+                                            />
                                         </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setScale({ x: 1, y: 1, z: 1 })}
+                                            className="text-xs text-stone-500 underline hover:text-stone-300"
+                                        >
+                                            Reset Scale
+                                        </button>
                                     </div>
                                 </div>
 
@@ -169,56 +259,24 @@ const ModelEditor: React.FC = () => {
                         )}
 
                         {activeTab === 'materials' && (
-                            <>
-                                <div className="space-y-4">
-                                    <h3 className="text-xs font-bold text-stone-500 uppercase">Surface</h3>
-                                    <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label className="text-sm text-stone-300">Roughness</label>
-                                            <span className="text-xs text-stone-500">{roughness}</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            min="0" max="1" step="0.01"
-                                            value={roughness}
-                                            onChange={(e) => setRoughness(parseFloat(e.target.value))}
-                                            className="w-full h-1 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label className="text-sm text-stone-300">Metalness</label>
-                                            <span className="text-xs text-stone-500">0.0</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            min="0" max="1" step="0.01"
-                                            className="w-full h-1 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <h3 className="text-xs font-bold text-stone-500 uppercase">Textures</h3>
-                                    <div className="h-20 bg-stone-950 border border-stone-800 border-dashed rounded flex flex-col items-center justify-center text-stone-600 gap-1 hover:border-amber-500/50 hover:text-amber-500 transition-colors cursor-pointer">
-                                        <Download className="w-4 h-4" />
-                                        <span className="text-xs">Drop texture map</span>
-                                    </div>
-                                </div>
-                            </>
+                            <div className="text-center py-10 text-stone-500">
+                                <Layers className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                                <p className="text-sm">Material editing coming in V2</p>
+                            </div>
                         )}
 
                         {activeTab === 'lighting' && (
                             <>
                                 <div className="space-y-4">
                                     <h3 className="text-xs font-bold text-stone-500 uppercase">Environment</h3>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="h-16 rounded bg-gradient-to-br from-gray-200 to-gray-400 cursor-pointer ring-2 ring-amber-500"></div>
-                                        <div className="h-16 rounded bg-gradient-to-br from-blue-900 to-black cursor-pointer opacity-50 hover:opacity-100"></div>
-                                        <div className="h-16 rounded bg-gradient-to-br from-orange-200 to-orange-100 cursor-pointer opacity-50 hover:opacity-100"></div>
-                                        <div className="h-16 rounded bg-stone-800 flex items-center justify-center text-xs text-stone-500 cursor-pointer border border-stone-700 hover:border-stone-500">
-                                            Studio
-                                        </div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm text-stone-300">Auto-Rotate</label>
+                                        <input
+                                            type="checkbox"
+                                            checked={autoRotate}
+                                            onChange={(e) => setAutoRotate(e.target.checked)}
+                                            className="w-4 h-4 rounded bg-stone-800 border-stone-600 accent-amber-500"
+                                        />
                                     </div>
                                 </div>
 
@@ -229,9 +287,23 @@ const ModelEditor: React.FC = () => {
                                     </div>
                                     <input
                                         type="range"
-                                        min="0" max="5" step="0.1"
+                                        min="0" max="2" step="0.1"
                                         value={exposure}
                                         onChange={(e) => setExposure(parseFloat(e.target.value))}
+                                        className="w-full h-1 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="text-sm text-stone-300">Shadow Intensity</label>
+                                        <span className="text-xs text-stone-500">{shadowIntensity}</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0" max="2" step="0.1"
+                                        value={shadowIntensity}
+                                        onChange={(e) => setShadowIntensity(parseFloat(e.target.value))}
                                         className="w-full h-1 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
                                     />
                                 </div>
@@ -240,7 +312,10 @@ const ModelEditor: React.FC = () => {
                     </div>
 
                     <div className="p-4 border-t border-stone-800 mt-auto">
-                        <button className="w-full py-2 bg-stone-800 hover:bg-stone-700 rounded text-sm font-medium text-stone-300 transition-colors">
+                        <button
+                            onClick={handleReset}
+                            className="w-full py-2 bg-stone-800 hover:bg-stone-700 rounded text-sm font-medium text-stone-300 transition-colors"
+                        >
                             Reset All Settings
                         </button>
                     </div>

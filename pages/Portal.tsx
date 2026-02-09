@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Box } from 'lucide-react';
-import { Asset, Project, ProjectType } from '../types';
+import { Asset, Project } from '../types';
 import { NewProjectModal } from '../components/portal/NewProjectModal';
 import { ProjectTable } from '../components/portal/ProjectTable';
 import { AssetGrid } from '../components/portal/AssetGrid';
 import { ProjectProgress } from '../components/portal/ProjectProgress';
 import { ActivityFeed } from '../components/portal/ActivityFeed';
-import { Model3DViewer } from '../components/portal/Model3DViewer';
 import { getProjects, getAssets, addProject } from '../services/mockData';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
@@ -114,14 +113,15 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                   </div>
                 </div>
 
-                {/* Quick Actions for Client */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-gradient-to-br from-brand-600 to-brand-700 p-6 rounded-xl shadow-lg text-white">
-                    <h3 className="font-bold text-lg mb-2">Request New Capture</h3>
-                    <p className="text-brand-100 text-sm mb-4">Ready to scan more items? Start a new project request.</p>
-                    <button className="bg-white text-brand-700 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-brand-50 transition-colors">
-                      Start Request
-                    </button>
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Request New Capture</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Ready to scan more items? Start a new project request.</p>
+                    <Link to="/request">
+                      <button className="border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        Start Request
+                      </button>
+                    </Link>
                   </div>
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Download Assets</h3>
@@ -141,7 +141,16 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               </>
             ) : (
               // Employee Dashboard View (Stats)
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-amber-600 to-amber-700 p-6 rounded-xl shadow-lg text-white">
+                  <h3 className="font-bold text-lg mb-2">Create AR Scene</h3>
+                  <p className="text-amber-100 text-sm mb-4">Upload your 3D models and create instant AR experiences.</p>
+                  <Link to="/app/editor/new">
+                    <button className="bg-white text-amber-700 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-amber-50 transition-colors">
+                      Open Editor
+                    </button>
+                  </Link>
+                </div>
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                   <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Active Projects</div>
                   <div className="text-3xl font-bold text-slate-900 dark:text-white">12</div>

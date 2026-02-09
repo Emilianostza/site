@@ -31,8 +31,8 @@ export const getAssets = async (): Promise<Asset[]> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     return [
-        { id: 'AST-101', name: 'Cheeseburger Deluxe', thumb: 'https://picsum.photos/seed/burger/100/100', status: 'Published' },
-        { id: 'AST-102', name: 'Fries Basket', thumb: 'https://picsum.photos/seed/fries/100/100', status: 'Published' },
-        { id: 'AST-103', name: 'Milkshake', thumb: 'https://picsum.photos/seed/shake/100/100', status: 'In Review' },
+        { id: 'AST-101', name: 'Cheeseburger Deluxe', thumb: 'https://picsum.photos/seed/burger/400/300', status: 'Published', type: 'Food & Beverage', size: '12MB', updated: '2 days ago' },
+        { id: 'AST-102', name: 'Fries Basket', thumb: 'https://picsum.photos/seed/fries/400/300', status: 'Published', type: 'Food & Beverage', size: '8MB', updated: '1 week ago' },
+        { id: 'AST-103', name: 'Milkshake', thumb: 'https://picsum.photos/seed/shake/400/300', status: 'In Review', type: 'Food & Beverage', size: '15MB', updated: '3 hours ago' },
     ];
 };
