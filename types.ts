@@ -5,6 +5,16 @@ export enum Industry {
   General = 'General'
 }
 
+export enum PortalRole {
+  PublicVisitor = 'public',
+  CustomerOwner = 'customer_owner',
+  CustomerViewer = 'customer_viewer',
+  Technician = 'technician',
+  Approver = 'approver',
+  SalesLead = 'sales_lead',
+  Admin = 'admin'
+}
+
 export enum ProjectStatus {
   Intake = 'Intake',
   Capture = 'Capture',

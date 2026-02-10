@@ -38,14 +38,14 @@ A modern, full-featured web application for managing professional 3D photogramme
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up environment variables** (for local development)
    ```bash
    cp .env.example .env.local
    ```
-   Then edit `.env.local` and add your Gemini API key:
-   ```
-   GEMINI_API_KEY=your_actual_api_key_here
-   ```
+   ⚠️ **Important:** The `.env.local` file should NOT be committed to source control.
+   - For production (Netlify): Add `GEMINI_API_KEY` to your Netlify environment variables (Site Settings > Build & Deploy > Environment)
+   - For local development: You can set it here, but it will not be exposed to the frontend bundle
+   - The frontend calls `/.netlify/functions/gemini-proxy` for secure API access
 
 4. **Start the development server**
    ```bash
@@ -53,51 +53,105 @@ A modern, full-featured web application for managing professional 3D photogramme
    ```
 
 5. **Open your browser**
-   Navigate to `http://localhost:5173`
+   Navigate to `http://localhost:3000`
+
+### Demo Users (Mock Auth)
+
+For development, use these test accounts (any password works):
+
+**Employee Roles:**
+- `admin@company.com` - Admin access
+- `approver@company.com` - QA approver role
+- `tech@company.com` - Technician role
+
+**Customer Roles:**
+- `client@bistro.com` - Restaurant owner
+- `client@museum.com` - Museum curator
 
 ## 📁 Project Structure
 
 ```
 managed-capture-3d-platform/
-├── components/          # Reusable UI components
-│   ├── Button.tsx      # Button component with variants
-│   ├── Card.tsx        # Card component with hover effects
+├── components/                   # Reusable UI components
+│   ├── Button.tsx
+│   ├── Card.tsx
 │   ├── DarkModeToggle.tsx
 │   ├── ErrorBoundary.tsx
-│   ├── Layout.tsx      # Main layout with header/footer
-│   └── Toast.tsx       # Toast notifications
-├── contexts/           # React contexts
-│   └── ThemeContext.tsx # Dark mode theme management
-├── hooks/              # Custom React hooks
-│   └── useToast.tsx    # Toast notification hook
-├── pages/              # Page components (routes)
+│   ├── Layout.tsx
+│   ├── Toast.tsx
+│   ├── Modal.tsx
+│   ├── Accordion.tsx
+│   ├── ProtectedRoute.tsx        # Auth route guard (NEW)
+│   ├── Gatekeeper.tsx            # (Deprecated - to be removed)
+│   ├── devtools/
+│   │   └── CodeInspector.tsx
+│   ├── editor/
+│   │   └── AssetUploader.tsx
+│   └── portal/
+│       ├── Sidebar.tsx
+│       ├── ProjectTable.tsx
+│       ├── AssetGrid.tsx
+│       ├── NewProjectModal.tsx
+│       ├── ProjectProgress.tsx
+│       └── ActivityFeed.tsx
+├── contexts/                     # React contexts
+│   ├── ThemeContext.tsx          # Dark mode theme
+│   ├── ToastContext.tsx          # Toast notifications
+│   └── AuthContext.tsx           # Authentication (NEW)
+├── hooks/
+│   └── useToast.tsx
+├── pages/                        # Route page components
 │   ├── Home.tsx
 │   ├── Industry.tsx
 │   ├── Gallery.tsx
 │   ├── RequestForm.tsx
-│   ├── Login.tsx
-│   ├── Portal.tsx
+│   ├── Login.tsx                 # Updated to use AuthContext
+│   ├── Portal.tsx                # Employee & Customer dashboards
 │   ├── HowItWorks.tsx
 │   ├── Pricing.tsx
-│   └── NotFound.tsx
-├── App.tsx             # Main app with routing
-├── constants.tsx       # Shared constants
-├── types.ts            # TypeScript types
-├── index.css           # Global styles
-└── index.html          # HTML entry point
+│   ├── NotFound.tsx
+│   ├── editor/
+│   │   └── ModelEditor.tsx       # 3D model editor
+│   └── templates/
+│       └── RestaurantMenu.tsx
+├── services/
+│   └── mockData.ts               # Mock API (in-memory)
+├── netlify/functions/            # Netlify serverless functions
+│   └── gemini-proxy.ts           # Gemini API proxy (NEW)
+├── App.tsx                       # Main routing & context providers
+├── constants.tsx                 # Shared constants & configs
+├── types.ts                      # TypeScript types & enums
+├── index.tsx                     # React entry point
+├── index.css                     # Global styles
+└── index.html                    # HTML template
 ```
 
 ## 🎨 Available Routes
 
+### Public Routes (No Auth Required)
 - `/` - Home page with hero, industries, and features
 - `/industries/:type` - Industry-specific pages (restaurants, museums, ecommerce)
-- `/gallery` - 3D model gallery
+- `/gallery` - Public 3D model gallery
 - `/how-it-works` - Detailed process timeline
 - `/pricing` - Pricing tiers with FAQ
 - `/request` - Capture request form
-- `/app/login` - Login page
-- `/app/dashboard` - Employee dashboard
-- `/portal/dashboard` - Customer portal
+- `/security` - Trust & security information
+- `/privacy` - Privacy policy
+- `/terms` - Terms of service
+- `/project/:id/menu` - Restaurant menu template (public)
+
+### Auth Routes
+- `/app/login` - Login page (redirects to dashboard if already authenticated)
+
+### Protected Employee Routes (Require Authentication + Employee Role)
+- `/app/dashboard` - Employee operations dashboard (stats, pipeline)
+- `/app/editor/:assetId` - 3D model editor & asset uploader
+- `/editor/:assetId` - Demo version (no auth required, for testing)
+
+### Protected Customer Routes (Require Authentication + Customer Role)
+- `/portal/dashboard` - Customer portal (project tracking, asset downloads)
+
+### Fallback
 - `*` - Custom 404 page
 
 ## 🛠️ Available Scripts
@@ -112,6 +166,31 @@ npm run build
 # Preview production build
 npm run preview
 ```
+
+## 🔐 Authentication (MVP - Mock Auth)
+
+The application uses **mock authentication** for MVP development. This is NOT production-ready.
+
+### How Auth Works
+1. User navigates to `/app/login`
+2. Enters any email address from the demo user list (see Quick Start section)
+3. Enters any password (mock auth doesn't validate passwords)
+4. Session persists in localStorage for 24 hours
+5. Protected routes redirect to login if user is not authenticated
+6. User is redirected based on role:
+   - **Employee roles** → `/app/dashboard`
+   - **Customer roles** → `/portal/dashboard`
+
+### Key Files
+- `contexts/AuthContext.tsx` - Mock auth provider & hook
+- `components/ProtectedRoute.tsx` - Route guard component
+- `pages/Login.tsx` - Login UI with demo user selector
+
+### Important Notes
+- ⚠️ **This is mock auth**: No real password validation, no backend API
+- All user data is in-memory; lost on page refresh
+- For production: Replace with real auth (Supabase, Firebase, Clerk, etc.)
+- The demo user list is in `AuthContext.tsx` lines 24–44; customize as needed
 
 ## 🌙 Dark Mode
 
@@ -133,6 +212,24 @@ The application includes a fully functional dark mode with:
 
 ## 🎯 Production Deployment
 
+### Netlify (Recommended)
+
+The app is pre-configured for Netlify with serverless functions support.
+
+1. **Connect your repo** to Netlify
+2. **Add environment variable** in Netlify Site Settings:
+   - Key: `GEMINI_API_KEY`
+   - Value: Your actual API key (kept secure on Netlify, not in source)
+3. **Deploy**:
+   ```bash
+   npm run build
+   # netlify.toml automatically sets build command and publish folder
+   ```
+
+The `netlify/functions/gemini-proxy.ts` function will securely proxy API calls from the frontend, keeping the API key server-side only.
+
+### Other Platforms
+
 1. **Build the project**
    ```bash
    npm run build
@@ -141,10 +238,13 @@ The application includes a fully functional dark mode with:
 2. **The `dist/` folder** contains the production-ready files
 
 3. **Deploy** to your favorite hosting service:
-   - Netlify (includes `netlify.toml`)
    - Vercel
    - GitHub Pages
    - Any static hosting service
+
+**Note:** If not using Netlify, you'll need to:
+- Set up your own API proxy (to keep GEMINI_API_KEY server-side)
+- Or use a different auth provider (Firebase, Supabase, etc.)
 
 ## 🔧 Troubleshooting
 

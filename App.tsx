@@ -2,10 +2,13 @@ import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import { ToastContainer } from './components/Toast';
 import ScrollToTop from './components/ScrollToTop';
+import { PortalRole } from './types';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -55,19 +58,42 @@ const AppContent: React.FC = () => {
               <Route path="/privacy" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Privacy Policy</h1></div>} />
               <Route path="/terms" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Terms of Service</h1></div>} />
 
-              {/* App / Auth Routes */}
+              {/* Auth Routes (public) */}
               <Route path="/app/login" element={<Login />} />
 
-              {/* Simulated Protected Routes */}
-              <Route path="/app/dashboard" element={<Portal role="employee" />} />
-              <Route path="/portal/dashboard" element={<Portal role="customer" />} />
+              {/* Protected Employee Routes */}
+              <Route
+                path="/app/dashboard"
+                element={
+                  <ProtectedRoute requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.SalesLead, PortalRole.Admin]}>
+                    <Portal role="employee" />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/app/editor/:assetId"
+                element={
+                  <ProtectedRoute requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}>
+                    <ModelEditor />
+                  </ProtectedRoute>
+                }
+              />
 
-              {/* Templates */}
+              {/* Protected Customer Routes */}
+              <Route
+                path="/portal/dashboard"
+                element={
+                  <ProtectedRoute requiredRoles={[PortalRole.CustomerOwner, PortalRole.CustomerViewer]}>
+                    <Portal role="customer" />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Templates (public) */}
               <Route path="/project/:id/menu" element={<RestaurantMenu />} />
 
-              {/* Editor */}
+              {/* Editor (public route exists for demo, protected version above) */}
               <Route path="/editor/:assetId" element={<ModelEditor />} />
-              <Route path="/app/editor/:assetId" element={<ModelEditor />} />
 
               {/* 404 Catch all */}
               <Route path="*" element={<NotFound />} />
@@ -83,11 +109,13 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <ToastProvider>
-        <ErrorBoundary>
-          <AppContent />
-        </ErrorBoundary>
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <ErrorBoundary>
+            <AppContent />
+          </ErrorBoundary>
+        </ToastProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 };
