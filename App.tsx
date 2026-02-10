@@ -22,6 +22,7 @@ const Pricing = lazy(() => import('./pages/Pricing'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const RestaurantMenu = lazy(() => import('./pages/templates/RestaurantMenu'));
 const ModelEditor = lazy(() => import('./pages/editor/ModelEditor'));
+const SceneDashboard = lazy(() => import('./pages/editor/SceneDashboard'));
 
 // Loading component
 const LoadingFallback: React.FC = () => (
@@ -72,6 +73,14 @@ const AppContent: React.FC = () => {
               />
               <Route
                 path="/app/editor/:assetId"
+                element={
+                  <ProtectedRoute requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}>
+                    <SceneDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/app/editor/:assetId/3d"
                 element={
                   <ProtectedRoute requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}>
                     <ModelEditor />

@@ -119,7 +119,7 @@ const ModelEditor: React.FC = () => {
             {/* Top Bar */}
             <header className="fixed top-0 w-full h-14 bg-stone-900 border-b border-stone-800 flex items-center justify-between px-4 z-50">
                 <div className="flex items-center gap-4">
-                    <Link to={`/app/dashboard`} className="p-2 hover:bg-stone-800 rounded-md text-stone-400 hover:text-white transition-colors">
+                    <Link to={`/app/editor/${assetId}`} className="p-2 hover:bg-stone-800 rounded-md text-stone-400 hover:text-white transition-colors">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div className="h-6 w-px bg-stone-800"></div>
