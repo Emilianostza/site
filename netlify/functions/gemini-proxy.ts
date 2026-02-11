@@ -15,7 +15,8 @@
  * });
  */
 
-import { Handler } from '@netlify/functions';
+// Netlify Function type (no external dependency needed)
+type Handler = (event: any) => Promise<{ statusCode: number; body: string }> | { statusCode: number; body: string };
 
 const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 

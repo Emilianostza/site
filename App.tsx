@@ -45,9 +45,10 @@ const AppContent: React.FC = () => {
         <ScrollToTop />
         <CodeInspector />
         <Layout>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              {/* Public Routes */}
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/industries" element={<Navigate to="/" replace />} />
               <Route path="/industries/:type" element={<Industry />} />
@@ -106,8 +107,9 @@ const AppContent: React.FC = () => {
 
               {/* 404 Catch all */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </Layout>
       </Router>
       <ToastContainer toasts={toasts} onClose={removeToast} />

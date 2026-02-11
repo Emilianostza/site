@@ -2,7 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, Download, Share2, Box, Edit } from 'lucide-react';
 import { Asset } from '../../types';
-import { AssetViewerModal } from './AssetViewerModal';
+
+
+import { QRCodeModal } from './QRCodeModal';
 
 interface AssetGridProps {
     assets: Asset[];
@@ -10,10 +12,15 @@ interface AssetGridProps {
 }
 
 export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
-    const [selectedAsset, setSelectedAsset] = React.useState<Asset | null>(null);
+    const [selectedAssetForQR, setSelectedAssetForQR] = React.useState<Asset | null>(null);
 
     return (
         <>
+            <QRCodeModal
+                isOpen={!!selectedAssetForQR}
+                onClose={() => setSelectedAssetForQR(null)}
+                asset={selectedAssetForQR}
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {assets.map(asset => (
                     <div key={asset.id} className="group relative bg-white dark:bg-stone-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-stone-800 hover:border-amber-500/60 dark:hover:border-amber-700/60 transition-all duration-500 hover:shadow-2xl hover:shadow-amber-900/10">
@@ -26,19 +33,28 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
                             />
                             {/* Hover overlay */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/40 backdrop-blur-[2px]">
-                                <button
-                                    onClick={() => setSelectedAsset(asset)}
-                                    className="bg-amber-600 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg shadow-amber-900/40 hover:bg-amber-500 mb-3"
-                                >
-                                    <Box className="w-5 h-5" /> View in 3D
-                                </button>
                                 <Link to={`/app/editor/${asset.id}`}>
                                     <button
-                                        className="bg-white/90 text-stone-900 px-6 py-2 rounded-full font-bold text-sm flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75 shadow-lg hover:bg-white"
+                                        className="bg-amber-600 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg shadow-amber-900/40 hover:bg-amber-500 mb-3"
                                     >
-                                        <Edit className="w-4 h-4" /> Edit Scene
+                                        <Box className="w-5 h-5" /> View
                                     </button>
                                 </Link>
+                                <div className="flex gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                                    <Link to={`/app/editor/${asset.id}`}>
+                                        <button
+                                            className="bg-white/90 text-stone-900 px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg hover:bg-white transition-colors"
+                                        >
+                                            <Edit className="w-4 h-4" /> Edit
+                                        </button>
+                                    </Link>
+                                    <button
+                                        onClick={() => setSelectedAssetForQR(asset)}
+                                        className="bg-white/90 text-stone-900 px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg hover:bg-white transition-colors"
+                                    >
+                                        <Share2 className="w-4 h-4" /> QR
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Status Badge (Top Left like Tags) */}
@@ -89,15 +105,6 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
                     </div>
                 ))}
             </div>
-
-            {selectedAsset && (
-                <AssetViewerModal
-                    isOpen={!!selectedAsset}
-                    onClose={() => setSelectedAsset(null)}
-                    modelUrl="https://modelviewer.dev/shared-assets/models/Astronaut.glb" // Using mock URL as in RestaurantMenu
-                    assetName={selectedAsset.name}
-                />
-            )}
         </>
     );
 };

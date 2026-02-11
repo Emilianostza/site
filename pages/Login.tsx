@@ -138,7 +138,7 @@ const Login: React.FC = () => {
                 </button>
               ))}
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">Use any password to sign in (mock auth)</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">Demo users for testing (backend required)</p>
         </div>
 
         <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">

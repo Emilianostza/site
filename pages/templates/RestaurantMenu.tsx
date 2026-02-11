@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProjects } from '../../services/mockData';
+import { ProjectsProvider } from '../../services/dataProvider';
 import { ArrowLeft, Box, ChefHat, X, ChevronLeft, ChevronRight, Smartphone, RotateCcw, Maximize2, Minimize2, Info } from 'lucide-react';
 import { Project } from '../../types';
 
@@ -38,7 +38,7 @@ const RestaurantMenu: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const projects = await getProjects();
+                const projects = await ProjectsProvider.list();
                 const found = projects.find(p => p.id === id);
                 if (found) setProject(found);
             } catch (e) {

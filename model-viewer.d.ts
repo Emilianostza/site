@@ -23,6 +23,9 @@ declare module 'react' {
                     'interaction-prompt'?: string;
                     loading?: string;
                     poster?: string;
+                    orientation?: string;
+                    scale?: string;
+                    reveal?: string;
                 },
                 HTMLElement
             >;

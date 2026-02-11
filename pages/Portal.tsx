@@ -1,20 +1,32 @@
+
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Box, Settings as SettingsIcon, User, Bell, Moon, Sun } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, Box, Settings as SettingsIcon, User, Bell, Moon, Sun, AlertCircle } from 'lucide-react';
 import { Asset, Project } from '../types';
 import { NewProjectModal } from '../components/portal/NewProjectModal';
 import { ProjectTable } from '../components/portal/ProjectTable';
 import { AssetGrid } from '../components/portal/AssetGrid';
 import { ProjectProgress } from '../components/portal/ProjectProgress';
 import { ActivityFeed } from '../components/portal/ActivityFeed';
-import { getProjects, getAssets, addProject } from '../services/mockData';
+import { ProjectsProvider, AssetsProvider } from '../services/dataProvider';
 import DarkModeToggle from '../components/DarkModeToggle';
+import { AssetStatsChart } from '../components/portal/AssetStatsChart';
+import { useAuth } from '../contexts/AuthContext';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'customers' | 'settings'>('dashboard');
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/app/login');
+  };
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredAssets = assets.filter(asset =>
@@ -25,23 +37,35 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCreateProject = async (data: { name: string; client: string; address?: string; phone?: string }) => {
-    await addProject({ ...data, type: 'standard' });
-    const projData = await getProjects();
-    setProjects(projData);
-    setActiveTab('projects');
+    try {
+      await ProjectsProvider.create({ ...data, type: 'standard' });
+      const projData = await ProjectsProvider.list();
+      setProjects(projData);
+      setActiveTab('projects');
+    } catch (error) {
+      console.error("Failed to create project", error);
+    }
   };
 
   useEffect(() => {
     let cancelled = false;
     const fetchData = async () => {
       try {
-        const [projData, assetData] = await Promise.all([getProjects(), getAssets()]);
+        setError(null);
+        const [projData, assetData] = await Promise.all([
+          ProjectsProvider.list(),
+          AssetsProvider.list()
+        ]);
         if (!cancelled) {
           setProjects(projData);
           setAssets(assetData);
         }
-      } catch (error) {
-        if (!cancelled) console.error("Failed to fetch data", error);
+      } catch (err) {
+        if (!cancelled) {
+          const errorMessage = err instanceof Error ? err.message : 'Failed to load portal data';
+          console.error("Failed to fetch data", err);
+          setError(errorMessage);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -69,6 +93,23 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
 
       {/* Main Content */}
       <main className="flex-1 p-8">
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 mb-6">
+            <div className="flex gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error Loading Portal</p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-2 text-sm text-red-600 dark:text-red-400 underline hover:opacity-70 transition-opacity"
+                >
+                  Reload Page
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <header className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
             <button
@@ -104,9 +145,12 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               <SettingsIcon className="w-4 h-4" />
               Settings
             </button>
-            <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 font-medium no-underline">
+            <button
+              onClick={handleLogout}
+              className="text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 font-medium no-underline bg-transparent border-none cursor-pointer"
+            >
               Sign Out
-            </Link>
+            </button>
           </div>
         </header>
 
@@ -123,8 +167,17 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                     />
                   </div>
                   <div className="lg:col-span-1">
+                    <AssetStatsChart assets={assets} />
+                  </div>
+                  {/* Activity feed moved down or kept if layout permits */}
+                </div>
+
+                {/* Secondary Row */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2">
                     <ActivityFeed />
                   </div>
+                  {/* Placeholder for future widget */}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -137,13 +190,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                       </button>
                     </Link>
                   </div>
-                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Download Assets</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Get all approved assets in a single zip file.</p>
-                    <button className="border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                      Download All
-                    </button>
-                  </div>
+
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Support</h3>
                     <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Need help with your models or the portal?</p>
@@ -183,7 +230,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             {/* Recent Assets (Shared) */}
             <div>
               <div className="flex justify-between items-end mb-6">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Assets</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Assets</h2>
                 <div className="relative">
                   <input
                     type="text"

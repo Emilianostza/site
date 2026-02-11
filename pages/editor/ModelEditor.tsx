@@ -6,7 +6,7 @@ import {
     Smartphone, RotateCcw, X, Copy, Check, Globe
 } from 'lucide-react';
 import { AssetUploader } from '../../components/editor/AssetUploader';
-import { saveAsset } from '../../services/mockData';
+import { AssetsProvider } from '../../services/dataProvider';
 import { useToast } from '../../contexts/ToastContext';
 
 const ModelEditor: React.FC = () => {
@@ -53,7 +53,7 @@ const ModelEditor: React.FC = () => {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const savedAsset = await saveAsset({
+            const savedAsset = await AssetsProvider.create({
                 id: assetId === 'new' ? undefined : assetId,
                 name: assetId === 'new' ? 'My New AR Scene' : 'Updated AR Scene',
                 // In a real app we'd upload the blob/file here
@@ -211,7 +211,7 @@ const ModelEditor: React.FC = () => {
                             auto-rotate={autoRotate ? 'true' : undefined}
                             ar
                             ar-modes="webxr scene-viewer quick-look"
-                            rotation={`${rotation.x}deg ${rotation.y}deg ${rotation.z}deg`}
+                            orientation={`${rotation.x}deg ${rotation.y}deg ${rotation.z}deg`}
                             scale={`${scale.x} ${scale.y} ${scale.z}`}
                             style={{ width: '100%', height: '100%' }}
                         ></model-viewer>
