@@ -127,6 +127,15 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setActiveTab('projects')}
+              className={`font-medium transition-colors ${activeTab === 'projects'
+                ? 'text-brand-600 dark:text-brand-400 font-bold'
+                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+            >
+              Projects
+            </button>
             {role === 'employee' && (
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -202,29 +211,45 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               </>
             ) : (
               // Employee Dashboard View (Stats)
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-gradient-to-br from-amber-600 to-amber-700 p-6 rounded-xl shadow-lg text-white">
-                  <h3 className="font-bold text-lg mb-2">Create AR Scene</h3>
-                  <p className="text-amber-100 text-sm mb-4">Upload your 3D models and create instant AR experiences.</p>
-                  <Link to="/app/editor/new">
-                    <button className="bg-white text-amber-700 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-amber-50 transition-colors">
-                      Open Editor
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-gradient-to-br from-amber-600 to-amber-700 p-6 rounded-xl shadow-lg text-white">
+                    <h3 className="font-bold text-lg mb-2">Create AR Scene</h3>
+                    <p className="text-amber-100 text-sm mb-4">Upload your 3D models and create instant AR experiences.</p>
+                    <Link to="/app/editor/new">
+                      <button className="bg-white text-amber-700 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-amber-50 transition-colors">
+                        Open Editor
+                      </button>
+                    </Link>
+                  </div>
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Active Projects</div>
+                    <div className="text-3xl font-bold text-slate-900 dark:text-white">12</div>
+                  </div>
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Assets in Review</div>
+                    <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">5</div>
+                  </div>
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Published Assets</div>
+                    <div className="text-3xl font-bold text-green-600 dark:text-green-400">148</div>
+                  </div>
+                </div>
+
+                {/* Recent Projects Table */}
+                <div className="mt-8">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Projects</h2>
+                    <button
+                      onClick={() => setActiveTab('projects')}
+                      className="text-brand-600 hover:text-brand-800 text-sm font-bold"
+                    >
+                      View All
                     </button>
-                  </Link>
+                  </div>
+                  <ProjectTable projects={projects.slice(0, 5)} />
                 </div>
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                  <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Active Projects</div>
-                  <div className="text-3xl font-bold text-slate-900 dark:text-white">12</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                  <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Assets in Review</div>
-                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">5</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                  <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Published Assets</div>
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">148</div>
-                </div>
-              </div>
+              </>
             )}
 
             {/* Recent Assets (Shared) */}
@@ -244,104 +269,109 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               <AssetGrid assets={filteredAssets} role={role} />
             </div>
           </div>
-        )}
+        )
+        }
 
         {/* Projects Table */}
-        {(activeTab === 'projects' || activeTab === 'customers') && (
-          <ProjectTable projects={projects} />
-        )}
+        {
+          (activeTab === 'projects' || activeTab === 'customers') && (
+            <ProjectTable projects={projects} />
+          )
+        }
 
         {/* Settings View */}
-        {activeTab === 'settings' && (
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <User className="w-5 h-5 text-brand-600" />
-                  Profile Settings
-                </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your account information and preferences.</p>
-              </div>
-              <div className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Full Name</label>
-                    <input
-                      type="text"
-                      defaultValue={role === 'employee' ? 'Admin User' : 'Valued Client'}
-                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
-                    <input
-                      type="email"
-                      defaultValue={role === 'employee' ? 'admin@example.com' : 'client@example.com'}
-                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                    />
-                  </div>
+        {
+          activeTab === 'settings' && (
+            <div className="max-w-4xl mx-auto space-y-6">
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <User className="w-5 h-5 text-brand-600" />
+                    Profile Settings
+                  </h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your account information and preferences.</p>
                 </div>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <SettingsIcon className="w-5 h-5 text-brand-600" />
-                  App Preferences
-                </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Customize your dashboard experience.</p>
-              </div>
-              <div className="p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                      <Sun className="w-5 h-5 text-amber-500 hidden dark:block" />
-                      <Moon className="w-5 h-5 text-slate-500 dark:hidden" />
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Full Name</label>
+                      <input
+                        type="text"
+                        defaultValue={role === 'employee' ? 'Admin User' : 'Valued Client'}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                      />
                     </div>
                     <div>
-                      <div className="font-medium text-slate-900 dark:text-white">Appearance</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400">Toggle between light and dark themes</div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
+                      <input
+                        type="email"
+                        defaultValue={role === 'employee' ? 'admin@example.com' : 'client@example.com'}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                      />
                     </div>
                   </div>
-                  <DarkModeToggle />
-                </div>
-
-                <div className="border-t border-slate-100 dark:border-slate-700 my-4"></div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                      <Bell className="w-5 h-5 text-brand-600" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-slate-900 dark:text-white">Notifications</div>
-                      <div className="text-sm text-slate-500 dark:text-slate-400">Receive email updates about project status</div>
-                    </div>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
-                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand-600"></div>
-                  </label>
                 </div>
               </div>
-            </div>
 
-            <div className="flex justify-end pt-4">
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors mr-3"
-              >
-                Cancel
-              </button>
-              <button className="px-6 py-2 bg-brand-600 text-white rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">
-                Save Changes
-              </button>
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <SettingsIcon className="w-5 h-5 text-brand-600" />
+                    App Preferences
+                  </h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Customize your dashboard experience.</p>
+                </div>
+                <div className="p-6 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                        <Sun className="w-5 h-5 text-amber-500 hidden dark:block" />
+                        <Moon className="w-5 h-5 text-slate-500 dark:hidden" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-slate-900 dark:text-white">Appearance</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">Toggle between light and dark themes</div>
+                      </div>
+                    </div>
+                    <DarkModeToggle />
+                  </div>
+
+                  <div className="border-t border-slate-100 dark:border-slate-700 my-4"></div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                        <Bell className="w-5 h-5 text-brand-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-slate-900 dark:text-white">Notifications</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">Receive email updates about project status</div>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" defaultChecked />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand-600"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <button
+                  onClick={() => setActiveTab('dashboard')}
+                  className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors mr-3"
+                >
+                  Cancel
+                </button>
+                <button className="px-6 py-2 bg-brand-600 text-white rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">
+                  Save Changes
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-      </main>
-    </div>
+          )
+        }
+      </main >
+    </div >
   );
 };
 
