@@ -25,6 +25,34 @@ class ErrorBoundary extends Component<Props, State> {
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error('Error caught by boundary:', error, errorInfo);
+
+        // Track error to analytics
+        this.trackErrorToAnalytics(error, errorInfo);
+    }
+
+    private trackErrorToAnalytics(error: Error, errorInfo: ErrorInfo) {
+        try {
+            fetch('/api/analytics/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    eventType: 'error_occurred',
+                    timestamp: Date.now(),
+                    properties: {
+                        error_type: 'component_error',
+                        error_message: error.message,
+                        stack: error.stack,
+                        component_stack: errorInfo.componentStack,
+                        url: window.location.href,
+                        user_agent: navigator.userAgent
+                    }
+                })
+            }).catch(err => {
+                console.warn('[ErrorBoundary] Failed to track error to analytics:', err);
+            });
+        } catch (err) {
+            console.warn('[ErrorBoundary] Error tracking failed:', err);
+        }
     }
 
     handleReset = () => {

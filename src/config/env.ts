@@ -29,6 +29,10 @@ interface EnvConfig {
   jwtExpiresIn: number;
   jwtRefreshExpiresIn: number;
 
+  // Supabase Configuration
+  supabaseUrl: string;
+  supabaseAnonKey: string;
+
   // Gemini API (server-side only via proxy)
   // Never expose in client code - accessed via /.netlify/functions/gemini-proxy
   geminiProxyUrl: string;
@@ -56,6 +60,10 @@ function validateEnv(): EnvConfig {
   const jwtExpiresIn = parseInt(import.meta.env.VITE_JWT_EXPIRES_IN || '3600', 10);
   const jwtRefreshExpiresIn = parseInt(import.meta.env.VITE_JWT_REFRESH_EXPIRES_IN || '604800', 10);
 
+  // Supabase Configuration
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
   // Gemini Proxy
   const geminiProxyUrl = '/.netlify/functions/gemini-proxy';
 
@@ -77,6 +85,21 @@ function validateEnv(): EnvConfig {
       errors.push('VITE_STORAGE_BUCKET must be configured in production');
     } else if (isDev) {
       console.warn('[Config] VITE_STORAGE_BUCKET using default placeholder');
+    }
+  }
+
+  // Supabase must be configured if not using mock data
+  if (!useMockData) {
+    if (!supabaseUrl) {
+      errors.push('VITE_SUPABASE_URL is required when not using mock data');
+    } else if (!supabaseUrl.includes('.supabase.co')) {
+      errors.push('VITE_SUPABASE_URL must be a valid Supabase project URL');
+    }
+
+    if (!supabaseAnonKey) {
+      errors.push('VITE_SUPABASE_ANON_KEY is required when not using mock data');
+    } else if (supabaseAnonKey.length < 20) {
+      errors.push('VITE_SUPABASE_ANON_KEY appears to be invalid (too short)');
     }
   }
 
@@ -105,6 +128,8 @@ function validateEnv(): EnvConfig {
     storageBucket,
     jwtExpiresIn,
     jwtRefreshExpiresIn,
+    supabaseUrl,
+    supabaseAnonKey,
     geminiProxyUrl,
   };
 }
