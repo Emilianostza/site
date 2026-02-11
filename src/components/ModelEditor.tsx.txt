@@ -1,0 +1,63 @@
+// src/components/ModelEditor.tsx
+import React, { Suspense, useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Stage, useGLTF } from '@react-three/drei';
+import { Mesh } from 'three'; // For type refs if needed
+
+interface ModelViewerProps {
+  modelUrl: string; // URL to the 3D model (e.g., from Supabase or S3)
+}
+
+const Model = ({ url }: { url: string }) => {
+  const { scene } = useGLTF(url);
+  return <primitive object={scene} scale={0.5} />; // Adjust scale based on model size
+};
+
+const ModelViewer: React.FC<ModelViewerProps> = ({ modelUrl }) => {
+  const [error, setError] = useState<string | null>(null);
+
+  if (error) {
+    return <div className="text-red-500">Error loading model: {error}</div>;
+  }
+
+  return (
+    <div className="w-full h-96 border border-gray-300 rounded-lg overflow-hidden"> {/* Tailwind styling */}
+      <Suspense fallback={<div className="flex items-center justify-center h-full">Loading 3D model...</div>}>
+        <Canvas
+          shadows
+          dpr={[1, 2]} // Device pixel ratio for sharpness
+          camera={{ position: [0, 0, 10], fov: 50 }}
+          onError={(e) => setError(e.message)} // Basic error handling
+        >
+          <Stage environment="city" intensity={0.6}>
+            <Model url={modelUrl} />
+          </Stage>
+          <OrbitControls enableZoom={true} autoRotate={false} /> {/* Customize as needed */}
+        </Canvas>
+      </Suspense>
+    </div>
+  );
+};
+
+// Main Editor Component (integrate with your workflow)
+const ModelEditor: React.FC = () => {
+  // Example: Fetch model URL from context or API (replace with your logic, e.g., useProjectWorkflow)
+  const modelUrl = '/models/test-model.gltf'; // Placeholder; fetch dynamically, e.g., from props or hook
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">3D Model Editor</h2>
+      <ModelViewer modelUrl={modelUrl} />
+      {/* Add editor tools here, e.g., buttons for approve/reject using state machine */}
+      <div className="mt-4">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded">Approve Model</button>
+        <button className="bg-red-500 text-white px-4 py-2 rounded ml-2">Reject</button>
+      </div>
+    </div>
+  );
+};
+
+export default ModelEditor;
+
+// Preload for performance (optional, call in parent components)
+useGLTF.preload('/models/test-model.gltf');

@@ -184,6 +184,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Set user and organization
       // Fix: Convert DTO to Domain User to ensure role is an object, not a string
+      // Fix: Convert DTO to Domain User to ensure role is an object, not a string
       const userDomain = userFromDTO(response.user);
       setUser(userDomain);
 

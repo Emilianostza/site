@@ -370,7 +370,7 @@ export function userFromDTO(dto: UserProfileDTO, roleDetails?: Partial<UserRole>
       type: dto.role as UserRoleType,
       orgId: dto.orgId,
       customerId: dto.customerId,
-      assignedProjectIds: [] // Default to empty if not in DTO (DTO doesn't carry this currently)
+      assignedProjectIds: [] // Default to empty if not in DTO
     } as UserRole);
 
   return {
