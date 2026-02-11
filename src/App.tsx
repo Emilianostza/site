@@ -43,7 +43,7 @@ const AppContent: React.FC = () => {
     <>
       <Router>
         <ScrollToTop />
-        <CodeInspector />
+        {import.meta.env.DEV && <CodeInspector />}
         <Layout>
           <ErrorBoundary>
             <Suspense fallback={<LoadingFallback />}>

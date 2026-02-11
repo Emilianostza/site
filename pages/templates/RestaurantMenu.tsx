@@ -162,7 +162,7 @@ const RestaurantMenu: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-stone-950 text-amber-50 font-sans selection:bg-amber-900 selection:text-white" data-component="Restaurant Menu Template" data-file="src/pages/templates/RestaurantMenu.tsx">
+        <div className="min-h-screen bg-stone-950 text-amber-50 font-sans selection:bg-amber-900 selection:text-white" {...(import.meta.env.DEV && { 'data-component': 'Restaurant Menu Template', 'data-file': 'src/pages/templates/RestaurantMenu.tsx' })}>
             {/* Navigation */}
             <nav className="fixed top-0 w-full z-50 bg-stone-950/80 backdrop-blur-md border-b border-stone-800">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">

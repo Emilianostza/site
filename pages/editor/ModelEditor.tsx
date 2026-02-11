@@ -114,7 +114,7 @@ const ModelEditor: React.FC = () => {
     }
 
     return (
-        <div className="flex h-screen bg-stone-950 text-stone-200 overflow-hidden font-sans" data-component="Model Editor" data-file="src/pages/editor/ModelEditor.tsx">
+        <div className="flex h-screen bg-stone-950 text-stone-200 overflow-hidden font-sans" {...(import.meta.env.DEV && { 'data-component': 'Model Editor', 'data-file': 'src/pages/editor/ModelEditor.tsx' })}>
 
             {/* Top Bar */}
             <header className="fixed top-0 w-full h-14 bg-stone-900 border-b border-stone-800 flex items-center justify-between px-4 z-50">

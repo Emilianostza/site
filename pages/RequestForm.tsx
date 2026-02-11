@@ -201,7 +201,7 @@ const RequestForm: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12" data-component="Request Form" data-file="src/pages/RequestForm.tsx">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12" {...(import.meta.env.DEV && { 'data-component': 'Request Form', 'data-file': 'src/pages/RequestForm.tsx' })}>
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="mb-8">
           <div className="flex items-center justify-between text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">

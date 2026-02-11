@@ -6,7 +6,7 @@ import Accordion from '../components/Accordion';
 
 const Home: React.FC = () => {
   return (
-    <div data-component="Home Page" data-file="src/pages/Home.tsx">
+    <div {...(import.meta.env.DEV && { 'data-component': 'Home Page', 'data-file': 'src/pages/Home.tsx' })}>
       {/* Hero */}
       <section className="relative bg-slate-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/hero_bg/1600/900')] bg-cover bg-center opacity-20"></div>

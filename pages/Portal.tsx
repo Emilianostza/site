@@ -84,7 +84,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900" data-component="Portal Dashboard" data-file="src/pages/Portal.tsx">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900" {...(import.meta.env.DEV && { 'data-component': 'Portal Dashboard', 'data-file': 'src/pages/Portal.tsx' })}>
       <NewProjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

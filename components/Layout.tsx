@@ -16,7 +16,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" data-component="Layout" data-file="src/components/Layout.tsx">
+    <div className="flex flex-col min-h-screen" {...(import.meta.env.DEV && { 'data-component': 'Layout', 'data-file': 'src/components/Layout.tsx' })}>
       <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2 font-bold text-xl text-slate-900 dark:text-white">
