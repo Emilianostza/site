@@ -28,6 +28,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [projectSearchTerm, setProjectSearchTerm] = useState('');
 
   const filteredAssets = assets.filter(asset =>
     asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -127,15 +128,17 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setActiveTab('projects')}
-              className={`font-medium transition-colors ${activeTab === 'projects'
-                ? 'text-brand-600 dark:text-brand-400 font-bold'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-            >
-              Projects
-            </button>
+            {role === 'employee' && (
+              <button
+                onClick={() => setActiveTab('projects')}
+                className={`font-medium transition-colors ${activeTab === 'projects'
+                  ? 'text-brand-600 dark:text-brand-400 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+              >
+                Projects
+              </button>
+            )}
             {role === 'employee' && (
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -237,18 +240,32 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                 </div>
 
                 {/* Recent Projects Table */}
-                <div className="mt-8">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Projects</h2>
-                    <button
-                      onClick={() => setActiveTab('projects')}
-                      className="text-brand-600 hover:text-brand-800 text-sm font-bold"
-                    >
-                      View All
-                    </button>
+                {/* Recent Projects Table - Employee Only */}
+                {role === 'employee' && (
+                  <div className="mt-8">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Projects</h2>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="text"
+                          placeholder="Search projects..."
+                          className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 w-64 text-slate-900 dark:text-slate-200"
+                          value={projectSearchTerm}
+                          onChange={(e) => setProjectSearchTerm(e.target.value)}
+                        />
+                        <button
+                          onClick={() => setActiveTab('projects')}
+                          className="text-brand-600 hover:text-brand-800 text-sm font-bold"
+                        >
+                          View All
+                        </button>
+                      </div>
+                    </div>
+                    <ProjectTable projects={projects
+                      .filter(p => p.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) || p.client.toLowerCase().includes(projectSearchTerm.toLowerCase()))
+                      .slice(0, 5)} />
                   </div>
-                  <ProjectTable projects={projects.slice(0, 5)} />
-                </div>
+                )}
               </>
             )}
 

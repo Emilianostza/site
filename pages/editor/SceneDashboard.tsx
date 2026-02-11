@@ -4,19 +4,17 @@ import { useParams, Link } from 'react-router-dom';
 import {
     ArrowLeft,
     Box,
-    Settings,
     Search,
-    ShoppingBag,
-    ChevronRight,
-    Star,
-    Plus,
-    Minus,
     Utensils,
     QrCode,
-    AlertCircle
+    AlertCircle,
+    Plus,
+    Maximize2, // For expanding editor
+    Minimize2
 } from 'lucide-react';
 import { Asset } from '../../types';
 import { QRCodeModal } from '../../components/portal/QRCodeModal';
+import { EmbeddedModelEditor } from '../../components/editor/EmbeddedModelEditor';
 
 const SceneDashboard: React.FC = () => {
     const { assetId } = useParams<{ assetId: string }>();
@@ -24,6 +22,10 @@ const SceneDashboard: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [activeCategory, setActiveCategory] = useState('Mains');
     const [selectedAssetForQR, setSelectedAssetForQR] = useState<Asset | null>(null);
+
+    // Split Screen State
+    const [selectedItem, setSelectedItem] = useState<any | null>(null);
+    const [isEditorExpanded, setIsEditorExpanded] = useState(false);
 
     // Simulate loading
     useEffect(() => {
@@ -110,15 +112,18 @@ const SceneDashboard: React.FC = () => {
         }
     ];
 
-    // const filteredItems = menuItems.filter(item =>
-    //     activeCategory === 'All' || item.category === activeCategory || (activeCategory === 'Mains' && item.isMain)
-    // );
+    // Select first item by default if none selected
+    useEffect(() => {
+        if (!selectedItem && menuItems.length > 0) {
+            setSelectedItem(menuItems[0]);
+        }
+    }, []);
 
     return (
-        <div className="min-h-screen bg-stone-950 text-stone-200 font-sans pb-24">
+        <div className="h-screen bg-stone-950 text-stone-200 font-sans flex flex-col overflow-hidden">
             {/* Header / Navigation Overlay */}
-            <nav className="fixed top-0 w-full z-50 bg-stone-950/90 backdrop-blur-md border-b border-stone-800 transition-all duration-300">
-                <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+            <nav className="w-full z-50 bg-stone-900 border-b border-stone-800 flex-shrink-0 h-16 flex items-center justify-between px-4">
+                <div className="flex items-center gap-4">
                     <Link to="/app/dashboard" className="p-2 -ml-2 hover:bg-stone-800 rounded-full text-stone-400 hover:text-white transition-colors">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
@@ -126,164 +131,127 @@ const SceneDashboard: React.FC = () => {
                     <div className="font-serif font-bold text-lg tracking-wide text-white">
                         Menu Editor
                     </div>
+                </div>
 
-                    <div className="flex items-center gap-2">
-                        <button className="p-2 hover:bg-stone-800 rounded-full text-stone-400 hover:text-white transition-colors">
-                            <Search className="w-5 h-5" />
-                        </button>
-                    </div>
+                <div className="flex items-center gap-4 text-xs text-stone-400 bg-stone-950 px-3 py-1.5 rounded-lg border border-stone-800">
+                    <Utensils className="w-3 h-3 text-amber-500" />
+                    <span>TableQR Demo</span>
+                    <span className="text-stone-600">|</span>
+                    <span className="text-green-400">Live</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button className="p-2 hover:bg-stone-800 rounded-full text-stone-400 hover:text-white transition-colors">
+                        <Search className="w-5 h-5" />
+                    </button>
+                    <div className="h-6 w-px bg-stone-800 mx-2"></div>
+                    <button
+                        onClick={() => setIsEditorExpanded(!isEditorExpanded)}
+                        className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isEditorExpanded ? 'bg-amber-600 text-white' : 'bg-stone-800 text-stone-400 hover:text-white'}`}
+                    >
+                        {isEditorExpanded ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+                        {isEditorExpanded ? 'Show List' : 'Expand Editor'}
+                    </button>
                 </div>
             </nav>
 
-            {/* Hero / Banner Area */}
-            <div className="relative h-48 md:h-64 w-full overflow-hidden mt-16">
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/50 to-transparent z-10"></div>
-                <img
-                    src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=2574&auto=format&fit=crop"
-                    alt="Restaurant Ambiance"
-                    className="w-full h-full object-cover opacity-60"
-                />
-                <div className="absolute bottom-0 left-0 w-full p-6 z-20 max-w-3xl mx-auto left-0 right-0">
-                    <div className="flex items-center gap-2 text-amber-500 mb-2">
-                        <Utensils className="w-4 h-4" />
-                        <span className="text-xs font-bold uppercase tracking-wider">Fine Dining</span>
+            <div className="flex flex-1 overflow-hidden">
+
+                {/* LEFT PANEL: Menu List */}
+                <div className={`
+                    bg-stone-950 border-r border-stone-800 transition-all duration-300 flex flex-col
+                    ${isEditorExpanded ? 'w-0 opacity-0 overflow-hidden' : 'w-full md:w-80 lg:w-96'} 
+                `}>
+
+                    {/* Categories */}
+                    <div className="p-2 border-b border-stone-800 overflow-x-auto no-scrollbar flex gap-2">
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveCategory(cat)}
+                                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${activeCategory === cat
+                                    ? 'bg-amber-600 text-white'
+                                    : 'bg-stone-900 text-stone-400 hover:text-white hover:bg-stone-800'
+                                    }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-serif font-bold text-white leading-tight mb-1">
-                        TableQR Demo
-                    </h1>
-                    <div className="flex items-center gap-4 text-xs text-stone-400">
-                        <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded">Open Now</span>
-                        <span>• Italian Cuisine</span>
-                        <span>• $$$</span>
-                    </div>
-                </div>
-            </div>
 
-            {/* Sticky Category Nav */}
-            <div className="sticky top-16 z-40 bg-stone-950/95 border-b border-stone-800 backdrop-blur-sm shadow-lg">
-                <div className="max-w-3xl mx-auto overflow-x-auto no-scrollbar py-3 px-4 flex gap-4">
-                    {categories.map(cat => (
-                        <button
-                            key={cat}
-                            onClick={() => setActiveCategory(cat)}
-                            className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeCategory === cat
-                                ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/40'
-                                : 'bg-stone-900 text-stone-400 hover:text-white hover:bg-stone-800 border border-stone-800'
-                                }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
-                </div>
-            </div>
+                    {/* Item List */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        {menuItems.filter(item => item.category === activeCategory).map((item) => (
+                            <div
+                                key={item.id}
+                                onClick={() => setSelectedItem(item)}
+                                className={`
+                                    group flex items-center gap-3 p-2 rounded-xl border cursor-pointer transition-all duration-200
+                                    ${selectedItem?.id === item.id
+                                        ? 'bg-stone-900 border-amber-600 ring-1 ring-amber-600/50'
+                                        : 'bg-stone-900/50 border-stone-800 hover:border-stone-700 hover:bg-stone-900'}
+                                `}
+                            >
+                                <div className="w-12 h-12 rounded-lg bg-stone-800 overflow-hidden flex-shrink-0 relative">
+                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                    {selectedItem?.id === item.id && (
+                                        <div className="absolute inset-0 bg-amber-600/20 backdrop-blur-[1px] flex items-center justify-center">
+                                            <div className="w-2 h-2 bg-amber-500 rounded-full shadow-lg shadow-amber-500/50" />
+                                        </div>
+                                    )}
+                                </div>
 
-            {/* Main Menu List */}
-            <div className="max-w-3xl mx-auto px-4 py-6 space-y-12">
-                {categories.map(category => {
-                    const categoryItems = menuItems.filter(item => item.category === category);
-                    if (categoryItems.length === 0) return null;
-
-                    return (
-                        <div key={category} id={category}>
-                            <h2 className="text-xl font-bold text-white mb-4 px-1 flex items-center gap-2 sticky top-28 bg-stone-950/95 py-2 z-30">
-                                {category}
-                                <span className="text-xs font-normal text-stone-500 bg-stone-900 px-2 py-0.5 rounded-full border border-stone-800">
-                                    {categoryItems.length}
-                                </span>
-                            </h2>
-
-                            <div className="space-y-4">
-                                {categoryItems.map((item) => (
-                                    <div key={item.id} className="group block relative">
-                                        <Link
-                                            to={item.isMain ? `/app/editor/${assetId}/3d` : '#'}
-                                            className="block"
-                                            onClick={(e) => !item.isMain && e.preventDefault()}
-                                        >
-                                            <div className="flex bg-stone-900 border border-stone-800 rounded-xl overflow-hidden hover:border-amber-500/30 transition-all duration-300 relative">
-
-                                                {/* Left Content */}
-                                                <div className="flex-1 p-4 flex flex-col">
-                                                    <div className="flex justify-between items-start">
-                                                        <h3 className="text-base font-bold text-white group-hover:text-amber-500 transition-colors line-clamp-1 mb-1">
-                                                            {item.name}
-                                                        </h3>
-                                                    </div>
-
-                                                    <p className="text-stone-400 text-xs leading-relaxed line-clamp-2 mb-3">
-                                                        {item.description}
-                                                    </p>
-
-                                                    <div className="mt-auto flex items-center justify-between">
-                                                        <span className="font-mono text-amber-500 font-bold text-sm">
-                                                            {item.price}
-                                                        </span>
-
-                                                        {item.isMain ? (
-                                                            <div className="flex items-center gap-1 text-[10px] font-bold text-stone-500 bg-stone-950 px-2 py-1 rounded border border-stone-800 group-hover:border-amber-500/30 transition-colors">
-                                                                <Box className="w-3 h-3 text-amber-500" />
-                                                                3D READY
-                                                            </div>
-                                                        ) : (
-                                                            <button className="w-6 h-6 rounded bg-stone-800 flex items-center justify-center text-stone-400 hover:bg-amber-600 hover:text-white transition-colors">
-                                                                <Plus className="w-4 h-4" />
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* Right Image (Square) */}
-                                                <div className="w-32 h-32 bg-stone-800 relative shrink-0 border-l border-stone-800">
-                                                    {/* @ts-ignore - model-viewer custom element */}
-                                                    <model-viewer
-                                                        src={item.image}
-                                                        poster="https://via.placeholder.com/150"
-                                                        alt={item.name}
-                                                        auto-rotate
-                                                        camera-controls={false}
-                                                        interaction-prompt="none"
-                                                        style={{ width: '100%', height: '100%' }}
-                                                        className="mix-blend-normal transform scale-[0.8] group-hover:scale-100 transition-transform duration-500"
-                                                    ></model-viewer>
-                                                    {item.isMain && (
-                                                        <div className="absolute top-2 right-2 flex flex-col gap-1">
-                                                            <span className="bg-amber-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded shadow">
-                                                                TOP
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </Link>
-
-                                        {/* QR Code Button - Positioned absolutely over the card but separate from the link */}
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setSelectedAssetForQR({
-                                                    id: item.id,
-                                                    name: item.name,
-                                                    thumb: item.image,
-                                                    status: 'Published' // Mock status
-                                                });
-                                            }}
-                                            className="absolute top-2 right-2 z-20 p-1.5 bg-black/60 hover:bg-amber-600 text-white/80 hover:text-white rounded-lg backdrop-blur-sm transition-colors opacity-0 group-hover:opacity-100"
-                                            title="View QR Code"
-                                        >
-                                            <QrCode className="w-4 h-4" />
-                                        </button>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className={`text-sm font-bold truncate ${selectedItem?.id === item.id ? 'text-white' : 'text-stone-300'}`}>
+                                        {item.name}
+                                    </h4>
+                                    <p className="text-[10px] text-stone-500 truncate">{item.description}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-xs font-mono text-amber-500">{item.price}</span>
+                                        {item.isMain && (
+                                            <span className="text-[8px] bg-stone-800 text-stone-400 px-1.5 py-0.5 rounded border border-stone-700">3D</span>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
+                                </div>
 
-                {/* Add New Item Placeholder */}
-                <button className="w-full py-4 border border-dashed border-stone-800 rounded-xl text-stone-500 hover:text-white hover:bg-stone-900/30 transition-all flex items-center justify-center gap-2 text-sm font-medium">
-                    <Plus className="w-4 h-4" /> Add New Item
-                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedAssetForQR({
+                                            id: item.id,
+                                            name: item.name,
+                                            thumb: item.image,
+                                            status: 'Published'
+                                        });
+                                    }}
+                                    className="p-2 rounded-lg hover:bg-stone-800 text-stone-600 hover:text-white transition-colors"
+                                >
+                                    <QrCode className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ))}
+
+                        <button className="w-full py-3 border border-dashed border-stone-800 rounded-xl text-stone-500 hover:text-white hover:bg-stone-900/50 hover:border-stone-700 transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wide">
+                            <Plus className="w-4 h-4" /> Add Item
+                        </button>
+                    </div>
+                </div>
+
+                {/* RIGHT PANEL: Editor */}
+                <div className="flex-1 bg-stone-950 relative overflow-hidden flex flex-col">
+                    {selectedItem ? (
+                        <EmbeddedModelEditor
+                            assetId={selectedItem.id}
+                            initialData={selectedItem}
+                        />
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center text-stone-500">
+                            <Box className="w-16 h-16 mb-4 opacity-20" />
+                            <p>Select an item to edit 3D scene</p>
+                        </div>
+                    )}
+                </div>
+
             </div>
 
             <QRCodeModal
@@ -291,22 +259,6 @@ const SceneDashboard: React.FC = () => {
                 onClose={() => setSelectedAssetForQR(null)}
                 asset={selectedAssetForQR}
             />
-
-            {/* Bottom Floating Action Bar (View Order Style) */}
-            <div className="fixed bottom-0 left-0 w-full p-4 z-50 bg-gradient-to-t from-stone-950 to-transparent pt-8 pointer-events-none">
-                <div className="max-w-3xl mx-auto pointer-events-auto">
-                    <button className="w-full bg-amber-600 hover:bg-amber-500 text-white py-4 rounded-xl shadow-xl shadow-black/50 flex items-center justify-between px-6 transition-transform active:scale-[0.98]">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center font-bold text-sm">
-                                2
-                            </div>
-                            <span className="font-bold text-sm uppercase tracking-wide">View Order</span>
-                        </div>
-                        <span className="font-bold font-mono text-lg">$26.50</span>
-                    </button>
-                </div>
-            </div>
-
         </div>
     );
 };
