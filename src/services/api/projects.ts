@@ -13,7 +13,7 @@
  * DELETE /projects/:id       - Archive/delete project
  */
 
-import { apiClient } from '@/client';
+import { apiClient } from '@/services/api/client';
 import { Project, ProjectStatus, ProjectType } from '@/types';
 
 export interface CreateProjectInput {

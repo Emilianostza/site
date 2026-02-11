@@ -75,6 +75,18 @@ export interface Organization {
   deletedAt?: string;
 }
 
+// --- Roles Enum (for form selects, API enums) ---
+
+export enum UserRoleEnum {
+  ADMIN = 'admin',
+  APPROVER = 'approver',
+  TECHNICIAN = 'technician',
+  SALES_LEAD = 'sales_lead',
+  CUSTOMER_OWNER = 'customer_owner',
+  CUSTOMER_VIEWER = 'customer_viewer',
+  PUBLIC_VISITOR = 'public_visitor'
+}
+
 // --- User Role (Discriminated Union) ---
 
 export type UserRole =
@@ -127,6 +139,39 @@ export interface User {
   invitedBy?: string;
   invitedAt?: string;
   activatedAt?: string;
+
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
+// --- Organization Membership ---
+
+/**
+ * OrgMembership links a user to an organization with an explicit role.
+ * This is separate from User to allow:
+ * - Users in multiple organizations
+ * - Different roles in different orgs
+ * - Explicit membership tracking for audit/billing
+ */
+export interface OrgMembership {
+  id: string;
+  orgId: string;
+  userId: string;
+
+  // Membership role (independent of user.role)
+  role: UserRoleType;
+
+  // Status
+  status: 'invited' | 'active' | 'inactive';
+
+  // When role was granted
+  roleAssignedAt: string;
+  roleAssignedBy?: string;
+
+  // Metadata for role context (e.g., which projects assigned to technician)
+  metadata?: Record<string, unknown>;
 
   // Timestamps
   createdAt: string;

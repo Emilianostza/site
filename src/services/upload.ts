@@ -20,7 +20,7 @@
  * - No exposing AWS keys to frontend
  */
 
-import { apiClient } from '@/api';
+import { apiClient } from '@/services/api';
 import * as AssetsAPI from '@/api/assets';
 import { Asset } from '@/types';
 

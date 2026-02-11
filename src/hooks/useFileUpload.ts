@@ -1,111 +1,117 @@
 /**
- * Hook: File Upload with Progress Tracking
+ * File Upload Hook - Signed URL Version (Phase 3)
  *
- * Manages file upload state and progress for React components.
+ * Manages upload state, progress, error handling, and retry logic.
+ * Uploads directly to S3 via signed URLs.
  *
  * Example:
  * ```tsx
- * const { upload, uploading, progress, error } = useFileUpload(projectId);
+ * const upload = useFileUpload();
  *
  * const handleFileSelect = async (file: File) => {
- *   const asset = await upload(file);
- *   if (asset) {
- *     console.log('Uploaded:', asset);
+ *   try {
+ *     const result = await upload.uploadFile(projectId, file);
+ *     console.log('Uploaded:', result.fileKey);
+ *   } catch (err) {
+ *     console.error('Upload failed:', upload.error);
  *   }
  * };
  *
  * return (
  *   <>
- *     <input type="file" onChange={(e) => handleFileSelect(e.target.files[0])} />
- *     {uploading && <div>{progress}%</div>}
- *     {error && <div>{error}</div>}
+ *     <input type="file" onChange={(e) => handleFileSelect(e.target.files?.[0])} />
+ *     {upload.isUploading && <div>{upload.progress}%</div>}
+ *     {upload.error && <div className="error">{upload.error}</div>}
+ *     {upload.uploadedFileName && <div className="success">✓ {upload.uploadedFileName}</div>}
  *   </>
  * );
  * ```
  */
 
 import { useState, useCallback } from 'react';
-import { Asset } from '@/types';
-import { uploadFile, validateFile, SUPPORTED_FORMATS, MAX_FILE_SIZE, UploadProgress } from '@/services/upload';
+import { uploadAssetFile, validateUploadFile, UploadProgressEvent } from '@/services/upload/signed-upload';
 
 export interface UseFileUploadResult {
-  /** Upload a file (returns asset on success, null on failure) */
-  upload: (file: File) => Promise<Asset | null>;
-
-  /** Currently uploading? */
-  uploading: boolean;
-
-  /** Upload progress 0-100 */
-  progress: number;
-
-  /** Error message if upload failed */
+  // State
+  isUploading: boolean;
+  progress: number; // 0-100
   error: string | null;
+  uploadedFileName?: string;
 
-  /** Clear error message */
+  // Actions
+  uploadFile: (projectId: string, file: File) => Promise<{ fileKey: string; assetId?: string; fileName: string; fileSize: number }>;
+  reset: () => void;
   clearError: () => void;
 }
 
-export function useFileUpload(projectId: string): UseFileUploadResult {
-  const [uploading, setUploading] = useState(false);
+export function useFileUpload(): UseFileUploadResult {
+  const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string>();
 
-  const upload = useCallback(
-    async (file: File): Promise<Asset | null> => {
-      // Clear previous error
-      setError(null);
-
-      // Validate file
-      const validation = validateFile(file, {
-        maxSize: MAX_FILE_SIZE,
-        allowedTypes: SUPPORTED_FORMATS
-      });
-
+  const uploadFile = useCallback(
+    async (projectId: string, file: File) => {
+      // Validate
+      const validation = validateUploadFile(file);
       if (!validation.valid) {
-        setError(validation.error);
-        return null;
+        setError(validation.error || 'Validation failed');
+        throw new Error(validation.error);
       }
 
-      setUploading(true);
+      setIsUploading(true);
       setProgress(0);
+      setError(null);
 
       try {
-        const result = await uploadFile({
-          projectId,
-          fileName: file.name,
-          file,
-          contentType: file.type,
-          onProgress: (p: UploadProgress) => {
-            setProgress(p.percentage);
+        // Upload with progress tracking
+        const result = await uploadAssetFile(projectId, file, (event: UploadProgressEvent) => {
+          if (event.type === 'progress') {
+            setProgress(event.percent);
+          } else if (event.type === 'error') {
+            setError(event.error || 'Upload failed');
           }
         });
 
-        if (!result.success) {
-          setError(result.error || 'Upload failed');
-          return null;
-        }
+        // Success
+        setProgress(100);
+        setUploadedFileName(file.name);
 
-        return result.asset;
+        return {
+          fileKey: result.fileKey,
+          assetId: result.assetId,
+          fileName: file.name,
+          fileSize: file.size
+        };
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Upload failed';
-        setError(message);
-        return null;
+        const errorMsg = err instanceof Error ? err.message : 'Upload failed';
+        setError(errorMsg);
+        throw err;
       } finally {
-        setUploading(false);
+        setIsUploading(false);
       }
     },
-    [projectId]
+    []
   );
+
+  const reset = useCallback(() => {
+    setIsUploading(false);
+    setProgress(0);
+    setError(null);
+    setUploadedFileName(undefined);
+  }, []);
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
   return {
-    upload,
-    uploading,
+    isUploading,
     progress,
     error,
+    uploadedFileName,
+    uploadFile,
+    reset,
     clearError
   };
 }

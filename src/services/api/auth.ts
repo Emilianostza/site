@@ -7,7 +7,7 @@
  * TODO: Replace with real Supabase Auth calls
  */
 
-import { apiClient } from '@/client';
+import { apiClient } from '@/services/api/client';
 import { PortalRole } from '@/types';
 import {
   LoginRequestDTO,

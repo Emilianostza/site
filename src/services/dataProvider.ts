@@ -32,34 +32,40 @@
  * 3. Access control happens server-side (client can't override)
  */
 
-import * as ProjectsAPI from '@/api/projects';
-import * as AssetsAPI from '@/api/assets';
+import { API_CONFIG, isUsingMockData } from '@/services/api/config';
+import * as ProjectsAPI from '@/services/api/projects';
+import * as AssetsAPI from '@/services/api/assets';
 import {
   getProjects as getMockProjects,
   getAssets as getMockAssets,
   addProject as addMockProject,
   saveAsset as saveMockAsset,
-} from '@/mockData';
+} from '@/services/mockData';
 import { Project, Asset, ProjectType, ProjectStatus } from '@/types';
 
-const FALLBACK_TO_MOCK = import.meta.env.VITE_USE_MOCK_DATA !== 'false';
-
 /**
- * Wraps API call with fallback to mock data
+ * Data access router - selects mock or real API based on feature flag
+ *
+ * Strategy:
+ * - If useMockData=true: Always use mock data
+ * - If useMockData=false: Use real API, with optional fallback to mock on error
  */
 async function withMockFallback<T>(
   apiCall: () => Promise<T>,
   mockCall: () => Promise<T>,
   operation: string
 ): Promise<T> {
+  // If explicitly using mock data, skip API call entirely
+  if (isUsingMockData()) {
+    return mockCall();
+  }
+
+  // Try real API, fall back to mock on error if available
   try {
     return await apiCall();
   } catch (error) {
-    if (FALLBACK_TO_MOCK) {
-      console.warn(`[DataProvider] API ${operation} failed, using mock data:`, error);
-      return mockCall();
-    }
-    throw error;
+    console.warn(`[DataProvider] API ${operation} failed, falling back to mock:`, error);
+    return mockCall();
   }
 }
 

@@ -4,7 +4,7 @@
  * PHASE 2: Organization management for multi-tenant system
  */
 
-import { apiClient } from '@/client';
+import { apiClient } from '@/services/api/client';
 import { Organization, organizationFromDTO } from '@/types/auth';
 
 /**

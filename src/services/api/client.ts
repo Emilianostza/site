@@ -3,11 +3,9 @@
  *
  * This is the single point of contact between frontend and backend.
  * All data flows through this client.
- *
- * Environment Variables:
- * - VITE_API_BASE_URL: Backend API base URL
- * - VITE_USE_MOCK_DATA: Enable mock data fallback during migration
  */
+
+import { env } from '@/config/env';
 
 export interface ApiError {
   status: number;
@@ -22,7 +20,7 @@ export class ApiClient {
   private orgId: string | null = null;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+    this.baseUrl = env.apiBaseUrl;
   }
 
   /**

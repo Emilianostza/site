@@ -1,3 +1,39 @@
+/**
+ * Request Form - Lead Capture & Draft Management
+ *
+ * PHASE 3 Integration Points:
+ * 1. Replace manual sessionStorage with useDraftRequest() hook
+ * 2. On submit: POST to submitRequest() with idempotency key
+ * 3. Error handling: Show retry + failure state UX
+ * 4. Success: clearDraft() + show confirmation
+ *
+ * Example Phase 3 implementation:
+ *
+ * const { draft, saveDraft, clearDraft, isExpired } = useDraftRequest();
+ * const [submitting, setSubmitting] = useState(false);
+ * const [error, setError] = useState<string | null>(null);
+ *
+ * const handleSubmit = async () => {
+ *   try {
+ *     setSubmitting(true);
+ *     const idempotencyKey = crypto.randomUUID();
+ *     const response = await submitRequest({
+ *       requester_name: formData.contact.full_name,
+ *       requester_email: formData.contact.email,
+ *       // ... map other fields
+ *     }, idempotencyKey);
+ *
+ *     clearDraft(); // Only after success
+ *     setSubmitted(true);
+ *   } catch (err) {
+ *     setError(err.message);
+ *     // Show retry button
+ *   } finally {
+ *     setSubmitting(false);
+ *   }
+ * };
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Industry, RequestFormState, ProjectStatus } from '@/types';

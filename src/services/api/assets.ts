@@ -12,7 +12,7 @@
  * POST   /assets/upload-url - Get signed upload URL (S3)
  */
 
-import { apiClient } from '@/client';
+import { apiClient } from '@/services/api/client';
 import { Asset } from '@/types';
 
 export interface UploadUrlRequest {

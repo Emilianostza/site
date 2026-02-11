@@ -22,7 +22,7 @@ import {
   isTierFeatureEnabled,
   getTierLimit,
   getTierInfo
-} from '@/tiers';
+} from '@/services/tiers';
 
 /**
  * Tier validation result

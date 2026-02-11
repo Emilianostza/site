@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://managedcapture3d.com/sitemap.xml
+
+# Disallow admin/app routes from crawling
+Disallow: /app/
+Disallow: /portal/
