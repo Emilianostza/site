@@ -1,25 +1,23 @@
 /**
  * Authentication API Service (MOCK VERSION)
  *
+ * PHASE 2: Uses new types from types/auth.ts
  * Handles login, logout, token validation, and refresh using LOCAL MOCK DATA.
  * Bypasses backend for development/demo purposes.
+ * TODO: Replace with real Supabase Auth calls
  */
 
 import { apiClient } from './client';
-import { AuthUser } from '../../contexts/AuthContext';
-import { PortalRole } from '../../types'; // Ensure this import is correct based on your types.ts
+import { PortalRole } from '../../types';
+import {
+  LoginRequestDTO,
+  LoginResponseDTO,
+  userToDTO
+} from '../../types/auth';
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  user: AuthUser;
-  token: string;
-  refresh_token?: string;
-  expires_in: number; // Token TTL in seconds
-}
+// Re-export DTOs for compatibility
+export type LoginRequest = LoginRequestDTO;
+export type LoginResponse = LoginResponseDTO;
 
 export interface RefreshTokenRequest {
   refresh_token: string;
@@ -27,65 +25,100 @@ export interface RefreshTokenRequest {
 
 export interface RefreshTokenResponse {
   token: string;
-  expires_in: number;
+  expiresIn: number;
 }
 
 // --- MOCK DATA ---
 
-const MOCK_USERS: AuthUser[] = [
-  // Original Demo Users
-  {
+const MOCK_USERS_MAP: Record<string, any> = {
+  'user-admin': {
     id: 'user-admin',
     email: 'admin@company.com',
     name: 'Admin User',
-    role: PortalRole.Admin,
-    org_id: 'org-1'
+    role: { type: 'admin', orgId: 'org-1' },
+    orgId: 'org-1',
+    status: 'active' as const,
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
-  {
+  'user-approver': {
     id: 'user-approver',
     email: 'approver@company.com',
     name: 'QA Approver',
-    role: PortalRole.Approver,
-    org_id: 'org-1'
+    role: { type: 'approver', orgId: 'org-1' },
+    orgId: 'org-1',
+    status: 'active' as const,
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
-  {
+  'user-tech': {
     id: 'user-tech',
     email: 'tech@company.com',
     name: 'Field Technician',
-    role: PortalRole.Technician,
-    org_id: 'org-1'
+    role: { type: 'technician', orgId: 'org-1', assignedProjectIds: [] },
+    orgId: 'org-1',
+    status: 'active' as const,
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
-  {
+  'user-client-bistro': {
     id: 'user-client-bistro',
     email: 'client@bistro.com',
     name: 'Bistro Owner',
-    role: PortalRole.CustomerOwner, // Assuming CustomerOwner maps to 'customer' logic in UI
-    customer_id: 'cust-bistro'
+    role: { type: 'customer_owner', orgId: 'cust-bistro', customerId: 'cust-bistro' },
+    orgId: 'cust-bistro',
+    customerId: 'cust-bistro',
+    status: 'active' as const,
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
-  {
+  'user-client-museum': {
     id: 'user-client-museum',
     email: 'client@museum.com',
     name: 'Museum Curator',
-    role: PortalRole.CustomerViewer,
-    customer_id: 'cust-museum'
+    role: { type: 'customer_viewer', orgId: 'cust-museum', customerId: 'cust-museum', assignedProjectIds: [] },
+    orgId: 'cust-museum',
+    customerId: 'cust-museum',
+    status: 'active' as const,
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
-
-  // --- NEW REQUESTED USERS ---
-  {
+  'user-emiliano-admin': {
     id: 'user-emiliano-admin',
     email: 'emilianostza@gmail.com',
     name: 'Emiliano (Admin)',
-    role: PortalRole.Admin,
-    org_id: 'org-emiliano'
+    role: { type: 'admin', orgId: 'org-emiliano' },
+    orgId: 'org-emiliano',
+    status: 'active' as const,
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
-  {
+  'user-emiliano-customer': {
     id: 'user-emiliano-customer',
-    email: 'emilianostza+customer@gmail.com', // Using alias for uniqueness
+    email: 'emilianostza+customer@gmail.com',
     name: 'Emiliano (Customer)',
-    role: PortalRole.CustomerOwner,
-    customer_id: 'cust-emiliano'
+    role: { type: 'customer_owner', orgId: 'cust-emiliano', customerId: 'cust-emiliano' },
+    orgId: 'cust-emiliano',
+    customerId: 'cust-emiliano',
+    status: 'active' as const,
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }
-];
+};
 
 // Helper to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -98,7 +131,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export async function login(request: LoginRequest): Promise<LoginResponse> {
   await delay(800); // Simulate network latency
 
-  const user = MOCK_USERS.find(u => u.email.toLowerCase() === request.email.toLowerCase());
+  const user = Object.values(MOCK_USERS_MAP).find(u => u.email.toLowerCase() === request.email.toLowerCase());
 
   // For this mock, we'll accept any password as long as the user exists.
   // In a real app, you'd check bcrypt.compare(request.password, user.passwordHash)
@@ -116,10 +149,10 @@ export async function login(request: LoginRequest): Promise<LoginResponse> {
   const refreshToken = `mock-refresh-${user.id}-${Date.now()}`;
 
   return {
-    user,
+    user: userToDTO(user),
     token,
-    refresh_token: refreshToken,
-    expires_in: 3600 // 1 hour
+    refreshToken,
+    expiresIn: 3600 // 1 hour
   };
 }
 
@@ -127,7 +160,7 @@ export async function login(request: LoginRequest): Promise<LoginResponse> {
  * Get current authenticated user (MOCK).
  * Parses the fake token to find the user.
  */
-export async function getCurrentUser(): Promise<AuthUser> {
+export async function getCurrentUser(): Promise<LoginResponseDTO['user']> {
   await delay(300);
 
   const token = apiClient.getToken();
@@ -148,7 +181,7 @@ export async function getCurrentUser(): Promise<AuthUser> {
   const userIdParts = parts.slice(2, parts.length - 1);
   const userId = userIdParts.join('-');
 
-  const user = MOCK_USERS.find(u => u.id === userId);
+  const user = Object.values(MOCK_USERS_MAP).find(u => u.id === userId);
 
   if (!user) {
     throw {
@@ -158,7 +191,7 @@ export async function getCurrentUser(): Promise<AuthUser> {
     };
   }
 
-  return user;
+  return userToDTO(user);
 }
 
 /**
@@ -183,7 +216,7 @@ export async function refreshToken(
   const userIdParts = parts.slice(2, parts.length - 1);
   const userId = userIdParts.join('-');
 
-  const user = MOCK_USERS.find(u => u.id === userId);
+  const user = Object.values(MOCK_USERS_MAP).find(u => u.id === userId);
 
   if (!user) {
     throw {
@@ -197,7 +230,7 @@ export async function refreshToken(
 
   return {
     token: newToken,
-    expires_in: 3600
+    expiresIn: 3600
   };
 }
 

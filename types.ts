@@ -154,3 +154,38 @@ export interface Asset {
   updated_at?: string;              // ISO timestamp
   download_count?: number;          // Analytics
 }
+
+/**
+ * PHASE 2: Backward Compatibility
+ *
+ * Migration helper to convert old PortalRole enum to new UserRole discriminated union.
+ * Use during transition period. New code should use types/auth.ts directly.
+ *
+ * @deprecated Use types/auth.ts UserRole instead
+ */
+export function portalRoleToUserRole(
+  role: PortalRole,
+  orgId: string,
+  customerId?: string,
+  assignedProjectIds?: string[]
+): import('./types/auth').UserRole {
+  switch (role) {
+    case PortalRole.Admin:
+      return { type: 'admin', orgId };
+    case PortalRole.Approver:
+      return { type: 'approver', orgId };
+    case PortalRole.Technician:
+      return { type: 'technician', orgId, assignedProjectIds: assignedProjectIds || [] };
+    case PortalRole.SalesLead:
+      return { type: 'sales_lead', orgId };
+    case PortalRole.CustomerOwner:
+      if (!customerId) throw new Error('customerId required for customer_owner');
+      return { type: 'customer_owner', orgId, customerId };
+    case PortalRole.CustomerViewer:
+      if (!customerId) throw new Error('customerId required for customer_viewer');
+      return { type: 'customer_viewer', orgId, customerId, assignedProjectIds: assignedProjectIds || [] };
+    case PortalRole.PublicVisitor:
+    default:
+      return { type: 'public_visitor', orgId };
+  }
+}

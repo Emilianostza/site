@@ -19,6 +19,7 @@ export interface ApiError {
 export class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
+  private orgId: string | null = null;
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
@@ -40,8 +41,23 @@ export class ApiClient {
   }
 
   /**
+   * Set organization context for org-scoped requests
+   * Called after login with user's orgId
+   */
+  setOrgId(orgId: string | null): void {
+    this.orgId = orgId;
+  }
+
+  /**
+   * Get current organization ID
+   */
+  getOrgId(): string | null {
+    return this.orgId;
+  }
+
+  /**
    * Core fetch wrapper
-   * Handles auth headers, error responses, JSON parsing
+   * Handles auth headers, org context, request tracking, error responses, JSON parsing
    */
   private async request<T>(
     endpoint: string,
@@ -57,6 +73,14 @@ export class ApiClient {
     if (this.token) {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
+
+    // Add organization context if available (org-scoped queries)
+    if (this.orgId) {
+      headers['X-Organization-Id'] = this.orgId;
+    }
+
+    // Add request tracking ID for audit trail
+    headers['X-Request-Id'] = crypto.randomUUID();
 
     const controller = new AbortController();
     const timeoutMs = options.timeout || 30000;

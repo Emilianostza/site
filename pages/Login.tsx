@@ -14,7 +14,9 @@ const Login: React.FC = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      if ([PortalRole.CustomerOwner, PortalRole.CustomerViewer].includes(user.role)) {
+      // Fix: user.role is an object (UserRole), so we must check .type property
+      const roleType = user.role.type as PortalRole;
+      if ([PortalRole.CustomerOwner, PortalRole.CustomerViewer].includes(roleType)) {
         navigate('/portal/dashboard');
       } else {
         navigate('/app/dashboard');

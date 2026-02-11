@@ -2,25 +2,33 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { PortalRole } from '../types';
+import { Permission, UserRoleType } from '../types/auth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRoles?: PortalRole[];
+  requiredRoles?: PortalRole[] | UserRoleType[];
+  requiredPermissions?: Permission[];
 }
 
 /**
  * ProtectedRoute guards routes from unauthenticated access.
+ * PHASE 2: Added permission-based checks via requiredPermissions prop
  *
- * Usage:
+ * Usage (role-based):
  * <ProtectedRoute requiredRoles={[PortalRole.Admin, PortalRole.Approver]}>
  *   <AdminPage />
  * </ProtectedRoute>
  *
+ * Usage (permission-based):
+ * <ProtectedRoute requiredPermissions={[{ resource: 'project', action: 'read', orgId: '...' }]}>
+ *   <ProjectPage />
+ * </ProtectedRoute>
+ *
  * If user is not authenticated, redirects to /app/login.
- * If user lacks required role, redirects to /.
+ * If user lacks required role/permission, redirects to /.
  */
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles }) => {
-  const { user, loading } = useAuth();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles, requiredPermissions }) => {
+  const { user, loading, hasPermission } = useAuth();
 
   // Loading state
   if (loading) {
@@ -40,8 +48,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
   }
 
   // Role check (if required roles specified)
-  if (requiredRoles && !requiredRoles.includes(user.role)) {
-    return <Navigate to="/" replace />;
+  if (requiredRoles) {
+    const userRole = user.role.type;
+    if (!requiredRoles.includes(userRole as any)) {
+      return <Navigate to="/" replace />;
+    }
+  }
+
+  // Permission check (if required permissions specified)
+  if (requiredPermissions) {
+    const hasAllPermissions = requiredPermissions.every(permission => hasPermission(permission));
+    if (!hasAllPermissions) {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <>{children}</>;
