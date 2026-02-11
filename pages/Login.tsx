@@ -32,8 +32,10 @@ const Login: React.FC = () => {
     { email: 'admin@company.com', role: 'employee', name: 'Admin' },
     { email: 'approver@company.com', role: 'employee', name: 'Approver' },
     { email: 'tech@company.com', role: 'employee', name: 'Technician' },
+    { email: 'emilianostza@gmail.com', role: 'employee', name: 'Emiliano (Admin)' },
     { email: 'client@bistro.com', role: 'customer', name: 'Restaurant Owner' },
-    { email: 'client@museum.com', role: 'customer', name: 'Museum Curator' }
+    { email: 'client@museum.com', role: 'customer', name: 'Museum Curator' },
+    { email: 'emilianostza+customer@gmail.com', role: 'customer', name: 'Emiliano (Customer)' }
   ];
 
   return (

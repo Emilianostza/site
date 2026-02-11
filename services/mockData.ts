@@ -2,7 +2,7 @@ import { Asset, Project, ProjectStatus, ProjectType } from '../types';
 
 // Mutable store for the session
 let PROJECTS: Project[] = [
-    { id: 'PRJ-001', name: 'Summer Menu Update', client: 'Bistro 55', status: ProjectStatus.Published, items: 12, type: 'restaurant_menu' },
+    { id: 'PRJ-001', name: 'Summer Menu Update', client: 'Bistro 55', status: ProjectStatus.Approved, items: 12, type: 'restaurant_menu' },
     { id: 'PRJ-002', name: 'Fall Collection', client: 'Style Co', status: ProjectStatus.Processing, items: 45, type: 'standard' },
     { id: 'PRJ-003', name: 'Ancient Egypt Exhibit', client: 'History Museum', status: ProjectStatus.QA, items: 8, type: 'standard' },
 ];
@@ -13,13 +13,13 @@ export const getProjects = async (): Promise<Project[]> => {
     return [...PROJECTS];
 };
 
-export const addProject = async (project: { name: string; client: string; type: ProjectType; address?: string; phone?: string }): Promise<Project> => {
+export const addProject = async (project: { name: string; client: string; type: ProjectType; address?: string; phone?: string; status?: ProjectStatus }): Promise<Project> => {
     await new Promise(resolve => setTimeout(resolve, 500));
     const newProject: Project = {
         id: `PRJ-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
         name: project.name,
         client: project.client,
-        status: ProjectStatus.Processing,
+        status: project.status || ProjectStatus.Processing,
         items: 0,
         type: project.type,
         address: project.address,

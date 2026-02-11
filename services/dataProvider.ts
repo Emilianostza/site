@@ -40,7 +40,7 @@ import {
   addProject as addMockProject,
   saveAsset as saveMockAsset,
 } from './mockData';
-import { Project, Asset, ProjectType } from '../types';
+import { Project, Asset, ProjectType, ProjectStatus } from '../types';
 
 const FALLBACK_TO_MOCK = import.meta.env.VITE_USE_MOCK_DATA !== 'false';
 
@@ -107,6 +107,7 @@ export const ProjectsProvider = {
     type: ProjectType;
     address?: string;
     phone?: string;
+    status?: ProjectStatus;
   }): Promise<Project> {
     return withMockFallback(
       () => ProjectsAPI.createProject(data),
