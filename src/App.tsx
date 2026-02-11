@@ -1,14 +1,14 @@
 import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/Layout';
-import ErrorBoundary from './components/ErrorBoundary';
-import ProtectedRoute from './components/ProtectedRoute';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { AuthProvider } from './contexts/AuthContext';
-import { ToastProvider, useToast } from './contexts/ToastContext';
-import { ToastContainer } from './components/Toast';
-import ScrollToTop from './components/ScrollToTop';
-import { PortalRole } from './types';
+import Layout from '@/components/Layout';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastProvider, useToast } from '@/contexts/ToastContext';
+import { ToastContainer } from '@/components/Toast';
+import ScrollToTop from '@/components/ScrollToTop';
+import { PortalRole } from '@/types';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -34,7 +34,7 @@ const LoadingFallback: React.FC = () => (
   </div>
 );
 
-import { CodeInspector } from './components/devtools/CodeInspector';
+import { CodeInspector } from '@/components/devtools/CodeInspector';
 
 const AppContent: React.FC = () => {
   const { toasts, removeToast } = useToast();

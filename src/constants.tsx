@@ -1,5 +1,5 @@
 import React from 'react';
-import { Industry, IndustryConfig } from './types';
+import { Industry, IndustryConfig } from '@/types';
 import { ShoppingBag, Box, Scan, Globe } from 'lucide-react';
 
 export const NAV_ITEMS = [
