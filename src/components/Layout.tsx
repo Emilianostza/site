@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS } from '@/constants';
 import { Menu, X, Box, ShieldCheck } from 'lucide-react';
-import DarkModeToggle from '@/DarkModeToggle';
+import DarkModeToggle from '@/components/DarkModeToggle';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

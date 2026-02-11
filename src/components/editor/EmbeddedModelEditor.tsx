@@ -4,7 +4,7 @@ import {
     Move, Share2, Settings,
     Smartphone, RotateCcw, Copy, Check, Globe, X
 } from 'lucide-react';
-import { AssetUploader } from '@/AssetUploader';
+import { AssetUploader } from '@/components/editor/AssetUploader';
 import { AssetsProvider } from '@/services/dataProvider';
 import { useToast } from '@/contexts/ToastContext';
 

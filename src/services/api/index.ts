@@ -5,7 +5,7 @@
  * Import from this file, not from individual service files.
  */
 
-export { apiClient, ApiClient, type ApiError } from '@/client';
-export * as AuthAPI from '@/auth';
-export * as ProjectsAPI from '@/projects';
-export * as AssetsAPI from '@/assets';
+export { apiClient, ApiClient, type ApiError } from '@/services/api/client';
+export * as AuthAPI from '@/services/api/auth';
+export * as ProjectsAPI from '@/services/api/projects';
+export * as AssetsAPI from '@/services/api/assets';

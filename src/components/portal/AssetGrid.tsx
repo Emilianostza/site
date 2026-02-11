@@ -4,7 +4,7 @@ import { Eye, Download, Share2, Box, Edit } from 'lucide-react';
 import { Asset } from '@/types';
 
 
-import { QRCodeModal } from '@/QRCodeModal';
+import { QRCodeModal } from '@/components/QRCodeModal';
 
 interface AssetGridProps {
     assets: Asset[];
