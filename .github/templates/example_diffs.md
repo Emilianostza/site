@@ -276,6 +276,7 @@ This is a substantial rewrite. Key changes:
 ## DIFF 7: README.md — Multiple Corrections
 
 ### Port Correction
+
 ```diff
 -5. **Open your browser**
 -   Navigate to `http://localhost:5173`
@@ -284,31 +285,34 @@ This is a substantial rewrite. Key changes:
 ```
 
 ### Project Structure
+
 ```diff
  ## 📁 Project Structure
 
- ```
- managed-capture-3d-platform/
--├── components/          # Reusable UI components
--│   ├── Button.tsx      # Button component with variants
--│   ├── Card.tsx        # Card component with hover effects
--│   ├── DarkModeToggle.tsx
--│   ├── ErrorBoundary.tsx
--│   ├── Layout.tsx      # Main layout with header/footer
--│   └── Toast.tsx       # Toast notifications
-+├── components/                   # Reusable UI components
-+│   ├── Button.tsx
-+│   ├── Card.tsx
-+│   ├── ProtectedRoute.tsx        # Auth route guard (NEW)
-+│   ├── devtools/
-+│   │   └── CodeInspector.tsx
-+│   ├── editor/
-+│   │   └── AssetUploader.tsx
-+│   └── portal/
-+│       ├── Sidebar.tsx
-+│       ├── ProjectTable.tsx
-+│       ├── AssetGrid.tsx
 ```
+
+managed-capture-3d-platform/
+-├── components/ # Reusable UI components
+-│ ├── Button.tsx # Button component with variants
+-│ ├── Card.tsx # Card component with hover effects
+-│ ├── DarkModeToggle.tsx
+-│ ├── ErrorBoundary.tsx
+-│ ├── Layout.tsx # Main layout with header/footer
+-│ └── Toast.tsx # Toast notifications
++├── components/ # Reusable UI components
++│ ├── Button.tsx
++│ ├── Card.tsx
++│ ├── ProtectedRoute.tsx # Auth route guard (NEW)
++│ ├── devtools/
++│ │ └── CodeInspector.tsx
++│ ├── editor/
++│ │ └── AssetUploader.tsx
++│ └── portal/
++│ ├── Sidebar.tsx
++│ ├── ProjectTable.tsx
++│ ├── AssetGrid.tsx
+
+````
 
 (Full structure shown above in README update)
 
@@ -337,9 +341,10 @@ This is a substantial rewrite. Key changes:
 -              {/* Simulated Protected Routes */}
 -              <Route path="/app/dashboard" element={<Portal role="employee" />} />
 -              <Route path="/portal/dashboard" element={<Portal role="customer" />} />
-```
+````
 
 ### Demo Users Added
+
 ```diff
 +### Demo Users (Mock Auth)
 +
@@ -356,6 +361,7 @@ This is a substantial rewrite. Key changes:
 ```
 
 ### New Auth Section
+
 ```diff
 +## 🔐 Authentication (MVP - Mock Auth)
 +
@@ -364,7 +370,8 @@ This is a substantial rewrite. Key changes:
 ```
 
 ### Deployment Section
-```diff
+
+````diff
  ## 🎯 Production Deployment
 
 +### Netlify (Recommended)
@@ -384,7 +391,7 @@ This is a substantial rewrite. Key changes:
 +### Other Platforms
 +
  1. **Build the project**
-```
+````
 
 **Rationale:** Critical for onboarding developers with accurate information.
 
@@ -392,31 +399,35 @@ This is a substantial rewrite. Key changes:
 
 ## Summary Statistics
 
-| Metric | Value |
-|--------|-------|
-| Files Modified | 7 |
-| Files Created | 3 |
-| Total Lines Added | ~650 |
-| Total Lines Removed | ~10 |
-| New Contexts | 1 (AuthContext) |
-| New Components | 1 (ProtectedRoute) |
-| New Functions | 1 (Netlify proxy) |
-| **Security Fixes** | 3 (API key, route protection, password removal) |
+| Metric              | Value                                           |
+| ------------------- | ----------------------------------------------- |
+| Files Modified      | 7                                               |
+| Files Created       | 3                                               |
+| Total Lines Added   | ~650                                            |
+| Total Lines Removed | ~10                                             |
+| New Contexts        | 1 (AuthContext)                                 |
+| New Components      | 1 (ProtectedRoute)                              |
+| New Functions       | 1 (Netlify proxy)                               |
+| **Security Fixes**  | 3 (API key, route protection, password removal) |
 
 ---
 
 ## How to Apply These Diffs
 
 ### Option 1: Direct Git Apply
+
 ```bash
 git apply PR-1-DIFFS.md
 ```
 
 ### Option 2: Cherry-Pick Changes
+
 Review each diff and apply selectively using your editor.
 
 ### Option 3: Full Merge
+
 Merge this PR branch into main:
+
 ```bash
 git checkout main
 git merge pr/security-fixes

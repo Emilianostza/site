@@ -11,6 +11,7 @@
 This PR addresses critical security vulnerabilities (API key exposure) and implements authentication stubs for route protection. It's the foundation for P0 security fixes before any production deployment.
 
 **Key Changes:**
+
 1. ✅ Remove GEMINI_API_KEY from frontend bundle (vite.config.ts)
 2. ✅ Create Netlify Function proxy for secure server-side API calls
 3. ✅ Implement AuthContext for mock authentication (development)
@@ -26,23 +27,27 @@ This PR addresses critical security vulnerabilities (API key exposure) and imple
 ### Before This PR
 
 **Security Issue #1: API Key Exposed to Frontend**
+
 - GEMINI_API_KEY was bundled into client-side JavaScript via Vite's `define` config
 - Anyone inspecting `dist/**/*.js` could extract the key
 - Attacker could abuse API quota and incur costs
 - **Risk Level:** 🔴 CRITICAL
 
 **Security Issue #2: No Route Protection**
+
 - `/app/dashboard` and `/portal/dashboard` accessible without authentication
 - Anyone could navigate directly to employee/customer portals
 - No role-based access control
 - **Risk Level:** 🔴 CRITICAL
 
 **Security Issue #3: Hardcoded Demo Password**
+
 - `components/Gatekeeper.tsx` has hardcoded password "123456"
 - If deployed, trivial to bypass
 - **Risk Level:** 🟡 MEDIUM (not currently used, but in codebase)
 
 **Documentation Issue: README Inaccurate**
+
 - Dev server port listed as 5173 (actually 3000)
 - Project structure shows non-existent `src/` folder
 - Routes missing (`/app/editor`, `/project/:id/menu`)
@@ -55,29 +60,29 @@ This PR addresses critical security vulnerabilities (API key exposure) and imple
 
 ### Modified Files
 
-| File | Changes | Reason |
-|------|---------|--------|
-| `vite.config.ts` | Removed `define` block for GEMINI_API_KEY | Security: prevent API key exposure |
-| `App.tsx` | Added AuthProvider wrapper, ProtectedRoute guards | Auth foundation |
-| `pages/Login.tsx` | Rewritten to use AuthContext, demo user selector, error handling | Auth integration |
-| `types.ts` | Added PortalRole enum | RBAC foundation |
-| `.env.example` | Updated with security notes about API key handling | Documentation |
-| `README.md` | Corrected port, structure, routes, added demo users & auth section | Accuracy |
+| File              | Changes                                                            | Reason                             |
+| ----------------- | ------------------------------------------------------------------ | ---------------------------------- |
+| `vite.config.ts`  | Removed `define` block for GEMINI_API_KEY                          | Security: prevent API key exposure |
+| `App.tsx`         | Added AuthProvider wrapper, ProtectedRoute guards                  | Auth foundation                    |
+| `pages/Login.tsx` | Rewritten to use AuthContext, demo user selector, error handling   | Auth integration                   |
+| `types.ts`        | Added PortalRole enum                                              | RBAC foundation                    |
+| `.env.example`    | Updated with security notes about API key handling                 | Documentation                      |
+| `README.md`       | Corrected port, structure, routes, added demo users & auth section | Accuracy                           |
 
 ### New Files Created
 
-| File | Purpose |
-|------|---------|
-| `contexts/AuthContext.tsx` | Mock authentication provider (development) |
-| `components/ProtectedRoute.tsx` | Route guard for authenticated routes |
-| `netlify/functions/gemini-proxy.ts` | Server-side API proxy (Netlify) |
+| File                                | Purpose                                    |
+| ----------------------------------- | ------------------------------------------ |
+| `contexts/AuthContext.tsx`          | Mock authentication provider (development) |
+| `components/ProtectedRoute.tsx`     | Route guard for authenticated routes       |
+| `netlify/functions/gemini-proxy.ts` | Server-side API proxy (Netlify)            |
 
 ### Files Not Modified (But Relevant)
 
-| File | Note |
-|------|------|
+| File                        | Note                                                             |
+| --------------------------- | ---------------------------------------------------------------- |
 | `components/Gatekeeper.tsx` | ⚠️ **Not removed yet** (not used, but should be deleted post-PR) |
-| `services/mockData.ts` | Ready for P1.1 (customer_id filtering) |
+| `services/mockData.ts`      | Ready for P1.1 (customer_id filtering)                           |
 
 ---
 
@@ -86,6 +91,7 @@ This PR addresses critical security vulnerabilities (API key exposure) and imple
 ### 1. API Key Security (P0.1)
 
 **Before:**
+
 ```typescript
 // vite.config.ts (INSECURE)
 define: {
@@ -95,12 +101,14 @@ define: {
 ```
 
 **After:**
+
 - ❌ Removed `define` block entirely
 - ✅ Created `netlify/functions/gemini-proxy.ts` to proxy API calls server-side
 - ✅ Frontend calls `/.netlify/functions/gemini-proxy` (relative path, no exposed key)
 - ✅ API key stored in Netlify environment variables (not source control)
 
 **Setup Instructions:**
+
 1. Local dev: optional to set `GEMINI_API_KEY` in `.env.local` (won't be exposed to build)
 2. Netlify: Add `GEMINI_API_KEY` to Site Settings > Build & Deploy > Environment
 3. Frontend: create utility `lib/callGeminiAPI()` that calls `/.netlify/functions/gemini-proxy` (TODO in P1 backlog)
@@ -110,12 +118,14 @@ define: {
 ### 2. Authentication Context (P0.2)
 
 **New `contexts/AuthContext.tsx`:**
+
 - Provides `useAuth()` hook globally
 - Mock users (hardcoded for MVP; will be replaced with real backend)
 - Persists session to localStorage (24-hour expiry)
 - Types: `AuthUser`, `AuthContextType`
 
 **Mock Users (for testing):**
+
 ```
 Employee Roles:
 - admin@company.com → Admin
@@ -134,6 +144,7 @@ Customer Roles:
 ### 3. Route Protection (P0.2)
 
 **New `components/ProtectedRoute.tsx`:**
+
 ```tsx
 <ProtectedRoute requiredRoles={[PortalRole.Admin, PortalRole.Approver]}>
   <AdminDashboard />
@@ -141,12 +152,14 @@ Customer Roles:
 ```
 
 **Behavior:**
+
 - If not authenticated → redirects to `/app/login`
 - If authenticated but wrong role → redirects to `/`
 - If authenticated + correct role → renders children
 - Shows loading spinner while auth state loads
 
 **Protected Routes (Updated in App.tsx):**
+
 - `/app/dashboard` → requires `[Technician, Approver, SalesLead, Admin]`
 - `/app/editor/:assetId` → requires `[Technician, Approver, Admin]`
 - `/portal/dashboard` → requires `[CustomerOwner, CustomerViewer]`
@@ -156,6 +169,7 @@ Customer Roles:
 ### 4. Login Page Rewrite (P0.2)
 
 **Updated `pages/Login.tsx`:**
+
 - ✅ Integrated with AuthContext
 - ✅ Shows demo user quick-select buttons (changes email field)
 - ✅ Password field (any value accepted in mock mode)
@@ -169,6 +183,7 @@ Customer Roles:
 ### 5. TypeScript Types (P0.2)
 
 **New `PortalRole` enum (added to `types.ts`):**
+
 ```typescript
 export enum PortalRole {
   PublicVisitor = 'public',
@@ -177,7 +192,7 @@ export enum PortalRole {
   Technician = 'technician',
   Approver = 'approver',
   SalesLead = 'sales_lead',
-  Admin = 'admin'
+  Admin = 'admin',
 }
 ```
 
@@ -198,6 +213,7 @@ This replaces hardcoded `'employee' | 'customer'` strings with typed enums.
 | API key docs | Generic | Specific Netlify setup instructions |
 
 **Added Sections:**
+
 - 🔐 Authentication (MVP - Mock Auth)
 - 🎯 Netlify Deployment (recommended)
 
@@ -208,17 +224,20 @@ This replaces hardcoded `'employee' | 'customer'` strings with typed enums.
 ### Manual QA Checklist
 
 #### 1. API Key Security ✅
+
 - [ ] Clone fresh, run `npm install && npm run build`
 - [ ] Inspect `dist/index-*.js` (search for "GEMINI")
 - [ ] Confirm: NO API key in bundle
 - [ ] Check `dist/index-*.js` file size reasonable (no embedded secrets)
 
 #### 2. Route Protection ✅
+
 - [ ] Navigate to `/app/dashboard` without login → redirects to `/app/login`
 - [ ] Navigate to `/portal/dashboard` without login → redirects to `/app/login`
 - [ ] Try `/app/editor/new` without login → redirects to `/app/login`
 
 #### 3. Login Flow ✅
+
 - [ ] Visit `/app/login`
 - [ ] Click on "Employee" role toggle
 - [ ] See 3 employee demo users in quick-select
@@ -230,23 +249,27 @@ This replaces hardcoded `'employee' | 'customer'` strings with typed enums.
 - [ ] Wait 24 hours (or manually clear localStorage) → session expires, redirects to login
 
 #### 4. Role-Based Access ✅
+
 - [ ] Login as `admin@company.com` → `/app/dashboard` loads
 - [ ] Login as `client@bistro.com` → `/portal/dashboard` loads
 - [ ] Login as customer, try `/app/dashboard` → should still allow (for now; P0.2 allows all roles)
   - **Note:** Full role enforcement is P1.2 (ProtectedRoute requiredRoles enforcement)
 
 #### 5. Auth Error Handling ✅
+
 - [ ] On login page, enter non-existent email (e.g., "fake@example.com")
 - [ ] Click "Sign In"
 - [ ] Should show error: "User not found: fake@example.com"
 - [ ] Form should NOT submit, page stays on login
 
 #### 6. Dark Mode Still Works ✅
+
 - [ ] Login
 - [ ] Toggle dark mode in header
 - [ ] Preference persists on refresh
 
 #### 7. TypeScript Compilation ✅
+
 - [ ] Run `npx tsc --noEmit`
 - [ ] No type errors
 - [ ] All imports resolve
@@ -302,6 +325,7 @@ grep -r "GEMINI" dist/ || echo "✅ No API key found"
 ## Dependencies Added
 
 **New Netlify Function Dependencies:**
+
 - `@netlify/functions` (type definitions, already in devDependencies via Vite/Netlify integration)
 
 **No new npm packages.** All changes use existing stack (React, React Router, TypeScript).
@@ -310,12 +334,12 @@ grep -r "GEMINI" dist/ || echo "✅ No API key found"
 
 ## Risk Analysis & Rollback
 
-| Risk | Severity | Mitigation | Rollback |
-|------|----------|-----------|----------|
-| AuthContext mock doesn't scale to many users | Low | Fine for MVP; backlog item to integrate real auth backend | Revert AuthContext, auth remains unimplemented |
-| ProtectedRoute breaks existing bookmarks to protected routes | Medium | Documented in README; users redirected to login (expected) | None needed; non-breaking |
-| Session persistence localStorage might fail on older browsers | Low | Graceful fallback: user redirected to login on page refresh | localStorage.clear(), user logs in again |
-| Netlify Function timeout on slow networks | Low | 10s default timeout; Gemini API response usually <2s | Use fallback API or longer timeout |
+| Risk                                                          | Severity | Mitigation                                                  | Rollback                                       |
+| ------------------------------------------------------------- | -------- | ----------------------------------------------------------- | ---------------------------------------------- |
+| AuthContext mock doesn't scale to many users                  | Low      | Fine for MVP; backlog item to integrate real auth backend   | Revert AuthContext, auth remains unimplemented |
+| ProtectedRoute breaks existing bookmarks to protected routes  | Medium   | Documented in README; users redirected to login (expected)  | None needed; non-breaking                      |
+| Session persistence localStorage might fail on older browsers | Low      | Graceful fallback: user redirected to login on page refresh | localStorage.clear(), user logs in again       |
+| Netlify Function timeout on slow networks                     | Low      | 10s default timeout; Gemini API response usually <2s        | Use fallback API or longer timeout             |
 
 **Overall Risk Assessment:** 🟢 **LOW**
 
@@ -326,6 +350,7 @@ All changes are non-breaking. Features added are foundational (auth stub, route 
 ## Future PRs (Backlog Reference)
 
 This PR unblocks:
+
 - **P0.2 [backlog]** – Customer data isolation (add customer_id filtering)
 - **P1.3 [backlog]** – Full RBAC enforcement (Approver-only actions, etc.)
 - **P1.2 [backlog]** – Asset approval workflow
@@ -336,6 +361,7 @@ This PR unblocks:
 ## Deployment Instructions
 
 ### Local Development
+
 ```bash
 git checkout this-branch
 npm install
@@ -345,6 +371,7 @@ npm run dev
 ```
 
 ### Netlify Deployment
+
 1. Merge this PR to `main`
 2. Netlify auto-deploys via `netlify.toml`
 3. **Before deploying to production:**
@@ -365,6 +392,7 @@ npm run dev
 - Claude Haiku 4.5 <noreply@anthropic.com>
 
 **Review Checklist:**
+
 - [ ] Code follows existing style (TypeScript, Tailwind, component patterns)
 - [ ] No console errors or warnings on login/navigation
 - [ ] README examples are accurate

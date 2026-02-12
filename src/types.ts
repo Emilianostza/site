@@ -2,7 +2,7 @@ export enum Industry {
   Restaurant = 'Restaurant',
   Museum = 'Museum',
   Ecommerce = 'Ecommerce',
-  General = 'General'
+  General = 'General',
 }
 
 export enum PortalRole {
@@ -12,7 +12,7 @@ export enum PortalRole {
   Technician = 'technician',
   Approver = 'approver',
   SalesLead = 'sales_lead',
-  Admin = 'admin'
+  Admin = 'admin',
 }
 
 /**
@@ -48,7 +48,7 @@ export enum ProjectStatus {
   Approved = 'Approved',
 
   // Project archived (old, completed, or cancelled)
-  Archived = 'Archived'
+  Archived = 'Archived',
 }
 
 export interface NavItem {
@@ -93,10 +93,10 @@ export interface RequestFormState {
  * Enforced server-side (cannot be upgraded via frontend).
  */
 export enum ServiceTier {
-  Basic = 'basic',           // Entry level (limited models, no custom domain)
-  Business = 'business',     // Mid-tier (analytics, branding)
+  Basic = 'basic', // Entry level (limited models, no custom domain)
+  Business = 'business', // Mid-tier (analytics, branding)
   Enterprise = 'enterprise', // High-end (API access, SLA)
-  Museum = 'museum'          // Specialized (guided mode, kiosk, accessibility)
+  Museum = 'museum', // Specialized (guided mode, kiosk, accessibility)
 }
 
 export type ProjectType = 'standard' | 'restaurant_menu';
@@ -112,18 +112,18 @@ export interface Project {
   phone?: string;
 
   // PHASE 3: Lifecycle management
-  assigned_to?: string;           // Technician ID
-  created_at?: string;            // ISO timestamp
-  updated_at?: string;            // ISO timestamp
-  qa_approved?: boolean;          // Approver sign-off
-  customer_approved?: boolean;    // Customer acceptance
-  payout_triggered?: boolean;     // Contractor payment flag
-  rejection_reason?: string;      // Why rejected (if applicable)
+  assigned_to?: string; // Technician ID
+  created_at?: string; // ISO timestamp
+  updated_at?: string; // ISO timestamp
+  qa_approved?: boolean; // Approver sign-off
+  customer_approved?: boolean; // Customer acceptance
+  payout_triggered?: boolean; // Contractor payment flag
+  rejection_reason?: string; // Why rejected (if applicable)
 
   // PHASE 5: Tier system
-  tier?: ServiceTier;             // Selected service tier (immutable)
-  tier_selected_by?: string;      // User ID who selected tier
-  tier_selected_at?: string;      // ISO timestamp when tier chosen
+  tier?: ServiceTier; // Selected service tier (immutable)
+  tier_selected_by?: string; // User ID who selected tier
+  tier_selected_at?: string; // ISO timestamp when tier chosen
 }
 
 /**
@@ -142,17 +142,19 @@ export interface Asset {
   updated?: string;
 
   // PHASE 4: Storage metadata
-  project_id?: string;              // Parent project
-  file_key?: string;                // S3 object key (path)
-  file_size?: number;               // Bytes
-  content_type?: string;            // MIME type (model/gltf-binary)
-  storage_url?: string;             // S3 bucket URL (not signed)
-  access_url?: string;              // Signed download URL (expires)
-  thumbnail_url?: string;           // Signed thumbnail URL
-  qr_code_url?: string;             // QR code image (signed)
-  created_at?: string;              // ISO timestamp
-  updated_at?: string;              // ISO timestamp
-  download_count?: number;          // Analytics
+  project_id?: string; // Parent project
+  file_key?: string; // S3 object key (path)
+  file_size?: number; // Bytes
+  content_type?: string; // MIME type (model/gltf-binary)
+  storage_url?: string; // S3 bucket URL (not signed)
+  access_url?: string; // Signed download URL (expires)
+  thumbnail_url?: string; // Signed thumbnail URL
+  qr_code_url?: string; // QR code image (signed)
+  created_at?: string; // ISO timestamp
+  updated_at?: string; // ISO timestamp
+  download_count?: number; // Analytics
+  viewCount?: number; // Total views
+  uniqueViewCount?: number; // Unique viewer count
 }
 
 /**
@@ -183,7 +185,12 @@ export function portalRoleToUserRole(
       return { type: 'customer_owner', orgId, customerId };
     case PortalRole.CustomerViewer:
       if (!customerId) throw new Error('customerId required for customer_viewer');
-      return { type: 'customer_viewer', orgId, customerId, assignedProjectIds: assignedProjectIds || [] };
+      return {
+        type: 'customer_viewer',
+        orgId,
+        customerId,
+        assignedProjectIds: assignedProjectIds || [],
+      };
     case PortalRole.PublicVisitor:
     default:
       return { type: 'public_visitor', orgId };

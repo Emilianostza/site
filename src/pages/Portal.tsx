@@ -1,7 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Box, Settings as SettingsIcon, User, Bell, Moon, Sun, AlertCircle } from 'lucide-react';
+import {
+  Plus,
+  Box,
+  Settings as SettingsIcon,
+  User,
+  Bell,
+  Moon,
+  Sun,
+  AlertCircle,
+} from 'lucide-react';
 import { Asset, Project } from '@/types';
 import { NewProjectModal } from '@/components/portal/NewProjectModal';
 import { ProjectTable } from '@/components/portal/ProjectTable';
@@ -10,13 +18,15 @@ import { ProjectProgress } from '@/components/portal/ProjectProgress';
 import { ActivityFeed } from '@/components/portal/ActivityFeed';
 import { ProjectsProvider, AssetsProvider } from '@/services/dataProvider';
 import DarkModeToggle from '@/components/DarkModeToggle';
-import { AssetStatsChart } from '@/components/portal/AssetStatsChart';
+import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'customers' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'customers' | 'settings'>(
+    'dashboard'
+  );
 
   const handleLogout = async () => {
     await logout();
@@ -30,21 +40,27 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
 
-  const filteredAssets = assets.filter(asset =>
-    asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    asset.status.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAssets = assets.filter(
+    (asset) =>
+      asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      asset.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCreateProject = async (data: { name: string; client: string; address?: string; phone?: string }) => {
+  const handleCreateProject = async (data: {
+    name: string;
+    client: string;
+    address?: string;
+    phone?: string;
+  }) => {
     try {
       await ProjectsProvider.create({ ...data, type: 'standard' });
       const projData = await ProjectsProvider.list();
       setProjects(projData);
       setActiveTab('projects');
     } catch (error) {
-      console.error("Failed to create project", error);
+      console.error('Failed to create project', error);
     }
   };
 
@@ -55,7 +71,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
         setError(null);
         const [projData, assetData] = await Promise.all([
           ProjectsProvider.list(),
-          AssetsProvider.list()
+          AssetsProvider.list(),
         ]);
         if (!cancelled) {
           setProjects(projData);
@@ -64,7 +80,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
       } catch (err) {
         if (!cancelled) {
           const errorMessage = err instanceof Error ? err.message : 'Failed to load portal data';
-          console.error("Failed to fetch data", err);
+          console.error('Failed to fetch data', err);
           setError(errorMessage);
         }
       } finally {
@@ -72,7 +88,9 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
       }
     };
     fetchData();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (loading) {
@@ -84,13 +102,18 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900" {...(import.meta.env.DEV && { 'data-component': 'Portal Dashboard', 'data-file': 'src/pages/Portal.tsx' })}>
+    <div
+      className="flex min-h-screen bg-slate-50 dark:bg-slate-900"
+      {...(import.meta.env.DEV && {
+        'data-component': 'Portal Dashboard',
+        'data-file': 'src/pages/Portal.tsx',
+      })}
+    >
       <NewProjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleCreateProject}
       />
-
 
       {/* Main Content */}
       <main className="flex-1 p-8">
@@ -99,7 +122,9 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             <div className="flex gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-red-800 dark:text-red-200">Error Loading Portal</p>
+                <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+                  Error Loading Portal
+                </p>
                 <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
                 <button
                   onClick={() => window.location.reload()}
@@ -124,17 +149,20 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
               </h1>
-              <p className="text-slate-500 dark:text-slate-400">Welcome back, {role === 'employee' ? 'Admin' : 'Client'}.</p>
+              <p className="text-slate-500 dark:text-slate-400">
+                Welcome back, {role === 'employee' ? 'Admin' : 'Client'}.
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             {role === 'employee' && (
               <button
                 onClick={() => setActiveTab('projects')}
-                className={`font-medium transition-colors ${activeTab === 'projects'
-                  ? 'text-brand-600 dark:text-brand-400 font-bold'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                  }`}
+                className={`font-medium transition-colors ${
+                  activeTab === 'projects'
+                    ? 'text-brand-600 dark:text-brand-400 font-bold'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
               >
                 Projects
               </button>
@@ -149,10 +177,11 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             )}
             <button
               onClick={() => setActiveTab('settings')}
-              className={`flex items-center gap-2 font-medium transition-colors ${activeTab === 'settings'
-                ? 'text-brand-600 dark:text-brand-400'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
+              className={`flex items-center gap-2 font-medium transition-colors ${
+                activeTab === 'settings'
+                  ? 'text-brand-600 dark:text-brand-400'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+              }`}
             >
               <SettingsIcon className="w-4 h-4" />
               Settings
@@ -179,7 +208,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                     />
                   </div>
                   <div className="lg:col-span-1">
-                    <AssetStatsChart assets={assets} />
+                    <AssetAnalyticsBoard assets={assets} />
                   </div>
                   {/* Activity feed moved down or kept if layout permits */}
                 </div>
@@ -194,8 +223,12 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Request New Capture</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Ready to scan more items? Start a new project request.</p>
+                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">
+                      Request New Capture
+                    </h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
+                      Ready to scan more items? Start a new project request.
+                    </p>
                     <Link to="/request">
                       <button className="border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         Start Request
@@ -204,8 +237,12 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                   </div>
 
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">Support</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Need help with your models or the portal?</p>
+                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">
+                      Support
+                    </h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
+                      Need help with your models or the portal?
+                    </p>
                     <button className="border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                       Contact Us
                     </button>
@@ -218,7 +255,9 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <div className="bg-gradient-to-br from-amber-600 to-amber-700 p-6 rounded-xl shadow-lg text-white">
                     <h3 className="font-bold text-lg mb-2">Create AR Scene</h3>
-                    <p className="text-amber-100 text-sm mb-4">Upload your 3D models and create instant AR experiences.</p>
+                    <p className="text-amber-100 text-sm mb-4">
+                      Upload your 3D models and create instant AR experiences.
+                    </p>
                     <Link to="/app/editor/new">
                       <button className="bg-white text-amber-700 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-amber-50 transition-colors">
                         Open Editor
@@ -226,15 +265,21 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                     </Link>
                   </div>
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Active Projects</div>
+                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">
+                      Active Projects
+                    </div>
                     <div className="text-3xl font-bold text-slate-900 dark:text-white">12</div>
                   </div>
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Assets in Review</div>
+                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">
+                      Assets in Review
+                    </div>
                     <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">5</div>
                   </div>
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">Published Assets</div>
+                    <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-2">
+                      Published Assets
+                    </div>
                     <div className="text-3xl font-bold text-green-600 dark:text-green-400">148</div>
                   </div>
                 </div>
@@ -244,7 +289,9 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                 {role === 'employee' && (
                   <div className="mt-8">
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recent Projects</h2>
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                        Recent Projects
+                      </h2>
                       <div className="flex items-center gap-4">
                         <input
                           type="text"
@@ -261,9 +308,15 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                         </button>
                       </div>
                     </div>
-                    <ProjectTable projects={projects
-                      .filter(p => p.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) || p.client.toLowerCase().includes(projectSearchTerm.toLowerCase()))
-                      .slice(0, 5)} />
+                    <ProjectTable
+                      projects={projects
+                        .filter(
+                          (p) =>
+                            p.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) ||
+                            p.client.toLowerCase().includes(projectSearchTerm.toLowerCase())
+                        )
+                        .slice(0, 5)}
+                    />
                   </div>
                 )}
               </>
@@ -286,109 +339,120 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               <AssetGrid assets={filteredAssets} role={role} />
             </div>
           </div>
-        )
-        }
+        )}
 
         {/* Projects Table */}
-        {
-          (activeTab === 'projects' || activeTab === 'customers') && (
-            <ProjectTable projects={projects} />
-          )
-        }
+        {(activeTab === 'projects' || activeTab === 'customers') && (
+          <ProjectTable projects={projects} />
+        )}
 
         {/* Settings View */}
-        {
-          activeTab === 'settings' && (
-            <div className="max-w-4xl mx-auto space-y-6">
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <User className="w-5 h-5 text-brand-600" />
-                    Profile Settings
-                  </h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your account information and preferences.</p>
-                </div>
-                <div className="p-6 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Full Name</label>
-                      <input
-                        type="text"
-                        defaultValue={role === 'employee' ? 'Admin User' : 'Valued Client'}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
-                      <input
-                        type="email"
-                        defaultValue={role === 'employee' ? 'admin@example.com' : 'client@example.com'}
-                        className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-                </div>
+        {activeTab === 'settings' && (
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <User className="w-5 h-5 text-brand-600" />
+                  Profile Settings
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                  Manage your account information and preferences.
+                </p>
               </div>
-
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <SettingsIcon className="w-5 h-5 text-brand-600" />
-                    App Preferences
-                  </h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Customize your dashboard experience.</p>
-                </div>
-                <div className="p-6 space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                        <Sun className="w-5 h-5 text-amber-500 hidden dark:block" />
-                        <Moon className="w-5 h-5 text-slate-500 dark:hidden" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-slate-900 dark:text-white">Appearance</div>
-                        <div className="text-sm text-slate-500 dark:text-slate-400">Toggle between light and dark themes</div>
-                      </div>
-                    </div>
-                    <DarkModeToggle />
-                  </div>
-
-                  <div className="border-t border-slate-100 dark:border-slate-700 my-4"></div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                        <Bell className="w-5 h-5 text-brand-600" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-slate-900 dark:text-white">Notifications</div>
-                        <div className="text-sm text-slate-500 dark:text-slate-400">Receive email updates about project status</div>
-                      </div>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" defaultChecked />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand-600"></div>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Full Name
                     </label>
+                    <input
+                      type="text"
+                      defaultValue={role === 'employee' ? 'Admin User' : 'Valued Client'}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      defaultValue={
+                        role === 'employee' ? 'admin@example.com' : 'client@example.com'
+                      }
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    />
                   </div>
                 </div>
-              </div>
-
-              <div className="flex justify-end pt-4">
-                <button
-                  onClick={() => setActiveTab('dashboard')}
-                  className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors mr-3"
-                >
-                  Cancel
-                </button>
-                <button className="px-6 py-2 bg-brand-600 text-white rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">
-                  Save Changes
-                </button>
               </div>
             </div>
-          )
-        }
-      </main >
-    </div >
+
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <SettingsIcon className="w-5 h-5 text-brand-600" />
+                  App Preferences
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                  Customize your dashboard experience.
+                </p>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                      <Sun className="w-5 h-5 text-amber-500 hidden dark:block" />
+                      <Moon className="w-5 h-5 text-slate-500 dark:hidden" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-900 dark:text-white">Appearance</div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400">
+                        Toggle between light and dark themes
+                      </div>
+                    </div>
+                  </div>
+                  <DarkModeToggle />
+                </div>
+
+                <div className="border-t border-slate-100 dark:border-slate-700 my-4"></div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                      <Bell className="w-5 h-5 text-brand-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-900 dark:text-white">
+                        Notifications
+                      </div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400">
+                        Receive email updates about project status
+                      </div>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors mr-3"
+              >
+                Cancel
+              </button>
+              <button className="px-6 py-2 bg-brand-600 text-white rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
   );
 };
 
