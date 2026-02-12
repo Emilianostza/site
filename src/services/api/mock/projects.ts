@@ -7,7 +7,8 @@
  * This service is used when VITE_USE_MOCK_DATA=true or when the real API is unavailable.
  */
 
-import { Project, ProjectStatus } from '@/types';
+import { Project } from '@/types';
+import { ProjectStatus } from '@/types/domain';
 
 // Mutable in-memory store for mock projects
 const MOCK_PROJECTS: Project[] = [

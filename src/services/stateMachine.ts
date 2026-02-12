@@ -11,7 +11,7 @@
  * Only the backend can change state (frontend requests, backend validates & applies).
  */
 
-import { ProjectStatus } from '@/types';
+import { ProjectStatus } from '@/types/domain';
 
 /**
  * Audit event logged for every state transition

@@ -16,7 +16,7 @@
  */
 
 import { useMemo } from 'react';
-import { ProjectStatus } from '@/types';
+import { ProjectStatus } from '@/types/domain';
 import {
   canTransition,
   getValidNextStates,

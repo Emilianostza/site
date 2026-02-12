@@ -48,13 +48,11 @@ async function getMockAssetsService() {
 }
 
 async function getRealProjectsService() {
-  const { default: service } = await import('@/services/api/real/projects');
-  return service;
+  return await import('@/services/api/real/projects');
 }
 
 async function getRealAssetsService() {
-  const { default: service } = await import('@/services/api/real/assets');
-  return service;
+  return await import('@/services/api/real/assets');
 }
 
 /**

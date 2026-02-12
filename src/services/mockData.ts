@@ -1,4 +1,5 @@
-import { Asset, Project, ProjectStatus, ProjectType } from '@/types';
+import { Asset, Project, ProjectType } from '@/types';
+import { ProjectStatus } from '@/types/domain';
 
 // Mutable store for the session
 const PROJECTS: Project[] = [

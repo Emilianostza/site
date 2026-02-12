@@ -14,7 +14,8 @@
  */
 
 import { apiClient } from '@/services/api/client';
-import { Project, ProjectStatus, ProjectType } from '@/types';
+import { Project, ProjectType } from '@/types';
+import { ProjectStatus } from '@/types/domain';
 
 export interface CreateProjectInput {
   name: string;

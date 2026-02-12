@@ -1,3 +1,5 @@
+import { ProjectStatus } from '@/types/domain';
+
 export enum Industry {
   Restaurant = 'Restaurant',
   Museum = 'Museum',
@@ -25,32 +27,6 @@ export enum PortalRole {
  *                                        ↑_________↓           ↑_________↓
  *                                       (rejection)          (rejection)
  */
-export enum ProjectStatus {
-  // Initial: Customer submitted capture request
-  Requested = 'Requested',
-
-  // Assigned to technician/photographer by manager
-  Assigned = 'Assigned',
-
-  // Photos captured, raw files uploaded
-  Captured = 'Captured',
-
-  // Processing raw files (cleanup, alignment, etc)
-  Processing = 'Processing',
-
-  // Quality assurance review by approver
-  QA = 'QA',
-
-  // Ready for customer review/approval
-  Delivered = 'Delivered',
-
-  // Customer approved final outcome, payout triggered
-  Approved = 'Approved',
-
-  // Project archived (old, completed, or cancelled)
-  Archived = 'Archived',
-}
-
 export interface NavItem {
   label: string;
   path: string;

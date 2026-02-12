@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, Clock, Circle } from 'lucide-react';
-import { ProjectStatus } from '@/types';
+import { ProjectStatus } from '@/types/domain';
 
 interface ProjectProgressProps {
     currentStatus: ProjectStatus;

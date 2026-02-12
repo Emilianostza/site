@@ -12,10 +12,11 @@
  * 5. Stale token detected → auto-refresh via Supabase
  */
 
-import { IAuthAdapter, LoginRequestDTO, LoginResponseDTO, User } from '@/types/auth';
+import { LoginRequestDTO, LoginResponseDTO, User } from '@/types/auth';
+import { IAuthAdapter } from '@/services/auth/adapter';
 import { supabase } from '@/services/supabase/client';
 import { env } from '@/config/env';
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export class SupabaseAuthAdapter implements IAuthAdapter {
   private initialized = false;
@@ -145,7 +146,7 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
    */
   isTokenExpired(token: string): boolean {
     try {
-      const decoded: any = jwt_decode(token);
+      const decoded: any = jwtDecode(token);
       if (!decoded.exp) return false;
 
       // Check if expires within next 5 minutes
@@ -165,7 +166,7 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
    */
   getTokenTTL(token: string): number {
     try {
-      const decoded: any = jwt_decode(token);
+      const decoded: any = jwtDecode(token);
       if (!decoded.exp) return 0;
 
       const expiresAt = decoded.exp * 1000; // milliseconds
@@ -239,6 +240,3 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
  * Singleton instance of Supabase adapter
  */
 export const supabaseAuthAdapter = new SupabaseAuthAdapter();
-
-// Import for jwt_decode type
-import 'jwt-decode';

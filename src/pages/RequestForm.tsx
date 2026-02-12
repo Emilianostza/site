@@ -36,7 +36,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Industry, RequestFormState, ProjectStatus } from '@/types';
+import { Industry, RequestFormState } from '@/types';
+import { ProjectStatus } from '@/types/domain';
 import { Check, ChevronRight, ChevronLeft, AlertCircle } from 'lucide-react';
 import { ProjectsProvider } from '@/services/dataProvider';
 
@@ -198,7 +199,7 @@ const RequestForm: React.FC = () => {
         name: `${formData.industry} Capture Request`,
         client: formData.contact.company,
         type: 'standard',
-        status: ProjectStatus.Requested,
+        status: ProjectStatus.Pending,
         phone: '', // Optional
         address: formData.country // Using country as address for now
       });
