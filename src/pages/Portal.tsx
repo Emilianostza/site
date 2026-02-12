@@ -19,6 +19,7 @@ import { ActivityFeed } from '@/components/portal/ActivityFeed';
 import { ProjectsProvider, AssetsProvider } from '@/services/dataProvider';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
+import { AssetListTable } from '@/components/portal/AssetListTable';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
@@ -253,14 +254,14 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               // Employee Dashboard View (Stats)
               <>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div className="bg-gradient-to-br from-amber-600 to-amber-700 p-6 rounded-xl shadow-lg text-white">
-                    <h3 className="font-bold text-lg mb-2">Create AR Scene</h3>
-                    <p className="text-amber-100 text-sm mb-4">
-                      Upload your 3D models and create instant AR experiences.
+                  <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 p-6 rounded-xl shadow-lg text-white">
+                    <h3 className="font-bold text-lg mb-2">Upload Product Images</h3>
+                    <p className="text-indigo-100 text-sm mb-4">
+                      Upload photos to generate high-quality 3D models.
                     </p>
                     <Link to="/app/editor/new">
-                      <button className="bg-white text-amber-700 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-amber-50 transition-colors">
-                        Open Editor
+                      <button className="bg-white text-indigo-700 px-4 py-2 rounded-lg font-bold text-sm w-full hover:bg-indigo-50 transition-colors">
+                        Upload Images
                       </button>
                     </Link>
                   </div>
@@ -308,12 +309,12 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                         </button>
                       </div>
                     </div>
-                    <ProjectTable
-                      projects={projects
+                    <AssetListTable
+                      assets={assets
                         .filter(
-                          (p) =>
-                            p.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) ||
-                            p.client.toLowerCase().includes(projectSearchTerm.toLowerCase())
+                          (a) =>
+                            a.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) ||
+                            a.type?.toLowerCase().includes(projectSearchTerm.toLowerCase())
                         )
                         .slice(0, 5)}
                     />

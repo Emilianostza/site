@@ -10,7 +10,7 @@
 import { Project, ProjectStatus } from '@/types';
 
 // Mutable in-memory store for mock projects
-let MOCK_PROJECTS: Project[] = [
+const MOCK_PROJECTS: Project[] = [
   {
     id: 'PRJ-001',
     name: 'Summer Menu Update',
@@ -53,16 +53,16 @@ const NETWORK_DELAY = 500;
  * Fetch all projects (with optional filtering)
  */
 export async function fetchProjects(filter: Record<string, any> = {}) {
-  await new Promise(resolve => setTimeout(resolve, NETWORK_DELAY));
+  await new Promise((resolve) => setTimeout(resolve, NETWORK_DELAY));
 
   let results = [...MOCK_PROJECTS];
 
   // Apply filters if provided
   if (filter.status) {
-    results = results.filter(p => p.status === filter.status);
+    results = results.filter((p) => p.status === filter.status);
   }
   if (filter.client) {
-    results = results.filter(p => p.client.toLowerCase().includes(filter.client.toLowerCase()));
+    results = results.filter((p) => p.client.toLowerCase().includes(filter.client.toLowerCase()));
   }
 
   return {
@@ -77,9 +77,9 @@ export async function fetchProjects(filter: Record<string, any> = {}) {
  * Get a single project by ID
  */
 export async function getProject(id: string) {
-  await new Promise(resolve => setTimeout(resolve, NETWORK_DELAY));
+  await new Promise((resolve) => setTimeout(resolve, NETWORK_DELAY));
 
-  const project = MOCK_PROJECTS.find(p => p.id === id);
+  const project = MOCK_PROJECTS.find((p) => p.id === id);
   if (!project) {
     throw new Error(`Project ${id} not found`);
   }
@@ -90,7 +90,7 @@ export async function getProject(id: string) {
  * Create a new project
  */
 export async function createProject(data: Partial<Project>) {
-  await new Promise(resolve => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, 800));
 
   const newProject: Project = {
     id: `PRJ-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
@@ -98,7 +98,7 @@ export async function createProject(data: Partial<Project>) {
     client: data.client || 'New Client',
     status: ProjectStatus.Pending,
     items: 0,
-    type: data.type || 'standard' as any,
+    type: data.type || ('standard' as any),
     address: data.address,
     phone: data.phone,
     created_at: new Date().toISOString(),
@@ -113,9 +113,9 @@ export async function createProject(data: Partial<Project>) {
  * Update an existing project
  */
 export async function updateProject(id: string, data: Partial<Project>) {
-  await new Promise(resolve => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, 800));
 
-  const index = MOCK_PROJECTS.findIndex(p => p.id === id);
+  const index = MOCK_PROJECTS.findIndex((p) => p.id === id);
   if (index === -1) {
     throw new Error(`Project ${id} not found`);
   }
@@ -156,9 +156,9 @@ export async function deliverProject(id: string) {
  * Delete a project
  */
 export async function deleteProject(id: string) {
-  await new Promise(resolve => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, 800));
 
-  const index = MOCK_PROJECTS.findIndex(p => p.id === id);
+  const index = MOCK_PROJECTS.findIndex((p) => p.id === id);
   if (index === -1) {
     throw new Error(`Project ${id} not found`);
   }
