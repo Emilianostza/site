@@ -38,7 +38,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Industry, RequestFormState } from '@/types';
 import { ProjectStatus } from '@/types/domain';
-import { Check, ChevronRight, ChevronLeft, AlertCircle } from 'lucide-react';
+import { Check, ChevronRight, ChevronLeft, AlertCircle, ArrowRight } from 'lucide-react';
 import { ProjectsProvider } from '@/services/dataProvider';
 
 const INITIAL_STATE: RequestFormState = {
@@ -50,7 +50,7 @@ const INITIAL_STATE: RequestFormState = {
   country: '',
   preferred_window: '',
   deliverables: [],
-  contact: { full_name: '', email: '', company: '' }
+  contact: { full_name: '', email: '', company: '' },
 };
 
 const RequestForm: React.FC = () => {
@@ -59,6 +59,7 @@ const RequestForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<RequestFormState>(INITIAL_STATE);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Initialize industry from URL param
   // Session Storage Key
@@ -71,16 +72,18 @@ const RequestForm: React.FC = () => {
       try {
         setFormData(JSON.parse(saved));
       } catch (e) {
-        console.error("Failed to parse saved draft");
+        console.error('Failed to parse saved draft');
       }
     }
 
     const params = new URLSearchParams(location.search);
     const ind = params.get('industry');
     if (ind) {
-      if (ind === 'restaurants') setFormData(prev => ({ ...prev, industry: Industry.Restaurant }));
-      else if (ind === 'museums') setFormData(prev => ({ ...prev, industry: Industry.Museum }));
-      else if (ind === 'ecommerce') setFormData(prev => ({ ...prev, industry: Industry.Ecommerce }));
+      if (ind === 'restaurants')
+        setFormData((prev) => ({ ...prev, industry: Industry.Restaurant }));
+      else if (ind === 'museums') setFormData((prev) => ({ ...prev, industry: Industry.Museum }));
+      else if (ind === 'ecommerce')
+        setFormData((prev) => ({ ...prev, industry: Industry.Ecommerce }));
     }
   }, [location.search]);
 
@@ -90,22 +93,19 @@ const RequestForm: React.FC = () => {
   }, [formData]);
 
   // Generic Type Safe Update
-  const updateField = <K extends keyof RequestFormState>(
-    field: K,
-    value: RequestFormState[K]
-  ) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const updateField = <K extends keyof RequestFormState>(field: K, value: RequestFormState[K]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateContact = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, contact: { ...prev.contact, [field]: value } }));
+    setFormData((prev) => ({ ...prev, contact: { ...prev.contact, [field]: value } }));
   };
 
   const toggleArrayField = (field: 'materials' | 'deliverables', value: string) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const arr = prev[field];
       if (arr.includes(value)) {
-        return { ...prev, [field]: arr.filter(i => i !== value) };
+        return { ...prev, [field]: arr.filter((i) => i !== value) };
       } else {
         return { ...prev, [field]: [...arr, value] };
       }
@@ -160,7 +160,7 @@ const RequestForm: React.FC = () => {
 
   const handleNext = () => {
     if (validateStep(step)) {
-      setStep(prev => prev + 1);
+      setStep((prev) => prev + 1);
       window.scrollTo(0, 0);
     }
   };
@@ -195,55 +195,107 @@ const RequestForm: React.FC = () => {
 
     // Create Project via Provider
     try {
+      setSubmitting(true);
       await ProjectsProvider.create({
         name: `${formData.industry} Capture Request`,
         client: formData.contact.company,
         type: 'standard',
         status: ProjectStatus.Pending,
         phone: '', // Optional
-        address: formData.country // Using country as address for now
+        address: formData.country, // Using country as address for now
       });
 
       sessionStorage.removeItem(STORAGE_KEY); // Clear draft
       setSubmitted(true);
       window.scrollTo(0, 0);
     } catch (error) {
-      console.error("Failed to click submit", error);
+      console.error('Failed to click submit', error);
       // Fallback or error handling if needed
       setSubmitted(true); // For demo purposes, still show success
+    } finally {
+      setSubmitting(false);
     }
   };
 
   if (submitted) {
     return (
-      <div className="container mx-auto px-4 py-24 text-center max-w-2xl min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div>
-          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 dark:text-green-400">
-            <Check className="w-10 h-10" />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center p-4">
+        <div className="container mx-auto max-w-2xl text-center">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 md:p-12 border border-slate-200 dark:border-slate-700">
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-8 text-green-600 dark:text-green-400">
+              <Check className="w-10 h-10" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              Request Confirmed!
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 leading-relaxed">
+              Thank you, <span className="font-semibold">{formData.contact.full_name}</span>. We've
+              received your {formData.industry} capture request.
+            </p>
+
+            <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-700 rounded-lg p-6 mb-8">
+              <h3 className="font-bold text-slate-900 dark:text-white mb-3">What happens next:</h3>
+              <ul className="space-y-2 text-left text-slate-600 dark:text-slate-400">
+                <li className="flex items-start gap-2">
+                  <span className="text-brand-600 font-bold flex-shrink-0 mt-0.5">1.</span>
+                  <span>Our operations team reviews your requirements</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-brand-600 font-bold flex-shrink-0 mt-0.5">2.</span>
+                  <span>
+                    We contact you at{' '}
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
+                      {formData.contact.email}
+                    </span>
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-brand-600 font-bold flex-shrink-0 mt-0.5">3.</span>
+                  <span>We schedule your capture session within 24–48 hours</span>
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
+              💡 Keep an eye on your email for next steps. No spam, just updates about your project.
+            </p>
+
+            <button
+              onClick={() => navigate('/')}
+              className="inline-flex items-center gap-2 px-8 py-3 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700 transition-colors shadow-lg hover:shadow-xl"
+            >
+              Return Home <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Request Received</h1>
-          <p className="text-slate-600 dark:text-slate-400 text-lg mb-8">
-            Thank you, {formData.contact.full_name}. We have received your capture request for {formData.industry}.
-            Our operations team will review your requirements and contact you at {formData.contact.email} within 24 hours.
-          </p>
-          <button
-            onClick={() => navigate('/')}
-            className="px-8 py-3 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700"
-          >
-            Return Home
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12" {...(import.meta.env.DEV && { 'data-component': 'Request Form', 'data-file': 'src/pages/RequestForm.tsx' })}>
+    <div
+      className="min-h-screen bg-slate-50 dark:bg-slate-900 py-12"
+      {...(import.meta.env.DEV && {
+        'data-component': 'Request Form',
+        'data-file': 'src/pages/RequestForm.tsx',
+      })}
+    >
       <div className="container mx-auto px-4 max-w-3xl">
-        <div className="mb-8">
-          <div className="flex items-center justify-between text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
-            <span>Step {step} of 5</span>
-            <span>{Math.round((step / 5) * 100)}% Complete</span>
+        <div className="mb-10">
+          <div className="flex items-center justify-between text-sm mb-3">
+            <div>
+              <span className="font-bold text-slate-900 dark:text-white">Step {step} of 5</span>
+              <span className="text-slate-500 dark:text-slate-400 ml-2">
+                {step === 1 && 'Tell us about your project'}
+                {step === 2 && 'Define your scope'}
+                {step === 3 && 'Choose your logistics'}
+                {step === 4 && 'Select deliverables'}
+                {step === 5 && 'Confirm your details'}
+              </span>
+            </div>
+            <span className="text-slate-500 dark:text-slate-400 text-xs">
+              {Math.round((step / 5) * 100)}%
+            </span>
           </div>
           <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
             <div
@@ -258,23 +310,33 @@ const RequestForm: React.FC = () => {
             {/* Step 1: Industry */}
             {step === 1 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Which industry describes you best?</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    Which industry describes you best?
+                  </h2>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    We tailor our service to your specific needs.
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[Industry.Restaurant, Industry.Museum, Industry.Ecommerce].map((ind) => (
                     <button
                       key={ind}
                       type="button"
                       onClick={() => updateField('industry', ind)}
-                      className={`p-6 rounded-xl border-2 text-left transition-all ${formData.industry === ind
-                        ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20'
-                        : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-500'
-                        }`}
+                      className={`p-6 rounded-xl border-2 text-left transition-all ${
+                        formData.industry === ind
+                          ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-500'
+                      }`}
                     >
-                      <span className="font-bold text-lg block mb-1 text-slate-900 dark:text-white">{ind}</span>
+                      <span className="font-bold text-lg block mb-1 text-slate-900 dark:text-white">
+                        {ind}
+                      </span>
                       <span className="text-sm text-slate-500 dark:text-slate-400">
-                        {ind === Industry.Restaurant && "Menu items & food"}
-                        {ind === Industry.Museum && "Artifacts & collections"}
-                        {ind === Industry.Ecommerce && "Retail products"}
+                        {ind === Industry.Restaurant && 'Menu items & food'}
+                        {ind === Industry.Museum && 'Artifacts & collections'}
+                        {ind === Industry.Ecommerce && 'Retail products'}
                       </span>
                     </button>
                   ))}
@@ -290,18 +352,30 @@ const RequestForm: React.FC = () => {
             {/* Step 2: Scope */}
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Project Scope</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    Project Scope
+                  </h2>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    Help us understand the scale and size of what we're capturing.
+                  </p>
+                </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">How many items?</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    How many items?
+                  </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {['1-10', '11-50', '51-200', '200+'].map(opt => (
+                    {['1-10', '11-50', '51-200', '200+'].map((opt) => (
                       <button
                         key={opt}
                         type="button"
                         onClick={() => updateField('quantity_range', opt)}
-                        className={`py-3 px-4 rounded-lg border text-sm font-medium ${formData.quantity_range === opt ? 'bg-brand-600 text-white border-brand-600' : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600'
-                          }`}
+                        className={`py-3 px-4 rounded-lg border text-sm font-medium ${
+                          formData.quantity_range === opt
+                            ? 'bg-brand-600 text-white border-brand-600'
+                            : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600'
+                        }`}
                       >
                         {opt}
                       </button>
@@ -310,7 +384,9 @@ const RequestForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Approximate Size</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Approximate Size
+                  </label>
                   <select
                     className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                     value={formData.object_size_range}
@@ -322,18 +398,34 @@ const RequestForm: React.FC = () => {
                     <option value="large">Large (Furniture / Statues)</option>
                     <option value="oversized">Oversized (Vehicle / Room)</option>
                   </select>
-                  {errors.object_size_range && <p className="text-red-600 text-sm mt-1">{errors.object_size_range}</p>}
+                  {errors.object_size_range && (
+                    <p className="text-red-600 text-sm mt-1">{errors.object_size_range}</p>
+                  )}
                 </div>
 
                 {formData.industry === Industry.Museum && (
                   <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                    <label className="block text-sm font-bold text-amber-900 mb-2">Handling Sensitivity</label>
+                    <label className="block text-sm font-bold text-amber-900 mb-2">
+                      Handling Sensitivity
+                    </label>
                     <div className="flex gap-4">
                       <label className="flex items-center gap-2 text-amber-900">
-                        <input type="radio" name="sensitivity" value="standard" onChange={(e) => updateField('handling_sensitivity', e.target.value)} /> Standard
+                        <input
+                          type="radio"
+                          name="sensitivity"
+                          value="standard"
+                          onChange={(e) => updateField('handling_sensitivity', e.target.value)}
+                        />{' '}
+                        Standard
                       </label>
                       <label className="flex items-center gap-2 text-amber-900">
-                        <input type="radio" name="sensitivity" value="fragile" onChange={(e) => updateField('handling_sensitivity', e.target.value)} /> Fragile
+                        <input
+                          type="radio"
+                          name="sensitivity"
+                          value="fragile"
+                          onChange={(e) => updateField('handling_sensitivity', e.target.value)}
+                        />{' '}
+                        Fragile
                       </label>
                     </div>
                   </div>
@@ -344,24 +436,39 @@ const RequestForm: React.FC = () => {
             {/* Step 3: Logistics */}
             {step === 3 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Logistics</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    Logistics
+                  </h2>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    Tell us where we'll capture and where to send the results.
+                  </p>
+                </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Capture Location</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Capture Location
+                  </label>
                   <div className="flex gap-4">
                     <button
                       type="button"
                       onClick={() => updateField('location_mode', 'on_site')}
-                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold text-slate-900 dark:text-white ${formData.location_mode === 'on_site' ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20' : 'border-slate-200 dark:border-slate-700'
-                        }`}
+                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold text-slate-900 dark:text-white ${
+                        formData.location_mode === 'on_site'
+                          ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20'
+                          : 'border-slate-200 dark:border-slate-700'
+                      }`}
                     >
                       On-site (We come to you)
                     </button>
                     <button
                       type="button"
                       onClick={() => updateField('location_mode', 'ship_in')}
-                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold text-slate-900 dark:text-white ${formData.location_mode === 'ship_in' ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20' : 'border-slate-200 dark:border-slate-700'
-                        }`}
+                      className={`flex-1 py-4 px-4 rounded-xl border-2 font-bold text-slate-900 dark:text-white ${
+                        formData.location_mode === 'ship_in'
+                          ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20'
+                          : 'border-slate-200 dark:border-slate-700'
+                      }`}
                     >
                       Ship-in (You send to us)
                     </button>
@@ -369,7 +476,9 @@ const RequestForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Country</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Country
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g. United States, France..."
@@ -385,26 +494,66 @@ const RequestForm: React.FC = () => {
             {/* Step 4: Deliverables */}
             {step === 4 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Deliverables</h2>
-                <p className="text-slate-500 dark:text-slate-400">Select what you need delivered.</p>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    What do you need?
+                  </h2>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    Select the formats and tools you'll use to deliver the 3D experience.
+                  </p>
+                </div>
 
                 <div className="grid grid-cols-1 gap-3">
                   {[
-                    { id: 'hosted_viewer_link', label: 'Hosted Viewer Link (Web)' },
-                    { id: 'website_embed', label: 'Website Embed Code (iFrame)' },
-                    { id: 'ar_ios_usdz', label: 'AR File for iOS (.usdz)' },
-                    { id: 'ar_android_glb', label: 'AR File for Android (.glb)' },
-                    { id: 'downloads_bundle', label: 'Raw Asset Bundle' },
-                    { id: 'qr_codes', label: 'QR Codes' },
+                    {
+                      id: 'hosted_viewer_link',
+                      label: 'Hosted Viewer Link',
+                      desc: 'Direct link to your 3D model (no setup required)',
+                    },
+                    {
+                      id: 'website_embed',
+                      label: 'Website Embed Code',
+                      desc: 'Copy-paste iFrame for Shopify, WordPress, or custom sites',
+                    },
+                    {
+                      id: 'ar_ios_usdz',
+                      label: 'AR for iOS',
+                      desc: 'QuickLook file (.usdz) for iPhone/iPad',
+                    },
+                    {
+                      id: 'ar_android_glb',
+                      label: 'AR for Android',
+                      desc: 'Scene Viewer file (.glb) for Android devices',
+                    },
+                    {
+                      id: 'downloads_bundle',
+                      label: 'Raw Files Bundle',
+                      desc: 'OBJ, FBX, or other 3D formats for game engines',
+                    },
+                    {
+                      id: 'qr_codes',
+                      label: 'QR Codes',
+                      desc: 'Quick links to models (print on packaging/displays)',
+                    },
                   ].map((item) => (
-                    <label key={item.id} className="flex items-center p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer">
+                    <label
+                      key={item.id}
+                      className="flex items-start p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-brand-300 dark:hover:border-brand-600 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"
+                    >
                       <input
                         type="checkbox"
-                        className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500"
+                        className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500 mt-0.5 flex-shrink-0"
                         checked={formData.deliverables.includes(item.id)}
                         onChange={() => toggleArrayField('deliverables', item.id)}
                       />
-                      <span className="ml-3 font-medium text-slate-900 dark:text-white">{item.label}</span>
+                      <div className="ml-3 flex-grow">
+                        <div className="font-medium text-slate-900 dark:text-white">
+                          {item.label}
+                        </div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                          {item.desc}
+                        </div>
+                      </div>
                     </label>
                   ))}
                 </div>
@@ -416,7 +565,9 @@ const RequestForm: React.FC = () => {
 
                 {formData.industry === Industry.Museum && (
                   <div className="mt-4">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Default Access Control</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Default Access Control
+                    </label>
                     <select
                       className="w-full p-3 border border-slate-300 rounded-lg"
                       onChange={(e) => updateField('museum_access_control', e.target.value)}
@@ -433,11 +584,20 @@ const RequestForm: React.FC = () => {
             {/* Step 5: Contact */}
             {step === 5 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Final Step</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    Let's Connect
+                  </h2>
+                  <p className="text-slate-600 dark:text-slate-400">
+                    We'll use this to contact you about your request and next steps.
+                  </p>
+                </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       required
@@ -447,7 +607,9 @@ const RequestForm: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Business Email</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Business Email
+                    </label>
                     <input
                       type="email"
                       required
@@ -457,7 +619,9 @@ const RequestForm: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Company / Organization</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Company / Organization
+                    </label>
                     <input
                       type="text"
                       required
@@ -470,7 +634,10 @@ const RequestForm: React.FC = () => {
 
                 <div className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400 mt-4">
                   <input type="checkbox" required className="mt-1" />
-                  <span>I agree to the Terms of Service and Privacy Policy. I understand this is a request for a quote and consultation.</span>
+                  <span>
+                    I agree to the Terms of Service and Privacy Policy. I understand this is a
+                    request for a quote and consultation.
+                  </span>
                 </div>
               </div>
             )}
@@ -480,12 +647,14 @@ const RequestForm: React.FC = () => {
               {step > 1 ? (
                 <button
                   type="button"
-                  onClick={() => setStep(s => s - 1)}
+                  onClick={() => setStep((s) => s - 1)}
                   className="flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300 font-medium"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" /> Back
                 </button>
-              ) : <div></div>}
+              ) : (
+                <div></div>
+              )}
 
               {step < 5 ? (
                 <button
@@ -498,9 +667,19 @@ const RequestForm: React.FC = () => {
               ) : (
                 <button
                   type="submit"
-                  className="flex items-center bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors"
+                  disabled={submitting}
+                  className="flex items-center bg-brand-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Submit Request
+                  {submitting ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Submit Request <ArrowRight className="w-4 h-4 ml-1" />
+                    </>
+                  )}
                 </button>
               )}
             </div>

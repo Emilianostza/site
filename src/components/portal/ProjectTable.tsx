@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { Project, Asset } from '@/types';
 import { ProjectStatus } from '@/types/domain';
-import { ExternalLink, Edit } from 'lucide-react';
+import {
+  ExternalLink,
+  Edit,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AssetGrid } from '@/components/portal/AssetGrid';
 
@@ -27,26 +35,26 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-x-auto">
-      <table className="w-full text-left border-collapse min-w-[600px]">
-        <thead className="bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <table className="w-full text-left border-collapse">
+        <thead className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
           <tr>
-            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
               ID
             </th>
-            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
-              Brand
+            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+              Project Name
             </th>
-            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
               Client
             </th>
-            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
               Status
             </th>
-            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
-              Items
+            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+              Assets
             </th>
-            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+            <th className="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
               Action
             </th>
           </tr>
@@ -54,59 +62,94 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({
         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
           {projects.map((p) => (
             <React.Fragment key={p.id}>
-              <tr className="hover:bg-slate-50 dark:hover:bg-slate-700">
-                <td className="p-4 text-sm text-slate-500 dark:text-slate-400 font-mono">{p.id}</td>
-                <td className="p-4 text-sm font-bold text-slate-900 dark:text-white">
+              <tr className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-700">
+                <td className="p-4 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                  {p.id.slice(0, 8)}
+                </td>
+                <td className="p-4 text-sm font-semibold text-slate-900 dark:text-white">
                   <button
                     onClick={() => toggleExpand(p.id)}
-                    className="hover:text-brand-600 transition-colors text-left"
+                    className="flex items-center gap-2 hover:text-brand-600 transition-colors text-left w-full"
                   >
+                    {expandedProjectId === p.id ? (
+                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    )}
                     {p.name}
                   </button>
                 </td>
                 <td className="p-4 text-sm text-slate-600 dark:text-slate-300">{p.client}</td>
                 <td className="p-4">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      p.status === ProjectStatus.Delivered
-                        ? 'bg-green-100 text-green-800'
-                        : p.status === ProjectStatus.InProgress
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                  >
-                    {p.status}
+                  <div className="flex items-center gap-2">
+                    {p.status === ProjectStatus.Delivered ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                    ) : p.status === ProjectStatus.InProgress ? (
+                      <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0" />
+                    )}
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        p.status === ProjectStatus.Delivered
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                          : p.status === ProjectStatus.InProgress
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                      }`}
+                    >
+                      {p.status}
+                    </span>
+                  </div>
+                </td>
+                <td className="p-4 text-sm text-slate-600 dark:text-slate-300">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                    {p.items} item{p.items !== 1 ? 's' : ''}
                   </span>
                 </td>
-                <td className="p-4 text-sm text-slate-600 dark:text-slate-300">{p.items}</td>
                 <td className="p-4">
-                  <div className="flex flex-col gap-2">
-                    {onEditProject && (
-                      <button
-                        onClick={() => onEditProject(p.id)}
-                        className="text-brand-600 hover:text-brand-800 text-sm font-bold flex items-center gap-1 text-left"
-                      >
-                        <Edit className="w-4 h-4" /> Edit
-                      </button>
-                    )}
-                  </div>
+                  <button
+                    onClick={() => onEditProject?.(p.id)}
+                    className="inline-flex items-center gap-1.5 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-semibold transition-colors"
+                    title="Edit project details"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Edit
+                  </button>
                 </td>
               </tr>
               {expandedProjectId === p.id && (
-                <tr className="bg-slate-50 dark:bg-slate-800/50">
-                  <td colSpan={6} className="p-4">
+                <tr className="bg-gradient-to-b from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-800">
+                  <td colSpan={6} className="p-6">
                     <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                          <span className="bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded text-xs">
-                            Project Assets
+                      <div className="flex items-center gap-3 mb-5">
+                        <div className="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center">
+                          <span className="text-brand-700 dark:text-brand-300 font-bold text-sm">
+                            {assets.filter((a) => a.project_id === p.id).length}
                           </span>
-                        </h3>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-slate-900 dark:text-white">
+                            Captured Assets
+                          </h3>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            3D models and deliverables
+                          </p>
+                        </div>
                       </div>
-                      <AssetGrid
-                        assets={assets.filter((a) => a.project_id === p.id)}
-                        role="employee"
-                      />
+                      {assets.filter((a) => a.project_id === p.id).length > 0 ? (
+                        <AssetGrid
+                          assets={assets.filter((a) => a.project_id === p.id)}
+                          role="employee"
+                        />
+                      ) : (
+                        <div className="text-center py-8 bg-slate-100 dark:bg-slate-700/30 rounded-lg">
+                          <p className="text-slate-500 dark:text-slate-400">
+                            No assets captured yet. Assets will appear here once the capture process
+                            is complete.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>
