@@ -39,6 +39,14 @@ const USE_REAL_API = !env.useMockData;
  * Dynamic imports for mock vs real services
  * This allows tree-shaking unused code in production
  */
+async function getMockProjectsService() {
+  return await import('@/services/api/mock/projects');
+}
+
+async function getMockAssetsService() {
+  return await import('@/services/api/mock/assets');
+}
+
 async function getRealProjectsService() {
   const { default: service } = await import('@/services/api/real/projects');
   return service;
@@ -64,9 +72,10 @@ export const ProjectsProvider = {
       return projects;
     }
 
-    // Mock data fallback
-    console.log('[DataProvider] Using mock projects');
-    return [];
+    // Mock data
+    const mockService = await getMockProjectsService();
+    const { projects } = await mockService.fetchProjects(filter);
+    return projects;
   },
 
   async get(id: string) {
@@ -75,8 +84,9 @@ export const ProjectsProvider = {
       return await getProject(id);
     }
 
-    // Mock data fallback
-    return null;
+    // Mock data
+    const mockService = await getMockProjectsService();
+    return await mockService.getProject(id);
   },
 
   async create(data: any) {
@@ -85,7 +95,9 @@ export const ProjectsProvider = {
       return await createProject(data);
     }
 
-    throw new Error('Project creation not available in mock mode');
+    // Mock data
+    const mockService = await getMockProjectsService();
+    return await mockService.createProject(data);
   },
 
   async update(id: string, data: any) {
@@ -94,7 +106,9 @@ export const ProjectsProvider = {
       return await updateProject(id, data);
     }
 
-    throw new Error('Project update not available in mock mode');
+    // Mock data
+    const mockService = await getMockProjectsService();
+    return await mockService.updateProject(id, data);
   },
 
   async approve(id: string) {
@@ -103,7 +117,9 @@ export const ProjectsProvider = {
       return await approveProject(id);
     }
 
-    throw new Error('Project approval not available in mock mode');
+    // Mock data
+    const mockService = await getMockProjectsService();
+    return await mockService.approveProject(id);
   },
 
   async start(id: string) {
@@ -112,7 +128,9 @@ export const ProjectsProvider = {
       return await startProject(id);
     }
 
-    throw new Error('Project start not available in mock mode');
+    // Mock data
+    const mockService = await getMockProjectsService();
+    return await mockService.startProject(id);
   },
 
   async deliver(id: string) {
@@ -121,7 +139,9 @@ export const ProjectsProvider = {
       return await deliverProject(id);
     }
 
-    throw new Error('Project delivery not available in mock mode');
+    // Mock data
+    const mockService = await getMockProjectsService();
+    return await mockService.deliverProject(id);
   },
 
   async delete(id: string) {
@@ -130,7 +150,9 @@ export const ProjectsProvider = {
       return await deleteProject(id);
     }
 
-    throw new Error('Project deletion not available in mock mode');
+    // Mock data
+    const mockService = await getMockProjectsService();
+    return await mockService.deleteProject(id);
   }
 };
 
@@ -149,9 +171,10 @@ export const AssetsProvider = {
       return assets;
     }
 
-    // Mock data fallback
-    console.log('[DataProvider] Using mock assets');
-    return [];
+    // Mock data
+    const mockService = await getMockAssetsService();
+    const { assets } = await mockService.fetchAssets(filter);
+    return assets;
   },
 
   async get(id: string) {
@@ -160,8 +183,9 @@ export const AssetsProvider = {
       return await getAsset(id);
     }
 
-    // Mock data fallback
-    return null;
+    // Mock data
+    const mockService = await getMockAssetsService();
+    return await mockService.getAsset(id);
   },
 
   async create(data: any) {
@@ -170,7 +194,9 @@ export const AssetsProvider = {
       return await createAsset(data);
     }
 
-    throw new Error('Asset creation not available in mock mode');
+    // Mock data
+    const mockService = await getMockAssetsService();
+    return await mockService.createAsset(data);
   },
 
   async update(id: string, data: any) {
@@ -179,7 +205,9 @@ export const AssetsProvider = {
       return await updateAsset(id, data);
     }
 
-    throw new Error('Asset update not available in mock mode');
+    // Mock data
+    const mockService = await getMockAssetsService();
+    return await mockService.updateAsset(id, data);
   },
 
   async publish(id: string) {
@@ -188,7 +216,9 @@ export const AssetsProvider = {
       return await publishAsset(id);
     }
 
-    throw new Error('Asset publish not available in mock mode');
+    // Mock data
+    const mockService = await getMockAssetsService();
+    return await mockService.publishAsset(id);
   },
 
   async delete(id: string) {
@@ -197,6 +227,8 @@ export const AssetsProvider = {
       return await deleteAsset(id);
     }
 
-    throw new Error('Asset deletion not available in mock mode');
+    // Mock data
+    const mockService = await getMockAssetsService();
+    return await mockService.deleteAsset(id);
   }
 };
