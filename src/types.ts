@@ -75,7 +75,7 @@ export enum ServiceTier {
   Museum = 'museum', // Specialized (guided mode, kiosk, accessibility)
 }
 
-export type ProjectType = 'standard' | 'restaurant_menu';
+export type ProjectType = string;
 
 export interface Project {
   id: string;

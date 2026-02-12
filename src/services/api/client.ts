@@ -62,10 +62,16 @@ export class ApiClient {
     options: RequestInit & { timeout?: number } = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
     };
+
+    // Merge existing headers if provided
+    if (options.headers) {
+      if (typeof options.headers === 'object' && !(options.headers instanceof Headers)) {
+        Object.assign(headers, options.headers);
+      }
+    }
 
     // Add JWT token if available
     if (this.token) {

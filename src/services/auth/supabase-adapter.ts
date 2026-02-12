@@ -12,7 +12,7 @@
  * 5. Stale token detected → auto-refresh via Supabase
  */
 
-import { LoginRequestDTO, LoginResponseDTO, User } from '@/types/auth';
+import { LoginRequestDTO, LoginResponseDTO, User, userToDTO } from '@/types/auth';
 import { IAuthAdapter } from '@/services/auth/adapter';
 import { supabase } from '@/services/supabase/client';
 import { env } from '@/config/env';
@@ -47,43 +47,30 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
   /**
    * Sign in with email and password
    */
-  async login(
-    email: string,
-    password: string,
-    orgSlug?: string
-  ): Promise<LoginResponseDTO> {
-    try {
-      // Sign in with Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+  async login(email: string, password: string, orgSlug?: string): Promise<LoginResponseDTO> {
+    // Sign in with Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (error) {
-        throw new Error(error.message || 'Sign in failed');
-      }
-
-      if (!data.session) {
-        throw new Error('No session returned from sign in');
-      }
-
-      // Fetch user profile with org and role information
-      const user = await this.getUserProfile(data.user.id);
-
-      return {
-        success: true,
-        token: data.session.access_token,
-        refreshToken: data.session.refresh_token || undefined,
-        expiresIn: data.session.expires_in || 3600,
-        user
-      };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Sign in failed';
-      return {
-        success: false,
-        error: message
-      };
+    if (error) {
+      throw new Error(error.message || 'Sign in failed');
     }
+
+    if (!data.session) {
+      throw new Error('No session returned from sign in');
+    }
+
+    // Fetch user profile with org and role information
+    const user = await this.getUserProfile(data.user.id);
+
+    return {
+      token: data.session.access_token,
+      refreshToken: data.session.refresh_token || '',
+      expiresIn: data.session.expires_in || 3600,
+      user: userToDTO(user),
+    };
   }
 
   /**
@@ -109,7 +96,7 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
   async refreshToken(refreshToken: string): Promise<{ token: string; expiresIn: number }> {
     try {
       const { data, error } = await supabase.auth.refreshSession({
-        refresh_token: refreshToken
+        refresh_token: refreshToken,
       });
 
       if (error || !data.session) {
@@ -118,7 +105,7 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
 
       return {
         token: data.session.access_token,
-        expiresIn: data.session.expires_in || 3600
+        expiresIn: data.session.expires_in || 3600,
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Token refresh failed';
@@ -198,14 +185,18 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
 
         // Return minimal user object from auth record
         const { data: authUser } = await supabase.auth.getUser();
+        const createdAt = authUser?.user?.created_at || new Date().toISOString();
         return {
           id: userId,
           email: authUser?.user?.email || '',
           name: authUser?.user?.user_metadata?.full_name || 'User',
-          avatarUrl: authUser?.user?.user_metadata?.avatar_url,
-          createdAt: authUser?.user?.created_at,
+          role: { type: 'public_visitor', orgId: '' },
+          status: 'active' as const,
           orgId: '',
-          roles: []
+          mfaEnabled: false,
+          failedLoginAttempts: 0,
+          createdAt,
+          updatedAt: createdAt,
         };
       }
 
@@ -220,14 +211,21 @@ export class SupabaseAuthAdapter implements IAuthAdapter {
         console.warn('[Auth] Could not fetch user memberships:', membershipError);
       }
 
+      const createdAt = profile.created_at || new Date().toISOString();
       return {
         id: profile.id,
         email: profile.email,
         name: profile.name,
-        avatarUrl: profile.avatar_url,
-        createdAt: profile.created_at,
+        role: {
+          type: memberships?.[0]?.role || 'public_visitor',
+          orgId: memberships?.[0]?.org_id || '',
+        },
+        status: 'active' as const,
         orgId: memberships?.[0]?.org_id || '',
-        roles: memberships?.map(m => m.role) || []
+        mfaEnabled: false,
+        failedLoginAttempts: 0,
+        createdAt,
+        updatedAt: createdAt,
       };
     } catch (err) {
       console.error('[Auth] Error fetching user profile:', err);

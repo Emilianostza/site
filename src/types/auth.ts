@@ -17,13 +17,13 @@
 // --- Enums & Constants ---
 
 export const COUNTRIES = ['ee', 'gr', 'fr', 'us', 'gb'] as const;
-export type CountryCode = typeof COUNTRIES[number];
+export type CountryCode = (typeof COUNTRIES)[number];
 
 export const REGIONS = ['eu', 'na', 'apac'] as const;
-export type Region = typeof REGIONS[number];
+export type Region = (typeof REGIONS)[number];
 
 export const USER_STATUSES = ['invited', 'active', 'suspended', 'deactivated'] as const;
-export type UserStatus = typeof USER_STATUSES[number];
+export type UserStatus = (typeof USER_STATUSES)[number];
 
 export const USER_ROLES = [
   'admin',
@@ -32,9 +32,9 @@ export const USER_ROLES = [
   'sales_lead',
   'customer_owner',
   'customer_viewer',
-  'public_visitor'
+  'public_visitor',
 ] as const;
-export type UserRoleType = typeof USER_ROLES[number];
+export type UserRoleType = (typeof USER_ROLES)[number];
 
 // --- State Machine Transitions ---
 
@@ -42,7 +42,7 @@ export const VALID_STATUS_TRANSITIONS: Record<UserStatus, UserStatus[]> = {
   invited: ['active', 'deactivated'],
   active: ['suspended', 'deactivated'],
   suspended: ['active', 'deactivated'],
-  deactivated: []  // Terminal state
+  deactivated: [], // Terminal state
 };
 
 export function canTransitionStatus(from: UserStatus, to: UserStatus): boolean {
@@ -70,7 +70,7 @@ export interface Organization {
   metadata: Record<string, unknown>;
 
   // Timestamps
-  createdAt: string;  // ISO 8601
+  createdAt: string; // ISO 8601
   updatedAt: string;
   deletedAt?: string;
 }
@@ -84,7 +84,7 @@ export enum UserRoleEnum {
   SALES_LEAD = 'sales_lead',
   CUSTOMER_OWNER = 'customer_owner',
   CUSTOMER_VIEWER = 'customer_viewer',
-  PUBLIC_VISITOR = 'public_visitor'
+  PUBLIC_VISITOR = 'public_visitor',
 }
 
 // --- User Role (Discriminated Union) ---
@@ -103,11 +103,15 @@ export function isAdmin(role: UserRole): role is Extract<UserRole, { type: 'admi
   return role.type === 'admin';
 }
 
-export function isCustomerRole(role: UserRole): role is Extract<UserRole, { type: 'customer_owner' | 'customer_viewer' }> {
+export function isCustomerRole(
+  role: UserRole
+): role is Extract<UserRole, { type: 'customer_owner' | 'customer_viewer' }> {
   return role.type === 'customer_owner' || role.type === 'customer_viewer';
 }
 
-export function isEmployeeRole(role: UserRole): role is Extract<UserRole, { type: 'admin' | 'approver' | 'technician' | 'sales_lead' }> {
+export function isEmployeeRole(
+  role: UserRole
+): role is Extract<UserRole, { type: 'admin' | 'approver' | 'technician' | 'sales_lead' }> {
   return ['admin', 'approver', 'technician', 'sales_lead'].includes(role.type);
 }
 
@@ -115,7 +119,7 @@ export function isEmployeeRole(role: UserRole): role is Extract<UserRole, { type
 
 export interface User {
   id: string;
-  orgId: string;  // REQUIRED - org-scoped
+  orgId: string; // REQUIRED - org-scoped
 
   // Identity
   email: string;
@@ -188,7 +192,7 @@ export interface AuthSession {
 
   // Token
   refreshTokenHash: string;
-  accessTokenJti?: string;  // JWT ID for revocation
+  accessTokenJti?: string; // JWT ID for revocation
 
   // Session metadata
   ipAddress?: string;
@@ -222,9 +226,9 @@ export const AUTH_ACTIONS = [
   'password_reset_requested',
   'password_reset_completed',
   'mfa_enabled',
-  'mfa_disabled'
+  'mfa_disabled',
 ] as const;
-export type AuthAction = typeof AUTH_ACTIONS[number];
+export type AuthAction = (typeof AUTH_ACTIONS)[number];
 
 export interface AuthAuditLog {
   id: string;
@@ -260,14 +264,14 @@ export interface AuthAuditLog {
 export interface LoginRequestDTO {
   email: string;
   password: string;
-  orgSlug?: string;  // Optional if email is unique globally
+  orgSlug?: string; // Optional if email is unique globally
 }
 
 export interface LoginResponseDTO {
   user: UserProfileDTO;
   token: string;
   refreshToken: string;
-  expiresIn: number;  // Seconds
+  expiresIn: number; // Seconds
 }
 
 // --- Token Refresh ---
@@ -288,7 +292,7 @@ export interface UserProfileDTO {
   orgId: string;
   email: string;
   name: string;
-  role: string;  // Serialized as string for API
+  role: string; // Serialized as string for API
   status: UserStatus;
   customerId?: string;
   mfaEnabled: boolean;
@@ -309,7 +313,7 @@ export interface CreateUserRequestDTO {
 
 export interface CreateUserResponseDTO {
   user: UserProfileDTO;
-  inviteToken?: string;  // One-time token for password setup
+  inviteToken?: string; // One-time token for password setup
 }
 
 // --- User Update ---
@@ -352,13 +356,13 @@ export function userToDTO(user: User): UserProfileDTO {
     orgId: user.orgId,
     email: user.email,
     name: user.name,
-    role: user.role.type,  // Serialize role as string
+    role: user.role.type, // Serialize role as string
     status: user.status,
     customerId: user.customerId,
     mfaEnabled: user.mfaEnabled,
     lastLoginAt: user.lastLoginAt,
     createdAt: user.createdAt,
-    updatedAt: user.updatedAt
+    updatedAt: user.updatedAt,
   };
 }
 
@@ -367,11 +371,11 @@ export function userFromDTO(dto: UserProfileDTO, roleDetails?: Partial<UserRole>
   const role: UserRole = roleDetails
     ? ({ type: dto.role as UserRoleType, orgId: dto.orgId, ...roleDetails } as UserRole)
     : ({
-      type: dto.role as UserRoleType,
-      orgId: dto.orgId,
-      customerId: dto.customerId,
-      assignedProjectIds: [] // Default to empty if not in DTO
-    } as UserRole);
+        type: dto.role as UserRoleType,
+        orgId: dto.orgId,
+        customerId: dto.customerId,
+        assignedProjectIds: [], // Default to empty if not in DTO
+      } as UserRole);
 
   return {
     id: dto.id,
@@ -385,7 +389,7 @@ export function userFromDTO(dto: UserProfileDTO, roleDetails?: Partial<UserRole>
     lastLoginAt: dto.lastLoginAt,
     failedLoginAttempts: 0,
     createdAt: dto.createdAt,
-    updatedAt: dto.updatedAt
+    updatedAt: dto.updatedAt,
   };
 }
 
@@ -405,7 +409,7 @@ export function organizationToDTO(org: Organization): Record<string, unknown> {
     metadata: org.metadata,
     created_at: org.createdAt,
     updated_at: org.updatedAt,
-    deleted_at: org.deletedAt
+    deleted_at: org.deletedAt,
   };
 }
 
@@ -416,14 +420,14 @@ export function organizationFromDTO(dto: any): Organization {
     slug: dto.slug,
     countryCode: dto.country_code,
     region: dto.region,
-    gdprConsent: dto.gdpr_consent,
-    dataRetentionDays: dto.data_retention_days,
+    gdprConsent: Boolean(dto.gdpr_consent),
+    dataRetentionDays: Number(dto.data_retention_days) || 30,
     contactEmail: dto.contact_email,
     contactPhone: dto.contact_phone,
     metadata: dto.metadata || {},
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
-    deletedAt: dto.deleted_at
+    deletedAt: dto.deleted_at,
   };
 }
 
@@ -438,10 +442,12 @@ export function isValidEmail(email: string): boolean {
 
 export function isValidPassword(password: string): boolean {
   // At least 8 chars, 1 uppercase, 1 lowercase, 1 number
-  return password.length >= 8
-    && /[A-Z]/.test(password)
-    && /[a-z]/.test(password)
-    && /[0-9]/.test(password);
+  return (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password)
+  );
 }
 
 export function isValidSlug(slug: string): boolean {
@@ -478,9 +484,11 @@ export function hasPermission(user: User, permission: Permission): boolean {
     case 'project':
       if (role.type === 'technician') {
         // Technicians can only access assigned projects
-        return permission.action === 'read'
-          && permission.projectId
-          && role.assignedProjectIds.includes(permission.projectId);
+        return (
+          permission.action === 'read' &&
+          Boolean(permission.projectId) &&
+          role.assignedProjectIds.includes(permission.projectId as string)
+        );
       }
       if (role.type === 'customer_owner') {
         // Customer owners can read/update their projects
@@ -488,9 +496,11 @@ export function hasPermission(user: User, permission: Permission): boolean {
       }
       if (role.type === 'customer_viewer') {
         // Customer viewers can only read assigned projects
-        return permission.action === 'read'
-          && permission.projectId
-          && role.assignedProjectIds.includes(permission.projectId);
+        return (
+          permission.action === 'read' &&
+          Boolean(permission.projectId) &&
+          role.assignedProjectIds.includes(permission.projectId as string)
+        );
       }
       return false;
 
@@ -513,12 +523,12 @@ export function hasPermission(user: User, permission: Permission): boolean {
 
 export interface JWTPayload {
   // Standard claims
-  sub: string;  // User ID
-  iss: string;  // Issuer
-  aud: string;  // Audience
-  exp: number;  // Expiration (Unix timestamp)
-  iat: number;  // Issued at (Unix timestamp)
-  jti: string;  // JWT ID (for revocation)
+  sub: string; // User ID
+  iss: string; // Issuer
+  aud: string; // Audience
+  exp: number; // Expiration (Unix timestamp)
+  iat: number; // Issued at (Unix timestamp)
+  jti: string; // JWT ID (for revocation)
 
   // Custom claims
   orgId: string;
@@ -540,6 +550,6 @@ export function createJWTPayload(user: User, expiresIn: number = 3600): JWTPaylo
     orgId: user.orgId,
     email: user.email,
     role: user.role.type,
-    status: user.status
+    status: user.status,
   };
 }

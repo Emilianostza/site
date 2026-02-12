@@ -17,12 +17,7 @@
  */
 
 import { ServiceTier, Project, Asset } from '@/types';
-import {
-  getTierFeatures,
-  isTierFeatureEnabled,
-  getTierLimit,
-  getTierInfo
-} from '@/services/tiers';
+import { getTierFeatures, isTierFeatureEnabled, getTierLimit, getTierInfo } from '@/services/tiers';
 
 /**
  * Tier validation result
@@ -38,16 +33,13 @@ export interface TierValidationResult {
 /**
  * Check if user can upload a model
  */
-export function canUploadModel(
-  tier: ServiceTier,
-  currentModelCount: number
-): TierValidationResult {
+export function canUploadModel(tier: ServiceTier, currentModelCount: number): TierValidationResult {
   // Check if AR is enabled (all tiers have this)
   if (!isTierFeatureEnabled(tier, 'ar_enabled')) {
     return {
       allowed: false,
       reason: 'Feature not available in this tier',
-      message: 'Model uploads are not available in your tier'
+      message: 'Model uploads are not available in your tier',
     };
   }
 
@@ -59,7 +51,7 @@ export function canUploadModel(
       reason: 'Model limit exceeded',
       limit: maxModels,
       current: currentModelCount,
-      message: `Model limit (${maxModels}) reached. Upgrade to continue.`
+      message: `Model limit (${maxModels}) reached. Upgrade to continue.`,
     };
   }
 
@@ -69,10 +61,7 @@ export function canUploadModel(
 /**
  * Check if file size is within tier limit
  */
-export function canUploadFileSize(
-  tier: ServiceTier,
-  fileSizeMb: number
-): TierValidationResult {
+export function canUploadFileSize(tier: ServiceTier, fileSizeMb: number): TierValidationResult {
   const maxSizeMb = getTierLimit(tier, 'max_model_size_mb');
 
   if (fileSizeMb > maxSizeMb) {
@@ -81,7 +70,7 @@ export function canUploadFileSize(
       reason: 'File size exceeds tier limit',
       limit: maxSizeMb,
       current: fileSizeMb,
-      message: `File too large. Max ${maxSizeMb}MB for your tier.`
+      message: `File too large. Max ${maxSizeMb}MB for your tier.`,
     };
   }
 
@@ -106,7 +95,7 @@ export function canUseFeature(
     return {
       allowed: false,
       reason: 'Feature not available in this tier',
-      message: `This feature requires a higher tier. Upgrade from ${tierInfo.name} to enable it.`
+      message: `This feature requires a higher tier. Upgrade from ${tierInfo.name} to enable it.`,
     };
   }
 
@@ -180,10 +169,7 @@ export function getSLAUptime(tier: ServiceTier): number {
 /**
  * Get upgrade message (what user needs to do to enable feature)
  */
-export function getUpgradeMessage(
-  currentTier: ServiceTier,
-  featureNeeded: string
-): string {
+export function getUpgradeMessage(currentTier: ServiceTier, featureNeeded: string): string {
   const tierInfo = getTierInfo(currentTier);
   return `This feature requires a higher tier than ${tierInfo.name}. Please upgrade your plan.`;
 }
@@ -221,7 +207,7 @@ export function validateProjectOperation(
 
     case 'customize':
       // Check if customization features are available
-      return canUseFeature(tier, 'custom_branding');
+      return canUseFeature(tier, 'white_label');
 
     case 'api_access':
       // Only Enterprise allows API access

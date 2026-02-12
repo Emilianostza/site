@@ -33,14 +33,17 @@ export interface RateLimitConfig {
 /**
  * Rate limits by endpoint and tier
  */
-export const RATE_LIMITS: Record<string, Record<ServiceTier | 'unauthenticated', RateLimitConfig>> = {
+export const RATE_LIMITS: Record<
+  string,
+  Record<ServiceTier | 'unauthenticated', RateLimitConfig>
+> = {
   // Authentication endpoints (strict)
   '/api/auth/login': {
     basic: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
     business: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
     enterprise: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
     museum: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
-    unauthenticated: { requests_per_minute: 5, burst_size: 10, tier_aware: false }
+    unauthenticated: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
   },
 
   // Project list endpoint (tier-aware)
@@ -49,7 +52,7 @@ export const RATE_LIMITS: Record<string, Record<ServiceTier | 'unauthenticated',
     business: { requests_per_minute: 60, burst_size: 120, tier_aware: true },
     enterprise: { requests_per_minute: 300, burst_size: 500, tier_aware: true },
     museum: { requests_per_minute: 100, burst_size: 200, tier_aware: true },
-    unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false }
+    unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
   },
 
   // Asset upload (tiered limits)
@@ -58,7 +61,7 @@ export const RATE_LIMITS: Record<string, Record<ServiceTier | 'unauthenticated',
     business: { requests_per_minute: 20, burst_size: 40, tier_aware: true },
     enterprise: { requests_per_minute: 100, burst_size: 200, tier_aware: true },
     museum: { requests_per_minute: 30, burst_size: 60, tier_aware: true },
-    unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false }
+    unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
   },
 
   // API access (Enterprise only)
@@ -67,7 +70,7 @@ export const RATE_LIMITS: Record<string, Record<ServiceTier | 'unauthenticated',
     business: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
     enterprise: { requests_per_minute: 1000, burst_size: 2000, tier_aware: true },
     museum: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
-    unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false }
+    unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
   },
 
   // Public gallery (generous)
@@ -76,8 +79,8 @@ export const RATE_LIMITS: Record<string, Record<ServiceTier | 'unauthenticated',
     business: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
     enterprise: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
     museum: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
-    unauthenticated: { requests_per_minute: 60, burst_size: 120, tier_aware: false }
-  }
+    unauthenticated: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
+  },
 };
 
 /**
@@ -116,7 +119,7 @@ export async function checkRateLimit(
   return {
     allowed: true,
     remaining: tierConfig.requests_per_minute,
-    resetAfter: 60
+    resetAfter: 60,
   };
 }
 
@@ -127,14 +130,17 @@ export function getRateLimitHeaders(result: RateLimitResult): Record<string, str
   return {
     'X-RateLimit-Limit': '60',
     'X-RateLimit-Remaining': String(result.remaining),
-    'X-RateLimit-Reset': String(Math.floor(Date.now() / 1000) + result.resetAfter)
+    'X-RateLimit-Reset': String(Math.floor(Date.now() / 1000) + result.resetAfter),
   };
 }
 
 /**
  * Get default rate limit config for endpoint
  */
-export function getDefaultRateLimit(endpoint: string, tier: ServiceTier = 'basic'): RateLimitConfig {
+export function getDefaultRateLimit(
+  endpoint: string,
+  tier: ServiceTier = ServiceTier.Basic
+): RateLimitConfig {
   const config = RATE_LIMITS[endpoint] || RATE_LIMITS['/api/*'];
   return config[tier] || { requests_per_minute: 30, burst_size: 60, tier_aware: true };
 }

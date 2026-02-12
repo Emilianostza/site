@@ -136,7 +136,7 @@ const SceneDashboard: React.FC = () => {
               name: asset.name,
               description: asset.type || 'Imported Asset',
               price: '--',
-              thumb: asset.thumb,
+              thumb: (asset as any).thumb || '',
               modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb', // Fallback for mock
               category: 'Mains', // Defaulting to Mains for now
               isMain: true,
@@ -290,7 +290,11 @@ const SceneDashboard: React.FC = () => {
         {/* RIGHT PANEL: Editor */}
         <div className="flex-1 bg-stone-950 relative overflow-hidden flex flex-col">
           {selectedItem ? (
-            <EmbeddedModelEditor assetId={selectedItem.id} initialData={selectedItem} />
+            <EmbeddedModelEditor
+              key={selectedItem.id}
+              assetId={selectedItem.id}
+              initialData={selectedItem}
+            />
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-stone-500">
               <Box className="w-16 h-16 mb-4 opacity-20" />

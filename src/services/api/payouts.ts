@@ -48,7 +48,7 @@ export async function fetchPayouts(filter: PayoutFilter): Promise<{
 
   return {
     payouts: response.data,
-    nextCursor: (response as any).next_cursor
+    nextCursor: (response as any).next_cursor,
   };
 }
 
@@ -66,7 +66,7 @@ export async function getPayout(id: string): Promise<PayoutDTO> {
  */
 export async function approvePayout(id: string, approvedBy?: string): Promise<PayoutDTO> {
   const response = await apiClient.patch<{ data: PayoutDTO }>(`/payouts/${id}/approve`, {
-    approved_by: approvedBy
+    approved_by: approvedBy,
   });
   return response.data;
 }
@@ -77,7 +77,7 @@ export async function approvePayout(id: string, approvedBy?: string): Promise<Pa
  */
 export async function rejectPayout(id: string, reason: string): Promise<PayoutDTO> {
   const response = await apiClient.patch<{ data: PayoutDTO }>(`/payouts/${id}/reject`, {
-    reason
+    reason,
   });
   return response.data;
 }
@@ -93,7 +93,7 @@ export async function markPayoutAsPaid(
 ): Promise<PayoutDTO> {
   const response = await apiClient.patch<{ data: PayoutDTO }>(`/payouts/${id}/mark-paid`, {
     reference_id: referenceId,
-    paid_at: paidAt || new Date().toISOString()
+    paid_at: paidAt || new Date().toISOString(),
   });
   return response.data;
 }
@@ -120,7 +120,7 @@ export async function getPhotographerPayoutSummary(photographerId: string): Prom
  */
 export async function requestPayout(photographerId: string): Promise<PayoutDTO> {
   const response = await apiClient.post<{ data: PayoutDTO }>('/payouts/request', {
-    photographer_id: photographerId
+    photographer_id: photographerId,
   });
   return response.data;
 }
@@ -132,7 +132,7 @@ export async function generatePayoutInvoice(
   payoutId: string,
   format: 'pdf' | 'json' = 'pdf'
 ): Promise<{ url: string; invoiceId: string }> {
-  const response = await apiClient.post<{ url: string; invoice_id: string }>(
+  const response = await apiClient.post<{ url: string; invoiceId: string }>(
     `/payouts/${payoutId}/invoice`,
     { format }
   );
@@ -148,7 +148,7 @@ export async function exportPayouts(
 ): Promise<{ url: string }> {
   const response = await apiClient.post<{ url: string }>('/payouts/export', {
     format,
-    filter
+    filter,
   });
   return response;
 }
@@ -176,37 +176,40 @@ export function payoutFromDTO(dto: PayoutDTO): Payout {
     metadata: dto.metadata,
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
-    deletedAt: dto.deleted_at
+    deletedAt: dto.deleted_at,
   };
 }
 
 /**
  * Payout status descriptions for UI
  */
-export const PAYOUT_STATUS_DESCRIPTIONS: Record<PayoutStatus, { label: string; description: string; color: string }> = {
+export const PAYOUT_STATUS_DESCRIPTIONS: Record<
+  PayoutStatus,
+  { label: string; description: string; color: string }
+> = {
   [PayoutStatus.Pending]: {
     label: 'Pending',
     description: 'Awaiting finance approval',
-    color: 'bg-yellow-100 text-yellow-800'
+    color: 'bg-yellow-100 text-yellow-800',
   },
   [PayoutStatus.Approved]: {
     label: 'Approved',
     description: 'Approved, waiting for payment processing',
-    color: 'bg-blue-100 text-blue-800'
+    color: 'bg-blue-100 text-blue-800',
   },
   [PayoutStatus.Paid]: {
     label: 'Paid',
     description: 'Payment sent to photographer',
-    color: 'bg-green-100 text-green-800'
+    color: 'bg-green-100 text-green-800',
   },
   [PayoutStatus.Rejected]: {
     label: 'Rejected',
     description: 'Finance rejected this payout',
-    color: 'bg-red-100 text-red-800'
+    color: 'bg-red-100 text-red-800',
   },
   [PayoutStatus.Failed]: {
     label: 'Failed',
     description: 'Payment processing failed',
-    color: 'bg-red-100 text-red-800'
-  }
+    color: 'bg-red-100 text-red-800',
+  },
 };

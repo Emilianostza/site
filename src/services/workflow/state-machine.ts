@@ -37,7 +37,7 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Approved,
     type: 'approve',
     requiredRole: 'admin',
-    requiresAssignment: false
+    requiresAssignment: false,
   },
 
   // Pending → Rejected (admin only, for rejection)
@@ -46,7 +46,7 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Rejected,
     type: 'reject',
     requiredRole: 'admin',
-    requiresAssignment: false
+    requiresAssignment: false,
   },
 
   // Approved → In Progress (technician with assignment)
@@ -55,7 +55,7 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.InProgress,
     type: 'start',
     requiredRole: 'technician',
-    requiresAssignment: true
+    requiresAssignment: true,
   },
 
   // Approved → Rejected (admin only)
@@ -64,7 +64,7 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Rejected,
     type: 'reject',
     requiredRole: 'admin',
-    requiresAssignment: false
+    requiresAssignment: false,
   },
 
   // In Progress → Delivered (technician who started it)
@@ -73,7 +73,7 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Delivered,
     type: 'deliver',
     requiredRole: 'technician',
-    requiresAssignment: true
+    requiresAssignment: true,
   },
 
   // In Progress → Rejected (admin only, for cancellation)
@@ -82,7 +82,7 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Rejected,
     type: 'reject',
     requiredRole: 'admin',
-    requiresAssignment: false
+    requiresAssignment: false,
   },
 
   // Delivered → Archived (admin only, after completion)
@@ -91,7 +91,7 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Archived,
     type: 'archive',
     requiredRole: 'admin',
-    requiresAssignment: false
+    requiresAssignment: false,
   },
 
   // Rejected → Archived (admin only)
@@ -100,8 +100,8 @@ export const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Archived,
     type: 'archive',
     requiredRole: 'admin',
-    requiresAssignment: false
-  }
+    requiresAssignment: false,
+  },
 ];
 
 // ============================================================================
@@ -117,7 +117,7 @@ export function canTransition(
   userRole: 'admin' | 'approver' | 'technician' | 'customer',
   hasAssignment: boolean = false
 ): boolean {
-  const transition = VALID_TRANSITIONS.find(t => t.from === from && t.to === to);
+  const transition = VALID_TRANSITIONS.find((t) => t.from === from && t.to === to);
 
   if (!transition) return false;
   if (transition.requiredRole !== userRole && userRole !== 'admin') return false;
@@ -134,58 +134,86 @@ export function getNextStates(
   userRole: 'admin' | 'approver' | 'technician' | 'customer',
   hasAssignment: boolean = false
 ): ProjectStatus[] {
-  return VALID_TRANSITIONS
-    .filter(t => t.from === currentStatus && canTransition(currentStatus, t.to, userRole, hasAssignment))
-    .map(t => t.to);
+  return VALID_TRANSITIONS.filter(
+    (t) => t.from === currentStatus && canTransition(currentStatus, t.to, userRole, hasAssignment)
+  ).map((t) => t.to);
 }
 
 /**
  * Get transition details
  */
 export function getTransition(from: ProjectStatus, to: ProjectStatus): StateTransition | null {
-  return VALID_TRANSITIONS.find(t => t.from === from && t.to === to) || null;
+  return VALID_TRANSITIONS.find((t) => t.from === from && t.to === to) || null;
 }
 
 /**
  * Check if status is terminal (no further transitions possible)
  */
 export function isTerminalStatus(status: ProjectStatus): boolean {
-  return !VALID_TRANSITIONS.some(t => t.from === status);
+  return !VALID_TRANSITIONS.some((t) => t.from === status);
 }
 
 // ============================================================================
 // STATUS DESCRIPTIONS
 // ============================================================================
 
-export const STATUS_DESCRIPTIONS: Record<ProjectStatus, { label: string; description: string; color: string }> = {
+export const STATUS_DESCRIPTIONS: Record<
+  ProjectStatus,
+  { label: string; description: string; color: string }
+> = {
   [ProjectStatus.Pending]: {
     label: 'Pending',
     description: 'Awaiting approval from team',
-    color: 'bg-yellow-100 text-yellow-800'
+    color: 'bg-yellow-100 text-yellow-800',
+  },
+  [ProjectStatus.Requested]: {
+    label: 'Requested',
+    description: 'Customer requested a project',
+    color: 'bg-yellow-100 text-yellow-800',
+  },
+  [ProjectStatus.Assigned]: {
+    label: 'Assigned',
+    description: 'Project assigned to technician',
+    color: 'bg-orange-100 text-orange-800',
+  },
+  [ProjectStatus.Captured]: {
+    label: 'Captured',
+    description: 'Raw files captured',
+    color: 'bg-blue-100 text-blue-800',
+  },
+  [ProjectStatus.Processing]: {
+    label: 'Processing',
+    description: 'Files being processed',
+    color: 'bg-purple-100 text-purple-800',
+  },
+  [ProjectStatus.QA]: {
+    label: 'QA',
+    description: 'Under quality assurance review',
+    color: 'bg-indigo-100 text-indigo-800',
   },
   [ProjectStatus.Approved]: {
     label: 'Approved',
     description: 'Ready for technician to start work',
-    color: 'bg-blue-100 text-blue-800'
+    color: 'bg-blue-100 text-blue-800',
   },
   [ProjectStatus.InProgress]: {
     label: 'In Progress',
     description: 'Technician is actively working',
-    color: 'bg-purple-100 text-purple-800'
+    color: 'bg-purple-100 text-purple-800',
   },
   [ProjectStatus.Delivered]: {
     label: 'Delivered',
     description: 'Assets delivered to customer',
-    color: 'bg-green-100 text-green-800'
+    color: 'bg-green-100 text-green-800',
   },
   [ProjectStatus.Archived]: {
     label: 'Archived',
     description: 'Project completed and archived',
-    color: 'bg-slate-100 text-slate-800'
+    color: 'bg-slate-100 text-slate-800',
   },
   [ProjectStatus.Rejected]: {
     label: 'Rejected',
     description: 'Project was rejected or cancelled',
-    color: 'bg-red-100 text-red-800'
-  }
+    color: 'bg-red-100 text-red-800',
+  },
 };

@@ -16,12 +16,7 @@
 import { apiClient } from '@/services/api/client';
 import { env } from '@/config/env';
 import { PortalRole } from '@/types';
-import {
-  LoginRequestDTO,
-  LoginResponseDTO,
-  userToDTO,
-  UserProfileDTO
-} from '@/types/auth';
+import { LoginRequestDTO, LoginResponseDTO, userToDTO, UserProfileDTO, User } from '@/types/auth';
 
 // ============================================================================
 // TYPE EXPORTS
@@ -46,7 +41,7 @@ export interface RefreshTokenResponse {
 const USE_MOCK_DATA = env.useMockData;
 
 // Helper to simulate network delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // ============================================================================
 // MOCK DATA (only used when USE_MOCK_DATA === true)
@@ -63,7 +58,7 @@ const MOCK_USERS_MAP: Record<string, any> = {
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   'user-approver': {
     id: 'user-approver',
@@ -75,7 +70,7 @@ const MOCK_USERS_MAP: Record<string, any> = {
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   'user-tech': {
     id: 'user-tech',
@@ -87,7 +82,7 @@ const MOCK_USERS_MAP: Record<string, any> = {
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   'user-client-bistro': {
     id: 'user-client-bistro',
@@ -100,20 +95,25 @@ const MOCK_USERS_MAP: Record<string, any> = {
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   'user-client-museum': {
     id: 'user-client-museum',
     email: 'client@museum.com',
     name: 'Museum Curator',
-    role: { type: 'customer_viewer', orgId: 'cust-museum', customerId: 'cust-museum', assignedProjectIds: [] },
+    role: {
+      type: 'customer_viewer',
+      orgId: 'cust-museum',
+      customerId: 'cust-museum',
+      assignedProjectIds: [],
+    },
     orgId: 'cust-museum',
     customerId: 'cust-museum',
     status: 'active' as const,
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   'user-emiliano-admin': {
     id: 'user-emiliano-admin',
@@ -125,7 +125,7 @@ const MOCK_USERS_MAP: Record<string, any> = {
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   'user-emiliano-customer': {
     id: 'user-emiliano-customer',
@@ -138,8 +138,8 @@ const MOCK_USERS_MAP: Record<string, any> = {
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
+    updatedAt: new Date().toISOString(),
+  },
 };
 
 // ============================================================================
@@ -149,13 +149,15 @@ const MOCK_USERS_MAP: Record<string, any> = {
 async function mockLogin(request: LoginRequest): Promise<LoginResponse> {
   await delay(800);
 
-  const user = Object.values(MOCK_USERS_MAP).find(u => u.email.toLowerCase() === request.email.toLowerCase());
+  const user = Object.values(MOCK_USERS_MAP).find(
+    (u) => u.email.toLowerCase() === request.email.toLowerCase()
+  );
 
   if (!user) {
     throw {
       status: 401,
       message: 'Invalid email or password',
-      code: 'INVALID_CREDENTIALS'
+      code: 'INVALID_CREDENTIALS',
     };
   }
 
@@ -166,7 +168,7 @@ async function mockLogin(request: LoginRequest): Promise<LoginResponse> {
     user: userToDTO(user),
     token,
     refreshToken,
-    expiresIn: 3600
+    expiresIn: 3600,
   };
 }
 
@@ -178,7 +180,7 @@ async function mockGetCurrentUser(): Promise<LoginResponseDTO['user']> {
     throw {
       status: 401,
       message: 'Invalid or expired token',
-      code: 'INVALID_TOKEN'
+      code: 'INVALID_TOKEN',
     };
   }
 
@@ -186,29 +188,27 @@ async function mockGetCurrentUser(): Promise<LoginResponseDTO['user']> {
   const userIdParts = parts.slice(2, parts.length - 1);
   const userId = userIdParts.join('-');
 
-  const user = Object.values(MOCK_USERS_MAP).find(u => u.id === userId);
+  const user = Object.values(MOCK_USERS_MAP).find((u) => u.id === userId);
 
   if (!user) {
     throw {
       status: 401,
       message: 'User not found for token',
-      code: 'INVALID_TOKEN'
+      code: 'INVALID_TOKEN',
     };
   }
 
   return userToDTO(user);
 }
 
-async function mockRefreshToken(
-  request: RefreshTokenRequest
-): Promise<RefreshTokenResponse> {
+async function mockRefreshToken(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {
   await delay(500);
 
   if (!request.refresh_token || !request.refresh_token.startsWith('mock-refresh-')) {
     throw {
       status: 401,
       message: 'Refresh token expired',
-      code: 'REFRESH_TOKEN_EXPIRED'
+      code: 'REFRESH_TOKEN_EXPIRED',
     };
   }
 
@@ -216,13 +216,13 @@ async function mockRefreshToken(
   const userIdParts = parts.slice(2, parts.length - 1);
   const userId = userIdParts.join('-');
 
-  const user = Object.values(MOCK_USERS_MAP).find(u => u.id === userId);
+  const user = Object.values(MOCK_USERS_MAP).find((u) => u.id === userId);
 
   if (!user) {
     throw {
       status: 401,
       message: 'Invalid refresh token',
-      code: 'REFRESH_TOKEN_EXPIRED'
+      code: 'REFRESH_TOKEN_EXPIRED',
     };
   }
 
@@ -230,7 +230,7 @@ async function mockRefreshToken(
 
   return {
     token: newToken,
-    expiresIn: 3600
+    expiresIn: 3600,
   };
 }
 
@@ -243,7 +243,7 @@ function mockIsTokenExpired(token: string): boolean {
 
   if (isNaN(timestamp)) return true;
 
-  const expirationTime = timestamp + (3600 * 1000);
+  const expirationTime = timestamp + 3600 * 1000;
   const now = Date.now();
 
   return now >= expirationTime - 30000;
@@ -258,7 +258,7 @@ function mockGetTokenTTL(token: string): number {
 
   if (isNaN(timestamp)) return 0;
 
-  const expirationTime = timestamp + (3600 * 1000);
+  const expirationTime = timestamp + 3600 * 1000;
   const now = Date.now();
   const remaining = Math.max(0, (expirationTime - now) / 1000);
 
@@ -275,14 +275,14 @@ async function realLogin(request: LoginRequest): Promise<LoginResponse> {
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email: request.email,
-    password: request.password
+    password: request.password,
   });
 
   if (error || !data.session) {
     throw {
       status: 401,
       message: error?.message || 'Login failed',
-      code: 'INVALID_CREDENTIALS'
+      code: 'INVALID_CREDENTIALS',
     };
   }
 
@@ -297,45 +297,50 @@ async function realLogin(request: LoginRequest): Promise<LoginResponse> {
     throw {
       status: 401,
       message: 'User profile not found',
-      code: 'INVALID_USER'
+      code: 'INVALID_USER',
     };
   }
 
-  // Build user DTO from Supabase data
-  const userDTO: UserProfileDTO = {
+  // Build user domain object first, then convert to DTO
+  const user: User = {
     id: data.user.id,
+    orgId: profileData.org_id || '',
     email: data.user.email || '',
     name: profileData.name || '',
     role: {
-      type: 'customer_owner' as PortalRole,
-      orgId: profileData.org_id || ''
+      type: 'customer_owner' as const,
+      orgId: profileData.org_id || '',
+      customerId: profileData.org_id || '',
     },
-    orgId: profileData.org_id || '',
     status: 'active' as const,
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: profileData.created_at || new Date().toISOString(),
-    updatedAt: profileData.updated_at || new Date().toISOString()
+    updatedAt: profileData.updated_at || new Date().toISOString(),
   };
+  const userDTO = userToDTO(user);
 
   return {
     user: userDTO,
     token: data.session.access_token,
     refreshToken: data.session.refresh_token || '',
-    expiresIn: 3600
+    expiresIn: 3600,
   };
 }
 
 async function realGetCurrentUser(): Promise<LoginResponseDTO['user']> {
   const { supabase } = await import('@/services/supabase/client');
 
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
   if (sessionError || !session) {
     throw {
       status: 401,
       message: 'No active session',
-      code: 'INVALID_TOKEN'
+      code: 'INVALID_TOKEN',
     };
   }
 
@@ -349,49 +354,49 @@ async function realGetCurrentUser(): Promise<LoginResponseDTO['user']> {
     throw {
       status: 401,
       message: 'User profile not found',
-      code: 'INVALID_USER'
+      code: 'INVALID_USER',
     };
   }
 
-  const userDTO: UserProfileDTO = {
+  // Build user domain object first, then convert to DTO
+  const user: User = {
     id: session.user.id,
+    orgId: profileData.org_id || '',
     email: session.user.email || '',
     name: profileData.name || '',
     role: {
-      type: 'customer_owner' as PortalRole,
-      orgId: profileData.org_id || ''
+      type: 'customer_owner' as const,
+      orgId: profileData.org_id || '',
+      customerId: profileData.org_id || '',
     },
-    orgId: profileData.org_id || '',
     status: 'active' as const,
     mfaEnabled: false,
     failedLoginAttempts: 0,
     createdAt: profileData.created_at || new Date().toISOString(),
-    updatedAt: profileData.updated_at || new Date().toISOString()
+    updatedAt: profileData.updated_at || new Date().toISOString(),
   };
 
-  return userDTO;
+  return userToDTO(user);
 }
 
-async function realRefreshToken(
-  request: RefreshTokenRequest
-): Promise<RefreshTokenResponse> {
+async function realRefreshToken(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {
   const { supabase } = await import('@/services/supabase/client');
 
   const { data, error } = await supabase.auth.refreshSession({
-    refresh_token: request.refresh_token
+    refresh_token: request.refresh_token,
   });
 
   if (error || !data.session) {
     throw {
       status: 401,
       message: 'Token refresh failed',
-      code: 'REFRESH_TOKEN_EXPIRED'
+      code: 'REFRESH_TOKEN_EXPIRED',
     };
   }
 
   return {
     token: data.session.access_token,
-    expiresIn: 3600
+    expiresIn: 3600,
   };
 }
 
@@ -412,6 +417,7 @@ function realIsTokenExpired(token: string): boolean {
     if (parts.length !== 3) return true;
 
     // Decode payload
+
     const payload = JSON.parse(atob(parts[1]));
     if (!payload.exp) return true;
 
@@ -420,7 +426,7 @@ function realIsTokenExpired(token: string): boolean {
     const now = Date.now();
     const bufferMs = 5 * 60 * 1000;
 
-    return now > (expiryTime - bufferMs);
+    return now > expiryTime - bufferMs;
   } catch (error) {
     console.warn('[Auth] Token decode error:', error);
     return true;
@@ -476,9 +482,7 @@ export async function getCurrentUser(): Promise<LoginResponseDTO['user']> {
  * Refresh an expired JWT token
  * Routes to mock or real based on VITE_USE_MOCK_DATA flag
  */
-export async function refreshToken(
-  request: RefreshTokenRequest
-): Promise<RefreshTokenResponse> {
+export async function refreshToken(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {
   if (USE_MOCK_DATA) {
     return mockRefreshToken(request);
   }

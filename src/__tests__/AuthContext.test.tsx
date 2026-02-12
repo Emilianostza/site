@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import * as AuthAPI from '@/services/api/auth';
+import { userToDTO } from '@/types/auth';
 
 // Mock auth API
 vi.mock('@/services/api/auth', () => ({
@@ -48,10 +49,7 @@ const TestComponent = () => {
       <div data-testid="user">{user ? user.email : 'no-user'}</div>
       <div data-testid="token">{token ? 'has-token' : 'no-token'}</div>
       <div data-testid="error">{error || 'no-error'}</div>
-      <button
-        onClick={() => login('test@example.com', 'password123')}
-        data-testid="login-button"
-      >
+      <button onClick={() => login('test@example.com', 'password123')} data-testid="login-button">
         Login
       </button>
       <button onClick={() => logout()} data-testid="logout-button">
@@ -111,7 +109,7 @@ describe('AuthContext', () => {
       };
 
       vi.mocked(AuthAPI.login).mockResolvedValueOnce({
-        user: mockUser,
+        user: userToDTO(mockUser),
         token: 'test-token-123',
         refreshToken: 'refresh-token-456',
         expiresIn: 3600,
@@ -178,7 +176,7 @@ describe('AuthContext', () => {
       };
 
       vi.mocked(AuthAPI.login).mockResolvedValueOnce({
-        user: mockUser,
+        user: userToDTO(mockUser),
         token: 'test-token-123',
         refreshToken: 'refresh-token-456',
         expiresIn: 3600,
@@ -222,7 +220,7 @@ describe('AuthContext', () => {
       };
 
       vi.mocked(AuthAPI.login).mockResolvedValueOnce({
-        user: mockUser,
+        user: userToDTO(mockUser),
         token: 'test-token-123',
         refreshToken: 'refresh-token-456',
         expiresIn: 3600,
@@ -302,7 +300,7 @@ describe('AuthContext', () => {
 
       vi.mocked(localStorage.getItem).mockImplementation(mockGetItem);
 
-      vi.mocked(AuthAPI.getCurrentUser).mockResolvedValueOnce(mockUser);
+      vi.mocked(AuthAPI.getCurrentUser).mockResolvedValueOnce(userToDTO(mockUser));
 
       render(
         <AuthProvider>
@@ -344,9 +342,7 @@ describe('AuthContext', () => {
     });
 
     it('should handle missing user profile', async () => {
-      vi.mocked(AuthAPI.getCurrentUser).mockRejectedValueOnce(
-        new Error('User profile not found')
-      );
+      vi.mocked(AuthAPI.getCurrentUser).mockRejectedValueOnce(new Error('User profile not found'));
 
       render(
         <AuthProvider>
@@ -390,7 +386,7 @@ describe('AuthContext', () => {
       };
 
       vi.mocked(AuthAPI.login).mockResolvedValueOnce({
-        user: mockUser,
+        user: userToDTO(mockUser),
         token: 'mock-token-admin-123',
         refreshToken: 'mock-refresh-admin',
         expiresIn: 3600,
@@ -415,7 +411,11 @@ describe('AuthContext', () => {
         id: 'supabase-user-uuid',
         email: 'real@example.com',
         name: 'Real User',
-        role: { type: 'customer_owner' as const, orgId: 'org-supabase' },
+        role: {
+          type: 'customer_owner' as const,
+          orgId: 'org-supabase',
+          customerId: 'org-supabase',
+        },
         orgId: 'org-supabase',
         status: 'active' as const,
         mfaEnabled: false,
@@ -425,8 +425,8 @@ describe('AuthContext', () => {
       };
 
       vi.mocked(AuthAPI.login).mockResolvedValueOnce({
-        user: supabaseUser,
-        token: 'eyJhbGc...',  // Real JWT format
+        user: userToDTO(supabaseUser),
+        token: 'eyJhbGc...', // Real JWT format
         refreshToken: 'real-refresh-token',
         expiresIn: 3600,
       });

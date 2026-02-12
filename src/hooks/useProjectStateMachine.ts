@@ -22,7 +22,7 @@ import {
   getValidNextStates,
   getTransitionDescription,
   requiresApproval,
-  TERMINAL_STATES
+  TERMINAL_STATES,
 } from '@/services/stateMachine';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -54,7 +54,7 @@ export function useProjectStateMachine(
   roleOverride?: string
 ): UseProjectStateMachineResult {
   const { user } = useAuth();
-  const userRole = roleOverride || user?.role || 'public';
+  const userRole = roleOverride || user?.role?.type || 'public';
 
   const result = useMemo<UseProjectStateMachineResult>(() => {
     return {
@@ -74,7 +74,7 @@ export function useProjectStateMachine(
 
       isTerminalState: TERMINAL_STATES.includes(currentStatus),
 
-      userRole
+      userRole,
     };
   }, [currentStatus, userRole]);
 

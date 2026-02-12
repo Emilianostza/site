@@ -4,7 +4,7 @@ import { ProjectStatus } from '@/types/domain';
 // Mutable store for the session
 const PROJECTS: Project[] = [
   {
-    id: 'PRJ-001',
+    id: 'CUST-001',
     name: 'Summer Menu Update',
     client: 'Bistro 55',
     status: ProjectStatus.Approved,
@@ -12,18 +12,18 @@ const PROJECTS: Project[] = [
     type: 'restaurant_menu',
   },
   {
-    id: 'PRJ-002',
+    id: 'CUST-002',
     name: 'Fall Collection',
     client: 'Style Co',
-    status: ProjectStatus.Processing,
+    status: ProjectStatus.InProgress,
     items: 45,
     type: 'standard',
   },
   {
-    id: 'PRJ-003',
+    id: 'CUST-003',
     name: 'Ancient Egypt Exhibit',
     client: 'History Museum',
-    status: ProjectStatus.QA,
+    status: ProjectStatus.Pending,
     items: 8,
     type: 'standard',
   },
@@ -45,10 +45,10 @@ export const addProject = async (project: {
 }): Promise<Project> => {
   await new Promise((resolve) => setTimeout(resolve, 500));
   const newProject: Project = {
-    id: `PRJ-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+    id: `CUST-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
     name: project.name,
     client: project.client,
-    status: project.status || ProjectStatus.Processing,
+    status: project.status || ProjectStatus.InProgress,
     items: 0,
     type: project.type,
     address: project.address,

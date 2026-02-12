@@ -18,9 +18,7 @@ export interface CreateAssignmentRequestDTO {
 /**
  * Assign a photographer to a project
  */
-export async function assignPhotographer(
-  data: CreateAssignmentRequestDTO
-): Promise<AssignmentDTO> {
+export async function assignPhotographer(data: CreateAssignmentRequestDTO): Promise<AssignmentDTO> {
   const response = await apiClient.post<{ data: AssignmentDTO }>('/assignments', data);
   return response.data;
 }
@@ -37,7 +35,9 @@ export async function getProjectAssignments(projectId: string): Promise<Assignme
  * Get assignments for a photographer
  */
 export async function getPhotographerAssignments(photographerId: string): Promise<AssignmentDTO[]> {
-  const response = await apiClient.get<AssignmentDTO[]>(`/assignments?photographer_id=${photographerId}`);
+  const response = await apiClient.get<AssignmentDTO[]>(
+    `/assignments?photographer_id=${photographerId}`
+  );
   return response;
 }
 
@@ -46,7 +46,7 @@ export async function getPhotographerAssignments(photographerId: string): Promis
  */
 export async function acceptAssignment(assignmentId: string): Promise<AssignmentDTO> {
   const response = await apiClient.patch<{ data: AssignmentDTO }>(`/assignments/${assignmentId}`, {
-    status: 'accepted'
+    status: 'accepted',
   });
   return response.data;
 }
@@ -56,7 +56,7 @@ export async function acceptAssignment(assignmentId: string): Promise<Assignment
  */
 export async function completeAssignment(assignmentId: string): Promise<AssignmentDTO> {
   const response = await apiClient.patch<{ data: AssignmentDTO }>(`/assignments/${assignmentId}`, {
-    status: 'completed'
+    status: 'completed',
   });
   return response.data;
 }
@@ -67,7 +67,7 @@ export async function completeAssignment(assignmentId: string): Promise<Assignme
 export async function cancelAssignment(assignmentId: string, reason?: string): Promise<void> {
   await apiClient.patch(`/assignments/${assignmentId}`, {
     status: 'cancelled',
-    metadata: { cancellation_reason: reason }
+    metadata: { cancellation_reason: reason },
   });
 }
 
@@ -82,10 +82,9 @@ export function assignmentFromDTO(dto: AssignmentDTO): Assignment {
     photographerId: dto.photographer_id,
     role: dto.role,
     status: dto.status,
-    roleAssignedAt: dto.created_at,
     metadata: dto.metadata,
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
-    deletedAt: dto.deleted_at
+    deletedAt: dto.deleted_at,
   };
 }

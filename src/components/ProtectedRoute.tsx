@@ -27,7 +27,11 @@ interface ProtectedRouteProps {
  * If user is not authenticated, redirects to /app/login.
  * If user lacks required role/permission, redirects to /.
  */
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles, requiredPermissions }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  requiredRoles,
+  requiredPermissions,
+}) => {
   const { user, loading, hasPermission } = useAuth();
 
   // Loading state
@@ -50,14 +54,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
   // Role check (if required roles specified)
   if (requiredRoles) {
     const userRole = user.role.type;
-    if (!requiredRoles.includes(userRole as any)) {
+    if (!(requiredRoles as string[]).includes(userRole)) {
       return <Navigate to="/" replace />;
     }
   }
 
   // Permission check (if required permissions specified)
   if (requiredPermissions) {
-    const hasAllPermissions = requiredPermissions.every(permission => hasPermission(permission));
+    const hasAllPermissions = requiredPermissions.every((permission) => hasPermission(permission));
     if (!hasAllPermissions) {
       return <Navigate to="/" replace />;
     }

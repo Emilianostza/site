@@ -49,64 +49,99 @@ const AppContent: React.FC = () => {
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/industries" element={<Navigate to="/" replace />} />
-              <Route path="/industries/:type" element={<Industry />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/request" element={<RequestForm />} />
-              <Route path="/security" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Trust & Security</h1></div>} />
-              <Route path="/privacy" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Privacy Policy</h1></div>} />
-              <Route path="/terms" element={<div className="container mx-auto py-20 px-4 text-center"><h1 className="text-3xl font-bold dark:text-white">Terms of Service</h1></div>} />
+                <Route path="/" element={<Home />} />
+                <Route path="/industries" element={<Navigate to="/" replace />} />
+                <Route path="/industries/:type" element={<Industry />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/request" element={<RequestForm />} />
+                <Route
+                  path="/security"
+                  element={
+                    <div className="container mx-auto py-20 px-4 text-center">
+                      <h1 className="text-3xl font-bold dark:text-white">Trust & Security</h1>
+                    </div>
+                  }
+                />
+                <Route
+                  path="/privacy"
+                  element={
+                    <div className="container mx-auto py-20 px-4 text-center">
+                      <h1 className="text-3xl font-bold dark:text-white">Privacy Policy</h1>
+                    </div>
+                  }
+                />
+                <Route
+                  path="/terms"
+                  element={
+                    <div className="container mx-auto py-20 px-4 text-center">
+                      <h1 className="text-3xl font-bold dark:text-white">Terms of Service</h1>
+                    </div>
+                  }
+                />
 
-              {/* Auth Routes (public) */}
-              <Route path="/app/login" element={<Login />} />
+                {/* Auth Routes (public) */}
+                <Route path="/app/login" element={<Login />} />
 
-              {/* Protected Employee Routes */}
-              <Route
-                path="/app/dashboard"
-                element={
-                  <ProtectedRoute requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.SalesLead, PortalRole.Admin]}>
-                    <Portal role="employee" />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/app/editor/:assetId"
-                element={
-                  <ProtectedRoute requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}>
-                    <SceneDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/app/editor/:assetId/3d"
-                element={
-                  <ProtectedRoute requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}>
-                    <ModelEditor />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Protected Employee Routes */}
+                <Route
+                  path="/app/dashboard"
+                  element={
+                    <ProtectedRoute
+                      requiredRoles={[
+                        PortalRole.Technician,
+                        PortalRole.Approver,
+                        PortalRole.SalesLead,
+                        PortalRole.Admin,
+                      ]}
+                    >
+                      <Portal role="employee" />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/app/editor/:assetId"
+                  element={
+                    <ProtectedRoute
+                      requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}
+                    >
+                      <SceneDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/app/editor/:assetId/3d"
+                  element={
+                    <ProtectedRoute
+                      requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}
+                    >
+                      <ModelEditor />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Protected Customer Routes */}
-              <Route
-                path="/portal/dashboard"
-                element={
-                  <ProtectedRoute requiredRoles={[PortalRole.CustomerOwner, PortalRole.CustomerViewer]}>
-                    <Portal role="customer" />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Protected Customer Routes */}
+                <Route
+                  path="/portal/dashboard"
+                  element={
+                    <ProtectedRoute
+                      requiredRoles={[PortalRole.CustomerOwner, PortalRole.CustomerViewer]}
+                    >
+                      <Portal role="customer" />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Templates (public) */}
-              <Route path="/project/:id/menu" element={<RestaurantMenu />} />
+                {/* Templates (public) */}
+                <Route path="/project/:id/menu" element={<RestaurantMenu />} />
+                <Route path="/project/:id/menu/edit" element={<RestaurantMenu />} />
 
-              {/* Editor (public route exists for demo, protected version above) */}
-              <Route path="/editor/:assetId" element={<ModelEditor />} />
+                {/* Editor (public route exists for demo, protected version above) */}
+                <Route path="/editor/:assetId" element={<ModelEditor />} />
 
-              {/* 404 Catch all */}
-              <Route path="*" element={<NotFound />} />
+                {/* 404 Catch all */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

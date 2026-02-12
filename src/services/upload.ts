@@ -20,8 +20,8 @@
  * - No exposing AWS keys to frontend
  */
 
-import { apiClient } from '@/services/api';
-import * as AssetsAPI from '@/api/assets';
+import { apiClient } from '@/services/api/client';
+import * as AssetsAPI from '@/services/api/assets';
 import { Asset } from '@/types';
 
 export interface UploadProgress {
@@ -60,7 +60,7 @@ async function getUploadUrl(
     project_id: projectId,
     file_name: fileName,
     file_size: fileSize,
-    content_type: contentType
+    content_type: contentType,
   });
 }
 
@@ -86,7 +86,7 @@ async function uploadToS3(
           onProgress({
             loaded: e.loaded,
             total: e.total,
-            percentage: Math.round((e.loaded / e.total) * 100)
+            percentage: Math.round((e.loaded / e.total) * 100),
           });
         }
       });
@@ -145,7 +145,7 @@ async function completeUpload(
     project_id: projectId,
     file_key: `projects/${projectId}/assets/${assetId}/${fileName}`,
     file_size: fileSize,
-    content_type: contentType
+    content_type: contentType,
   });
 }
 
@@ -182,12 +182,7 @@ export async function uploadFile(options: UploadOptions): Promise<UploadResult> 
       onProgress({ loaded: 0, total: file.size, percentage: 0 });
     }
 
-    const uploadUrlResponse = await getUploadUrl(
-      projectId,
-      fileName,
-      file.size,
-      mimeType
-    );
+    const uploadUrlResponse = await getUploadUrl(projectId, fileName, file.size, mimeType);
 
     // Step 2: Upload to S3
     const progressHandler = onProgress
@@ -195,7 +190,7 @@ export async function uploadFile(options: UploadOptions): Promise<UploadResult> 
           // Report first 90% for upload progress
           onProgress({
             ...p,
-            percentage: Math.round(p.percentage * 0.9)
+            percentage: Math.round(p.percentage * 0.9),
           });
         }
       : undefined;
@@ -207,13 +202,7 @@ export async function uploadFile(options: UploadOptions): Promise<UploadResult> 
       onProgress({ loaded: file.size, total: file.size, percentage: 90 });
     }
 
-    const asset = await completeUpload(
-      projectId,
-      assetId,
-      fileName,
-      file.size,
-      mimeType
-    );
+    const asset = await completeUpload(projectId, assetId, fileName, file.size, mimeType);
 
     if (onProgress) {
       onProgress({ loaded: file.size, total: file.size, percentage: 100 });
@@ -225,7 +214,7 @@ export async function uploadFile(options: UploadOptions): Promise<UploadResult> 
     return {
       asset: {} as Asset,
       success: false,
-      error: message
+      error: message,
     };
   }
 }
@@ -266,7 +255,7 @@ export function validateFile(
   if (options?.maxSize && file.size > options.maxSize) {
     return {
       valid: false,
-      error: `File too large. Max: ${formatFileSize(options.maxSize)}`
+      error: `File too large. Max: ${formatFileSize(options.maxSize)}`,
     };
   }
 
@@ -274,7 +263,7 @@ export function validateFile(
   if (options?.allowedTypes && !options.allowedTypes.includes(file.type)) {
     return {
       valid: false,
-      error: `File type not allowed. Allowed: ${options.allowedTypes.join(', ')}`
+      error: `File type not allowed. Allowed: ${options.allowedTypes.join(', ')}`,
     };
   }
 
@@ -285,11 +274,11 @@ export function validateFile(
  * Supported 3D model formats
  */
 export const SUPPORTED_FORMATS = [
-  'model/gltf-binary',      // .glb
-  'model/gltf+json',        // .gltf
-  'model/vnd.usdz',         // .usdz
-  'application/x-zip',      // .zip (may contain obj+mtl)
-  'image/vnd.adobe.photoshop' // PSD for reference
+  'model/gltf-binary', // .glb
+  'model/gltf+json', // .gltf
+  'model/vnd.usdz', // .usdz
+  'application/x-zip', // .zip (may contain obj+mtl)
+  'image/vnd.adobe.photoshop', // PSD for reference
 ];
 
 /**

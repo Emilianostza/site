@@ -71,7 +71,7 @@ async function testClientInitialization() {
       name: 'Client Initialization',
       status: 'success',
       message: 'Supabase client initialized successfully',
-      duration: performance.now() - start
+      duration: performance.now() - start,
     });
   } catch (error) {
     results.push({
@@ -79,7 +79,7 @@ async function testClientInitialization() {
       status: 'failed',
       message: 'Failed to initialize Supabase client',
       duration: performance.now() - start,
-      error: String(error)
+      error: String(error),
     });
   }
 }
@@ -105,7 +105,7 @@ async function testGetSession() {
       message: hasSession
         ? `Session found: ${data.session?.user?.email}`
         : 'No session (user not authenticated)',
-      duration: performance.now() - start
+      duration: performance.now() - start,
     });
   } catch (error) {
     results.push({
@@ -113,7 +113,7 @@ async function testGetSession() {
       status: 'failed',
       message: 'Failed to get session',
       duration: performance.now() - start,
-      error: String(error)
+      error: String(error),
     });
   }
 }
@@ -127,15 +127,15 @@ async function testAuthState() {
   try {
     let listenerCalled = false;
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const subscription = supabase.auth.onAuthStateChange((event, session) => {
       listenerCalled = true;
       console.log(`  → Auth event: ${event}, session: ${session ? 'present' : 'none'}`);
     });
 
     // Give listener a moment to fire
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
-    if (!authListener) {
+    if (!subscription?.data) {
       throw new Error('Auth listener not created');
     }
 
@@ -143,18 +143,22 @@ async function testAuthState() {
       name: 'Auth State Listener',
       status: 'success',
       message: 'Auth state listener created successfully',
-      duration: performance.now() - start
+      duration: performance.now() - start,
     });
 
     // Cleanup
-    authListener.unsubscribe();
+    if (subscription?.data && typeof (subscription.data as any)?.unsubscribe === 'function') {
+      (subscription.data as any).unsubscribe();
+    } else if ((subscription?.data as any)?.subscription?.unsubscribe) {
+      (subscription.data as any).subscription.unsubscribe();
+    }
   } catch (error) {
     results.push({
       name: 'Auth State Listener',
       status: 'failed',
       message: 'Failed to create auth listener',
       duration: performance.now() - start,
-      error: String(error)
+      error: String(error),
     });
   }
 }
@@ -179,7 +183,7 @@ async function testDatabaseConnectivity() {
           name: 'Database Connectivity',
           status: 'success',
           message: 'Database reachable (RLS policies working)',
-          duration: performance.now() - start
+          duration: performance.now() - start,
         });
       } else {
         throw new Error(`Database error: ${error.message}`);
@@ -189,7 +193,7 @@ async function testDatabaseConnectivity() {
         name: 'Database Connectivity',
         status: 'success',
         message: 'Database reachable and queryable',
-        duration: performance.now() - start
+        duration: performance.now() - start,
       });
     }
   } catch (error) {
@@ -198,7 +202,7 @@ async function testDatabaseConnectivity() {
       status: 'failed',
       message: 'Failed to connect to database',
       duration: performance.now() - start,
-      error: String(error)
+      error: String(error),
     });
   }
 }
@@ -226,7 +230,7 @@ async function testUserProfilesAccess() {
         error?.code === '403'
           ? 'Table exists (RLS prevents access without auth)'
           : `Table accessible (${count || 0} records)`,
-      duration: performance.now() - start
+      duration: performance.now() - start,
     });
   } catch (error) {
     results.push({
@@ -234,7 +238,7 @@ async function testUserProfilesAccess() {
       status: 'failed',
       message: 'Failed to query user_profiles',
       duration: performance.now() - start,
-      error: String(error)
+      error: String(error),
     });
   }
 }
@@ -262,7 +266,7 @@ async function testOrgsAccess() {
         error?.code === '403'
           ? 'Table exists (RLS prevents access without auth)'
           : `Table accessible (${count || 0} records)`,
-      duration: performance.now() - start
+      duration: performance.now() - start,
     });
   } catch (error) {
     results.push({
@@ -270,7 +274,7 @@ async function testOrgsAccess() {
       status: 'failed',
       message: 'Failed to query orgs',
       duration: performance.now() - start,
-      error: String(error)
+      error: String(error),
     });
   }
 }
@@ -298,7 +302,7 @@ async function testProjectsAccess() {
         error?.code === '403'
           ? 'Table exists (RLS prevents access without auth)'
           : `Table accessible (${count || 0} records)`,
-      duration: performance.now() - start
+      duration: performance.now() - start,
     });
   } catch (error) {
     results.push({
@@ -306,7 +310,7 @@ async function testProjectsAccess() {
       status: 'failed',
       message: 'Failed to query projects',
       duration: performance.now() - start,
-      error: String(error)
+      error: String(error),
     });
   }
 }
@@ -315,18 +319,18 @@ async function testProjectsAccess() {
  * Print test summary
  */
 function printSummary() {
-  const successful = results.filter(r => r.status === 'success').length;
-  const failed = results.filter(r => r.status === 'failed').length;
-  const skipped = results.filter(r => r.status === 'skipped').length;
+  const successful = results.filter((r) => r.status === 'success').length;
+  const failed = results.filter((r) => r.status === 'failed').length;
+  const skipped = results.filter((r) => r.status === 'skipped').length;
 
   console.log('\n📋 Test Results:');
   console.log('================\n');
 
-  results.forEach(result => {
+  results.forEach((result) => {
     const icon = {
       success: '✅',
       failed: '❌',
-      skipped: '⊘ '
+      skipped: '⊘ ',
     }[result.status];
 
     console.log(`${icon} ${result.name}`);
@@ -347,9 +351,7 @@ function printSummary() {
   console.log(`  Total: ${results.length}`);
 
   if (failed > 0) {
-    console.log(
-      '\n⚠️  Some tests failed. Check your Supabase configuration.'
-    );
+    console.log('\n⚠️  Some tests failed. Check your Supabase configuration.');
   } else {
     console.log('\n✨ All tests passed! Supabase is ready to use.');
   }

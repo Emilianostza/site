@@ -31,6 +31,11 @@ export default [
         sessionStorage: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
+        AbortController: 'readonly',
+        Headers: 'readonly',
+        RequestInit: 'readonly',
+        Response: 'readonly',
+        Request: 'readonly',
 
         // Browser Types (used in TypeScript)
         HTMLElement: 'readonly',
@@ -47,10 +52,19 @@ export default [
         customElements: 'readonly',
         NodeJS: 'readonly',
         File: 'readonly',
+        Blob: 'readonly',
         URL: 'readonly',
         alert: 'readonly',
         crypto: 'readonly',
         XMLHttpRequest: 'readonly',
+        // Node.js globals
+        atob: 'readonly',
+        btoa: 'readonly',
+        URLSearchParams: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        performance: 'readonly',
+        process: 'readonly',
       },
       parser: tseslint.parser,
       parserOptions: {

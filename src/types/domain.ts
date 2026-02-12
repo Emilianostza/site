@@ -13,11 +13,16 @@
 
 export enum ProjectStatus {
   Pending = 'pending',
+  Requested = 'requested',
+  Assigned = 'assigned',
+  Captured = 'captured',
+  Processing = 'processing',
+  QA = 'qa',
   Approved = 'approved',
   InProgress = 'in_progress',
   Delivered = 'delivered',
   Archived = 'archived',
-  Rejected = 'rejected'
+  Rejected = 'rejected',
 }
 
 export enum AssetType {
@@ -25,7 +30,7 @@ export enum AssetType {
   Photo = 'photo',
   Mesh = 'mesh',
   PointCloud = 'point_cloud',
-  Video = 'video'
+  Video = 'video',
 }
 
 export enum AssetStatus {
@@ -33,7 +38,7 @@ export enum AssetStatus {
   Processing = 'processing',
   Published = 'published',
   Failed = 'failed',
-  Archived = 'archived'
+  Archived = 'archived',
 }
 
 export enum AuditEventType {
@@ -46,7 +51,7 @@ export enum AuditEventType {
   AssetPublished = 'asset_published',
   PayoutCreated = 'payout_created',
   PayoutApproved = 'payout_approved',
-  PayoutPaid = 'payout_paid'
+  PayoutPaid = 'payout_paid',
 }
 
 export enum PayoutStatus {
@@ -54,14 +59,14 @@ export enum PayoutStatus {
   Approved = 'approved',
   Paid = 'paid',
   Rejected = 'rejected',
-  Failed = 'failed'
+  Failed = 'failed',
 }
 
 export enum TierType {
   Basic = 'basic',
   Standard = 'standard',
   Premium = 'premium',
-  Enterprise = 'enterprise'
+  Enterprise = 'enterprise',
 }
 
 // ============================================================================

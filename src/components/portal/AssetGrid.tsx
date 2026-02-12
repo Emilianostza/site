@@ -35,13 +35,13 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
               />
               {/* Hover overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/40 backdrop-blur-[2px]">
-                <Link to={`/app/editor/${asset.id}`}>
+                <Link to={`/project/${asset.project_id}/menu`}>
                   <button className="bg-amber-600 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-lg shadow-amber-900/40 hover:bg-amber-500 mb-3">
                     <Box className="w-5 h-5" /> View
                   </button>
                 </Link>
                 <div className="flex gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
-                  <Link to={`/app/editor/${asset.id}`}>
+                  <Link to={`/project/${asset.project_id}/menu/edit`}>
                     <button className="bg-white/90 text-stone-900 px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg hover:bg-white transition-colors">
                       <Edit className="w-4 h-4" /> Edit
                     </button>
@@ -110,10 +110,10 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
                   ID: {asset.id}
                 </span>
                 <Link
-                  to={`/app/editor/${asset.id}`}
+                  to={`/project/${asset.project_id}/menu/edit`}
                   className="text-xs text-amber-600 dark:text-amber-500 hover:text-amber-500 font-bold flex items-center gap-1 transition-colors"
                 >
-                  <Edit className="w-3 h-3" /> Open Editor
+                  <Edit className="w-3 h-3" /> Edit Menu
                 </Link>
               </div>
             </div>

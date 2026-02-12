@@ -1,7 +1,6 @@
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import { getViteConfig } from 'vitest/config';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
@@ -15,11 +14,11 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-      }
+      },
     },
     esbuild: {
       drop: mode === 'production' ? ['console', 'debugger'] : [],
-      pure: mode === 'production' ? ['console.log', 'console.warn'] : []
+      pure: mode === 'production' ? ['console.log', 'console.warn'] : [],
     },
     build: {
       rollupOptions: {
@@ -31,7 +30,10 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules/react-dom')) {
               return 'vendor-react';
             }
-            if (id.includes('node_modules/react-router') || id.includes('node_modules/@remix-run')) {
+            if (
+              id.includes('node_modules/react-router') ||
+              id.includes('node_modules/@remix-run')
+            ) {
               return 'vendor-router';
             }
             if (id.includes('node_modules/lucide-react')) {
@@ -40,9 +42,9 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules')) {
               return 'vendor';
             }
-          }
-        }
-      }
+          },
+        },
+      },
     },
     test: {
       globals: true,
@@ -51,8 +53,8 @@ export default defineConfig(({ mode }) => {
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json', 'html'],
-        exclude: ['node_modules/', 'src/__tests__/']
-      }
-    }
+        exclude: ['node_modules/', 'src/__tests__/'],
+      },
+    },
   };
 });

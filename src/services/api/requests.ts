@@ -21,15 +21,15 @@ export async function submitRequest(
 ): Promise<RequestDTO> {
   const response = await apiClient.post<ApiResponseDTO<RequestDTO>>('/requests', data, {
     headers: {
-      'Idempotency-Key': idempotencyKey
-    }
+      'Idempotency-Key': idempotencyKey,
+    },
   });
 
-  if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.error?.message || 'Failed to submit request');
+  if (!response.success || !response.data) {
+    throw new Error(response.error?.message || 'Failed to submit request');
   }
 
-  return response.data.data;
+  return response.data;
 }
 
 /**
@@ -38,11 +38,11 @@ export async function submitRequest(
 export async function fetchRequest(id: string): Promise<RequestDTO> {
   const response = await apiClient.get<ApiResponseDTO<RequestDTO>>(`/requests/${id}`);
 
-  if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.error?.message || 'Failed to fetch request');
+  if (!response.success || !response.data) {
+    throw new Error(response.error?.message || 'Failed to fetch request');
   }
 
-  return response.data.data;
+  return response.data;
 }
 
 /**
@@ -54,15 +54,24 @@ export async function fetchRequests(params?: {
   cursor?: string;
   limit?: number;
 }): Promise<{ requests: RequestDTO[]; nextCursor?: string }> {
-  const response = await apiClient.get<ApiResponseDTO<RequestDTO[]>>('/requests', params);
+  // Build query string from params
+  const queryString = params
+    ? '?' +
+      Object.entries(params)
+        .filter(([, v]) => v !== undefined)
+        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+        .join('&')
+    : '';
 
-  if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.error?.message || 'Failed to fetch requests');
+  const response = await apiClient.get<ApiResponseDTO<RequestDTO[]>>(`/requests${queryString}`);
+
+  if (!response.success || !response.data) {
+    throw new Error(response.error?.message || 'Failed to fetch requests');
   }
 
   return {
-    requests: response.data.data,
-    nextCursor: (response.data as any).next_cursor
+    requests: response.data,
+    nextCursor: (response as any).next_cursor,
   };
 }
 
@@ -88,6 +97,6 @@ export function requestFromDTO(dto: RequestDTO): Request {
     metadata: dto.metadata,
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
-    deletedAt: dto.deleted_at
+    deletedAt: dto.deleted_at,
   };
 }

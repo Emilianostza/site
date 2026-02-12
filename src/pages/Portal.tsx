@@ -15,12 +15,12 @@ import { NewProjectModal } from '@/components/portal/NewProjectModal';
 import { ProjectTable } from '@/components/portal/ProjectTable';
 import { AssetGrid } from '@/components/portal/AssetGrid';
 import { ProjectProgress } from '@/components/portal/ProjectProgress';
-import { ActivityFeed } from '@/components/portal/ActivityFeed';
 import { ProjectsProvider, AssetsProvider } from '@/services/dataProvider';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
 import { AssetListTable } from '@/components/portal/AssetListTable';
 import { useAuth } from '@/contexts/AuthContext';
+import { X } from 'lucide-react';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const { logout } = useAuth();
@@ -40,6 +40,8 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
+  const [expandedAssetId, setExpandedAssetId] = useState<string | null>(null);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const filteredAssets = assets.filter(
     (asset) =>
@@ -52,16 +54,27 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const handleCreateProject = async (data: {
     name: string;
     client: string;
+    type?: string;
     address?: string;
     phone?: string;
   }) => {
     try {
       await ProjectsProvider.create({ ...data, type: 'standard' });
       const projData = await ProjectsProvider.list();
-      setProjects(projData);
+      setProjects(projData as Project[]);
       setActiveTab('projects');
     } catch (error) {
       console.error('Failed to create project', error);
+    }
+  };
+
+  const handleUpdateProject = async (id: string, data: Partial<Project>) => {
+    try {
+      await ProjectsProvider.update(id, data);
+      const projData = await ProjectsProvider.list();
+      setProjects(projData as Project[]);
+    } catch (error) {
+      console.error('Failed to update project', error);
     }
   };
 
@@ -75,8 +88,8 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
           AssetsProvider.list(),
         ]);
         if (!cancelled) {
-          setProjects(projData);
-          setAssets(assetData);
+          setProjects(projData as Project[]);
+          setAssets(assetData as Asset[]);
         }
       } catch (err) {
         if (!cancelled) {
@@ -111,10 +124,24 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
       })}
     >
       <NewProjectModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleCreateProject}
+        isOpen={isModalOpen || Boolean(editingProject)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingProject(null);
+        }}
+        project={editingProject}
+        onSave={async (data) => {
+          if (editingProject) {
+            await handleUpdateProject(editingProject.id, data);
+            setEditingProject(null);
+          } else {
+            await handleCreateProject(data);
+            setIsModalOpen(false);
+          }
+        }}
       />
+
+      {/* Project Assets Modal (Popup) */}
 
       {/* Main Content */}
       <main className="flex-1 p-8">
@@ -158,22 +185,10 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
           <div className="flex items-center gap-4">
             {role === 'employee' && (
               <button
-                onClick={() => setActiveTab('projects')}
-                className={`font-medium transition-colors ${
-                  activeTab === 'projects'
-                    ? 'text-brand-600 dark:text-brand-400 font-bold'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Projects
-              </button>
-            )}
-            {role === 'employee' && (
-              <button
                 onClick={() => setIsModalOpen(true)}
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-brand-700 flex items-center gap-2"
               >
-                <Plus className="w-4 h-4" /> New Project
+                <Plus className="w-4 h-4" /> New Customer
               </button>
             )}
             <button
@@ -201,28 +216,19 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             {role === 'customer' ? (
               // Client Dashboard View
               <>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <ProjectProgress
-                      currentStatus={projects[0]?.status || 'Intake'}
-                      projectName={projects[0]?.name || 'New Project'}
-                    />
-                  </div>
-                  <div className="lg:col-span-1">
-                    <AssetAnalyticsBoard assets={assets} />
-                  </div>
-                  {/* Activity feed moved down or kept if layout permits */}
+                <div className="mb-8">
+                  <ProjectProgress
+                    currentStatus={projects[0]?.status || 'Intake'}
+                    projectName={projects[0]?.name || 'New Project'}
+                  />
                 </div>
 
-                {/* Secondary Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <ActivityFeed />
-                  </div>
-                  {/* Placeholder for future widget */}
+                {/* Expanded Analytics Board */}
+                <div className="w-full">
+                  <AssetAnalyticsBoard assets={assets} />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">
                       Request New Capture
@@ -248,6 +254,22 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                       Contact Us
                     </button>
                   </div>
+                </div>
+                {/* Assets Grid (Customer) */}
+                <div>
+                  <div className="flex justify-between items-end mb-6">
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Assets</h2>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search scenes..."
+                        className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 w-64 text-slate-900 dark:text-slate-200"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <AssetGrid assets={filteredAssets} role={role} />
                 </div>
               </>
             ) : (
@@ -291,7 +313,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                   <div className="mt-8">
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                        Recent Projects
+                        Customers
                       </h2>
                       <div className="flex items-center gap-4">
                         <input
@@ -309,42 +331,42 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                         </button>
                       </div>
                     </div>
-                    <AssetListTable
-                      assets={assets
+
+                    <ProjectTable
+                      projects={projects
                         .filter(
-                          (a) =>
-                            a.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) ||
-                            a.type?.toLowerCase().includes(projectSearchTerm.toLowerCase())
+                          (p) =>
+                            p.name.toLowerCase().includes(projectSearchTerm.toLowerCase()) ||
+                            p.client.toLowerCase().includes(projectSearchTerm.toLowerCase())
                         )
                         .slice(0, 5)}
+                      assets={assets}
+                      onEditProject={(projectId) => {
+                        const project = projects.find((p) => p.id === projectId);
+                        if (project) {
+                          setEditingProject(project);
+                        }
+                      }}
                     />
                   </div>
                 )}
               </>
             )}
-
-            {/* Recent Assets (Shared) */}
-            <div>
-              <div className="flex justify-between items-end mb-6">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Assets</h2>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search scenes..."
-                    className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 w-64 text-slate-200"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-              <AssetGrid assets={filteredAssets} role={role} />
-            </div>
           </div>
         )}
 
         {/* Projects Table */}
         {(activeTab === 'projects' || activeTab === 'customers') && (
-          <ProjectTable projects={projects} />
+          <ProjectTable
+            projects={projects}
+            assets={assets}
+            onEditProject={(projectId) => {
+              const project = projects.find((p) => p.id === projectId);
+              if (project) {
+                setEditingProject(project);
+              }
+            }}
+          />
         )}
 
         {/* Settings View */}

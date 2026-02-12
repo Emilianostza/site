@@ -19,35 +19,27 @@ import { env } from '@/config/env';
 if (!env.supabaseUrl || !env.supabaseAnonKey) {
   throw new Error(
     'Missing Supabase configuration. ' +
-    'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.'
+      'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.'
   );
 }
 
 /**
  * Initialize Supabase client
  */
-export const supabase: SupabaseClient = createClient(
-  env.supabaseUrl,
-  env.supabaseAnonKey,
-  {
-    auth: {
-      // Auto-refresh token before expiry
-      autoRefreshToken: true,
-      // Persist session in localStorage
-      persistSession: true,
-      // Detect session from URL query params (OAuth redirect)
-      detectSessionInUrl: true,
-      // Storage adapter (browser localStorage)
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-      // Storage key prefix
-      storageKey: 'supabase.auth'
-    },
-    // Global headers for all requests
-    headers: {
-      'X-Client-Info': 'managed-capture-3d/1.0.0'
-    }
-  }
-);
+export const supabase: SupabaseClient = createClient(env.supabaseUrl, env.supabaseAnonKey, {
+  auth: {
+    // Auto-refresh token before expiry
+    autoRefreshToken: true,
+    // Persist session in localStorage
+    persistSession: true,
+    // Detect session from URL query params (OAuth redirect)
+    detectSessionInUrl: true,
+    // Storage adapter (browser localStorage)
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    // Storage key prefix
+    storageKey: 'supabase.auth',
+  },
+});
 
 /**
  * Session listener for authentication state changes
@@ -59,14 +51,12 @@ export function setupAuthListener(
     session: any
   ) => void
 ) {
-  const { data: authListener } = supabase.auth.onAuthStateChange(
-    (event, session) => {
-      onAuthStateChange(
-        event as 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'USER_UPDATED',
-        session
-      );
-    }
-  );
+  const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    onAuthStateChange(
+      event as 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'USER_UPDATED',
+      session
+    );
+  });
 
   return authListener?.subscription;
 }
@@ -95,7 +85,7 @@ export async function getSession() {
 export async function signInWithPassword(email: string, password: string) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password
+    password,
   });
   if (error) throw error;
   return data;
@@ -104,17 +94,15 @@ export async function signInWithPassword(email: string, password: string) {
 /**
  * Sign in with OAuth (Google, GitHub, etc.)
  */
-export async function signInWithOAuth(
-  provider: 'google' | 'github' | 'discord'
-) {
+export async function signInWithOAuth(provider: 'google' | 'github' | 'discord') {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
       queryParams: {
         // Include any custom parameters
-      }
-    }
+      },
+    },
   });
   if (error) throw error;
   return data;
@@ -128,8 +116,8 @@ export async function signUp(email: string, password: string) {
     email,
     password,
     options: {
-      emailRedirectTo: `${window.location.origin}/auth/confirm`
-    }
+      emailRedirectTo: `${window.location.origin}/auth/confirm`,
+    },
   });
   if (error) throw error;
   return data;
@@ -157,7 +145,7 @@ export async function refreshSession() {
  */
 export async function resetPassword(email: string) {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/auth/reset-password`
+    redirectTo: `${window.location.origin}/auth/reset-password`,
   });
   if (error) throw error;
 }
@@ -167,7 +155,7 @@ export async function resetPassword(email: string) {
  */
 export async function updatePassword(newPassword: string) {
   const { data, error } = await supabase.auth.updateUser({
-    password: newPassword
+    password: newPassword,
   });
   if (error) throw error;
   return data.user;
@@ -176,10 +164,11 @@ export async function updatePassword(newPassword: string) {
 /**
  * Verify TOTP token (2FA)
  */
-export async function verifyTOTP(code: string) {
+export async function verifyTOTP(code: string, email: string) {
   const { data, error } = await supabase.auth.verifyOtp({
-    type: 'totp',
-    token: code
+    type: 'totp' as any,
+    token: code,
+    email,
   });
   if (error) throw error;
   return data;
