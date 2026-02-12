@@ -1,0 +1,198 @@
+name: CI Quality Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Prevent multiple workflows running for the same commit
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # Code quality checks
+  quality:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint 2>&1 || true
+        continue-on-error: true
+
+      - name: Check TypeScript types
+        run: npx tsc --noEmit
+
+      - name: Check Prettier formatting
+        run: npx prettier --check . --ignore-path .gitignore || true
+        continue-on-error: true
+
+  # Unit and integration tests
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Generate coverage
+        run: npm run test:coverage 2>&1 || true
+        continue-on-error: true
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          flags: unittests
+          fail_ci_if_error: false
+
+  # Build verification
+  build:
+    name: Build & Bundle Size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Check bundle size
+        run: |
+          SIZE=$(du -sh dist/ | cut -f1)
+          echo "📦 Bundle size: $SIZE"
+          # Fail if bundle > 5MB
+          if [ $(du -s dist/ | cut -f1) -gt 5120 ]; then
+            echo "❌ Bundle size exceeds 5MB limit"
+            exit 1
+          fi
+          echo "✅ Bundle size within limits"
+
+      - name: List bundle artifacts
+        run: |
+          echo "=== Bundle Contents ==="
+          find dist/assets -name "*.js" -exec du -h {} \; | sort -rh | head -10
+          echo ""
+          echo "=== CSS Bundle ==="
+          find dist/assets -name "*.css" -exec du -h {} \;
+
+  # Security scanning
+  security:
+    name: Security & Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate 2>&1 || true
+        continue-on-error: true
+
+      - name: Check for vulnerable dependencies
+        run: |
+          VULN_COUNT=$(npm audit --json 2>/dev/null | jq '.metadata.vulnerabilities.critical // 0')
+          if [ "$VULN_COUNT" -gt 0 ]; then
+            echo "⚠️  Found $VULN_COUNT critical vulnerabilities"
+            npm audit
+          fi
+        continue-on-error: true
+
+  # Dependency check
+  dependencies:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Check for outdated packages
+        run: npm outdated --depth=0 || true
+        continue-on-error: true
+
+      - name: Verify lock file
+        run: npm ci --dry-run
+
+  # Final status check
+  status:
+    name: CI Status
+    runs-on: ubuntu-latest
+    needs: [quality, test, build, security, dependencies]
+    if: always()
+    steps:
+      - name: Check CI status
+        run: |
+          if [ "${{ needs.quality.result }}" = "failure" ] || \
+             [ "${{ needs.test.result }}" = "failure" ] || \
+             [ "${{ needs.build.result }}" = "failure" ]; then
+            echo "❌ CI pipeline failed"
+            exit 1
+          fi
+          echo "✅ CI pipeline passed"
+
+      - name: Comment PR status
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const quality = '${{ needs.quality.result }}';
+            const test = '${{ needs.test.result }}';
+            const build = '${{ needs.build.result }}';
+
+            const status = quality === 'success' && test === 'success' && build === 'success'
+              ? '✅ All checks passed!'
+              : '❌ Some checks failed';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## CI Status\n${status}\n\n- Quality: ${quality}\n- Tests: ${test}\n- Build: ${build}`
+            });
+        continue-on-error: true
