@@ -182,6 +182,22 @@ const RestaurantMenu: React.FC = () => {
     };
   }, [viewerState]);
 
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [menuSettings, setMenuSettings] = useState({
+    title: 'Restaurant Menu', // Default, will update when project loads
+    brandColor: '#d97706', // amber-600
+    font: 'serif',
+    showPrices: true,
+    currency: '$',
+  });
+
+  // Update settings when project loads
+  useEffect(() => {
+    if (project) {
+      setMenuSettings((prev) => ({ ...prev, title: project.name }));
+    }
+  }, [project]);
+
   if (loading) {
     return (
       <div className="bg-stone-950 min-h-screen text-amber-50 flex flex-col items-center justify-center gap-4">
@@ -204,22 +220,6 @@ const RestaurantMenu: React.FC = () => {
       </div>
     );
   }
-
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [menuSettings, setMenuSettings] = useState({
-    title: project?.name || 'Restaurant Menu',
-    brandColor: '#d97706', // amber-600
-    font: 'serif',
-    showPrices: true,
-    currency: '$',
-  });
-
-  // Update settings when project loads
-  useEffect(() => {
-    if (project) {
-      setMenuSettings((prev) => ({ ...prev, title: project.name }));
-    }
-  }, [project]);
 
   return (
     <div
