@@ -378,7 +378,7 @@ $$ LANGUAGE plpgsql;
 -- Seed organization
 INSERT INTO organizations (id, name, slug, country_code, region, gdpr_consent)
 VALUES (
-  'org-00000000-0000-0000-0000-000000000001'::uuid,
+  '00000000-0000-0000-0000-000000000001'::uuid,
   'Managed Capture Demo',
   'managed-capture-demo',
   'ee'::country_code,
@@ -389,8 +389,8 @@ VALUES (
 -- Seed admin user (password: "admin123" - change in production!)
 INSERT INTO users (id, org_id, email, name, role, status, password_hash)
 VALUES (
-  'user-00000000-0000-0000-0000-000000000001'::uuid,
-  'org-00000000-0000-0000-0000-000000000001'::uuid,
+  '00000000-0000-0000-0000-000000000002'::uuid,
+  '00000000-0000-0000-0000-000000000001'::uuid,
   'admin@company.com',
   'Admin User',
   'admin'::user_role,
