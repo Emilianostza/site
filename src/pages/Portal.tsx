@@ -14,7 +14,7 @@ import { Asset, Project } from '@/types';
 import { NewProjectModal } from '@/components/portal/NewProjectModal';
 import { ProjectTable } from '@/components/portal/ProjectTable';
 import { AssetGrid } from '@/components/portal/AssetGrid';
-import { ProjectProgress } from '@/components/portal/ProjectProgress';
+
 import { ProjectsProvider, AssetsProvider } from '@/services/dataProvider';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
@@ -216,13 +216,6 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             {role === 'customer' ? (
               // Client Dashboard View
               <>
-                <div className="mb-8">
-                  <ProjectProgress
-                    currentStatus={projects[0]?.status || 'Intake'}
-                    projectName={projects[0]?.name || 'New Project'}
-                  />
-                </div>
-
                 {/* Expanded Analytics Board */}
                 <div className="w-full">
                   <AssetAnalyticsBoard assets={assets} />
