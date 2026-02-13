@@ -8,9 +8,6 @@
   # Publish directory - Vite output
   publish = "dist"
 
-  # Environment setup for build
-  environment = { NODE_ENV = "production" }
-
 # ============================================================================
 # REDIRECTS - Hash-based routing fallback
 # ============================================================================
@@ -98,14 +95,11 @@
 # Production context (main branch)
 [context.production]
   command = "npm run build"
-  environment = { NODE_ENV = "production" }
 
 # Preview context (pull requests)
 [context.deploy-preview]
   command = "npm run build"
-  environment = { NODE_ENV = "production" }
 
 # Branch deploy context
 [context.branch-deploy]
   command = "npm run build"
-  environment = { NODE_ENV = "production" }
