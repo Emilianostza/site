@@ -9,10 +9,9 @@
  * - false: Use real Supabase authentication
  *
  * Usage:
- * import { login, logout, getCurrentUser, refreshToken } from '@/services/api/auth';
- * const response = await login({ email, password });
+ *   import { login, logout, getCurrentUser, refreshToken } from '@/services/api/auth';
+ *   const response = await login({ email, password });
  */
-
 import { apiClient } from '@/services/api/client';
 import { env } from '@/config/env';
 import { PortalRole } from '@/types';
@@ -236,33 +235,70 @@ async function mockRefreshToken(request: RefreshTokenRequest): Promise<RefreshTo
 
 function mockIsTokenExpired(token: string): boolean {
   if (!token.startsWith('mock-token-')) return true;
-
   const parts = token.split('-');
   const timestampStr = parts[parts.length - 1];
   const timestamp = parseInt(timestampStr, 10);
-
   if (isNaN(timestamp)) return true;
-
   const expirationTime = timestamp + 3600 * 1000;
   const now = Date.now();
-
   return now >= expirationTime - 30000;
 }
 
 function mockGetTokenTTL(token: string): number {
   if (!token.startsWith('mock-token-')) return 0;
-
   const parts = token.split('-');
   const timestampStr = parts[parts.length - 1];
   const timestamp = parseInt(timestampStr, 10);
-
   if (isNaN(timestamp)) return 0;
-
   const expirationTime = timestamp + 3600 * 1000;
   const now = Date.now();
   const remaining = Math.max(0, (expirationTime - now) / 1000);
-
   return Math.floor(remaining);
+}
+
+// ============================================================================
+// HELPER: Build role object from profile data
+// ============================================================================
+
+/**
+ * Constructs the typed role object from Supabase profile row data.
+ * Reads the actual role from the database instead of hardcoding.
+ */
+function buildRoleFromProfile(profileData: any): User['role'] {
+  const roleType = profileData.role || 'customer_owner';
+  const orgId = profileData.org_id || '';
+
+  switch (roleType) {
+    case 'admin':
+      return { type: 'admin', orgId };
+    case 'approver':
+      return { type: 'approver', orgId };
+    case 'technician':
+      return {
+        type: 'technician',
+        orgId,
+        assignedProjectIds: profileData.assigned_project_ids || [],
+      };
+    case 'sales_lead':
+      return { type: 'sales_lead', orgId };
+    case 'customer_owner':
+      return {
+        type: 'customer_owner',
+        orgId,
+        customerId: profileData.customer_id || orgId,
+      };
+    case 'customer_viewer':
+      return {
+        type: 'customer_viewer',
+        orgId,
+        customerId: profileData.customer_id || orgId,
+        assignedProjectIds: profileData.assigned_project_ids || [],
+      };
+    case 'public_visitor':
+      return { type: 'public_visitor', orgId };
+    default:
+      return { type: 'customer_owner', orgId, customerId: orgId };
+  }
 }
 
 // ============================================================================
@@ -286,7 +322,7 @@ async function realLogin(request: LoginRequest): Promise<LoginResponse> {
     };
   }
 
-  // Fetch user profile with role info
+  // Fetch user profile with role info from user_profiles table
   const { data: profileData, error: profileError } = await supabase
     .from('user_profiles')
     .select('*, user_org_memberships(*)')
@@ -296,28 +332,30 @@ async function realLogin(request: LoginRequest): Promise<LoginResponse> {
   if (profileError || !profileData) {
     throw {
       status: 401,
-      message: 'User profile not found',
+      message: 'User profile not found. Please contact an administrator.',
       code: 'INVALID_USER',
     };
   }
 
-  // Build user domain object first, then convert to DTO
+  // Build user domain object with ACTUAL role from database
   const user: User = {
     id: data.user.id,
     orgId: profileData.org_id || '',
     email: data.user.email || '',
     name: profileData.name || '',
-    role: {
-      type: 'customer_owner' as const,
-      orgId: profileData.org_id || '',
-      customerId: profileData.org_id || '',
-    },
-    status: 'active' as const,
-    mfaEnabled: false,
-    failedLoginAttempts: 0,
+    role: buildRoleFromProfile(profileData),
+    status: (profileData.status as User['status']) || 'active',
+    mfaEnabled: profileData.mfa_enabled || false,
+    failedLoginAttempts: profileData.failed_login_attempts || 0,
     createdAt: profileData.created_at || new Date().toISOString(),
     updatedAt: profileData.updated_at || new Date().toISOString(),
   };
+
+  // Add customerId if role is customer-type
+  if (profileData.customer_id) {
+    (user as any).customerId = profileData.customer_id;
+  }
+
   const userDTO = userToDTO(user);
 
   return {
@@ -344,6 +382,7 @@ async function realGetCurrentUser(): Promise<LoginResponseDTO['user']> {
     };
   }
 
+  // Fetch user profile with role info from user_profiles table
   const { data: profileData, error: profileError } = await supabase
     .from('user_profiles')
     .select('*, user_org_memberships(*)')
@@ -358,23 +397,23 @@ async function realGetCurrentUser(): Promise<LoginResponseDTO['user']> {
     };
   }
 
-  // Build user domain object first, then convert to DTO
+  // Build user domain object with ACTUAL role from database
   const user: User = {
     id: session.user.id,
     orgId: profileData.org_id || '',
     email: session.user.email || '',
     name: profileData.name || '',
-    role: {
-      type: 'customer_owner' as const,
-      orgId: profileData.org_id || '',
-      customerId: profileData.org_id || '',
-    },
-    status: 'active' as const,
-    mfaEnabled: false,
-    failedLoginAttempts: 0,
+    role: buildRoleFromProfile(profileData),
+    status: (profileData.status as User['status']) || 'active',
+    mfaEnabled: profileData.mfa_enabled || false,
+    failedLoginAttempts: profileData.failed_login_attempts || 0,
     createdAt: profileData.created_at || new Date().toISOString(),
     updatedAt: profileData.updated_at || new Date().toISOString(),
   };
+
+  if (profileData.customer_id) {
+    (user as any).customerId = profileData.customer_id;
+  }
 
   return userToDTO(user);
 }
@@ -402,9 +441,7 @@ async function realRefreshToken(request: RefreshTokenRequest): Promise<RefreshTo
 
 async function realLogout(): Promise<void> {
   const { supabase } = await import('@/services/supabase/client');
-
   const { error } = await supabase.auth.signOut();
-
   if (error) {
     console.warn('[Auth] Logout error:', error);
   }
@@ -417,7 +454,6 @@ function realIsTokenExpired(token: string): boolean {
     if (parts.length !== 3) return true;
 
     // Decode payload
-
     const payload = JSON.parse(atob(parts[1]));
     if (!payload.exp) return true;
 
@@ -425,7 +461,6 @@ function realIsTokenExpired(token: string): boolean {
     const expiryTime = payload.exp * 1000;
     const now = Date.now();
     const bufferMs = 5 * 60 * 1000;
-
     return now > expiryTime - bufferMs;
   } catch (error) {
     console.warn('[Auth] Token decode error:', error);
@@ -444,7 +479,6 @@ function realGetTokenTTL(token: string): number {
     const expiryTime = payload.exp * 1000;
     const now = Date.now();
     const remaining = Math.max(0, (expiryTime - now) / 1000);
-
     return Math.floor(remaining);
   } catch (error) {
     console.warn('[Auth] Token decode error:', error);
