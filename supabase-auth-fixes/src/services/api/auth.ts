@@ -295,7 +295,7 @@ function buildRoleFromProfile(profileData: any): User['role'] {
         assignedProjectIds: profileData.assigned_project_ids || [],
       };
     case 'public_visitor':
-      return { type: 'public_visitor', orgId };
+      return { type: 'public_visitor' };
     default:
       return { type: 'customer_owner', orgId, customerId: orgId };
   }
