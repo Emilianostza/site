@@ -48,7 +48,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.Requested,
     to: ProjectStatus.Assigned,
     requiredRole: ['admin', 'sales_lead'],
-    description: 'Assign technician to project'
+    description: 'Assign technician to project',
   },
 
   // Assigned → Captured (technician uploads raw files)
@@ -56,7 +56,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.Assigned,
     to: ProjectStatus.Captured,
     requiredRole: 'technician',
-    description: 'Upload captured photos'
+    description: 'Upload captured photos',
   },
 
   // Captured → Processing (technician/admin starts processing)
@@ -64,7 +64,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.Captured,
     to: ProjectStatus.Processing,
     requiredRole: ['technician', 'admin'],
-    description: 'Start processing raw files'
+    description: 'Start processing raw files',
   },
 
   // Processing → QA (files ready for review)
@@ -72,7 +72,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.Processing,
     to: ProjectStatus.QA,
     requiredRole: ['technician', 'admin'],
-    description: 'Submit for quality assurance'
+    description: 'Submit for quality assurance',
   },
 
   // QA → Delivered (approver accepts quality)
@@ -81,7 +81,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Delivered,
     requiredRole: 'approver',
     requiresApproval: true,
-    description: 'Approve quality, ready for customer'
+    description: 'Approve quality, ready for customer',
   },
 
   // QA → Captured (approver rejects, retake needed)
@@ -89,7 +89,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.QA,
     to: ProjectStatus.Captured,
     requiredRole: 'approver',
-    description: 'Reject QA, request retake'
+    description: 'Reject QA, request retake',
   },
 
   // Delivered → Approved (customer accepts)
@@ -98,7 +98,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     to: ProjectStatus.Approved,
     requiredRole: 'customer_owner',
     requiresApproval: true,
-    description: 'Customer approves outcome, trigger payout'
+    description: 'Customer approves outcome, trigger payout',
   },
 
   // Delivered → Captured (customer rejects)
@@ -106,7 +106,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.Delivered,
     to: ProjectStatus.Captured,
     requiredRole: 'customer_owner',
-    description: 'Customer rejects, request retake'
+    description: 'Customer rejects, request retake',
   },
 
   // Approved → Archived (auto-archive after approval)
@@ -114,7 +114,7 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.Approved,
     to: ProjectStatus.Archived,
     requiredRole: ['admin', 'approver'],
-    description: 'Archive completed project'
+    description: 'Archive completed project',
   },
 
   // Any → Archived (cancel/abandon project)
@@ -122,38 +122,38 @@ const VALID_TRANSITIONS: StateTransition[] = [
     from: ProjectStatus.Requested,
     to: ProjectStatus.Archived,
     requiredRole: ['admin', 'sales_lead', 'customer_owner'],
-    description: 'Cancel project'
+    description: 'Cancel project',
   },
   {
     from: ProjectStatus.Assigned,
     to: ProjectStatus.Archived,
     requiredRole: ['admin', 'sales_lead'],
-    description: 'Cancel assigned project'
+    description: 'Cancel assigned project',
   },
   {
     from: ProjectStatus.Captured,
     to: ProjectStatus.Archived,
     requiredRole: ['admin', 'sales_lead'],
-    description: 'Cancel project'
+    description: 'Cancel project',
   },
   {
     from: ProjectStatus.Processing,
     to: ProjectStatus.Archived,
     requiredRole: ['admin', 'sales_lead'],
-    description: 'Cancel project'
+    description: 'Cancel project',
   },
   {
     from: ProjectStatus.QA,
     to: ProjectStatus.Archived,
     requiredRole: ['admin', 'approver'],
-    description: 'Cancel project'
+    description: 'Cancel project',
   },
   {
     from: ProjectStatus.Delivered,
     to: ProjectStatus.Archived,
     requiredRole: ['admin', 'sales_lead', 'customer_owner'],
-    description: 'Cancel project'
-  }
+    description: 'Cancel project',
+  },
 ];
 
 /**
@@ -176,14 +176,12 @@ export function canTransition(
   }
 
   // Find matching transition rule
-  const transition = VALID_TRANSITIONS.find(
-    t => t.from === currentState && t.to === targetState
-  );
+  const transition = VALID_TRANSITIONS.find((t) => t.from === currentState && t.to === targetState);
 
   if (!transition) {
     return {
       valid: false,
-      error: `Transition from ${currentState} to ${targetState} not allowed`
+      error: `Transition from ${currentState} to ${targetState} not allowed`,
     };
   }
 
@@ -195,7 +193,7 @@ export function canTransition(
   if (!allowedRoles.includes(userRole)) {
     return {
       valid: false,
-      error: `Role '${userRole}' cannot perform this transition. Required: ${allowedRoles.join(', ')}`
+      error: `Role '${userRole}' cannot perform this transition. Required: ${allowedRoles.join(', ')}`,
     };
   }
 
@@ -205,13 +203,10 @@ export function canTransition(
 /**
  * Get all valid next states from current state
  */
-export function getValidNextStates(
-  currentState: ProjectStatus,
-  userRole: string
-): ProjectStatus[] {
+export function getValidNextStates(currentState: ProjectStatus, userRole: string): ProjectStatus[] {
   return VALID_TRANSITIONS.filter(
-    t => t.from === currentState && canTransition(currentState, t.to, userRole).valid
-  ).map(t => t.to);
+    (t) => t.from === currentState && canTransition(currentState, t.to, userRole).valid
+  ).map((t) => t.to);
 }
 
 /**
@@ -221,7 +216,7 @@ export function getTransitionInfo(
   fromState: ProjectStatus,
   toState: ProjectStatus
 ): StateTransition | null {
-  return VALID_TRANSITIONS.find(t => t.from === fromState && t.to === toState) || null;
+  return VALID_TRANSITIONS.find((t) => t.from === fromState && t.to === toState) || null;
 }
 
 /**
@@ -235,10 +230,7 @@ export function requiresApproval(fromState: ProjectStatus, toState: ProjectStatu
 /**
  * Get human-readable transition description
  */
-export function getTransitionDescription(
-  fromState: ProjectStatus,
-  toState: ProjectStatus
-): string {
+export function getTransitionDescription(fromState: ProjectStatus, toState: ProjectStatus): string {
   const transition = getTransitionInfo(fromState, toState);
   return transition?.description ?? `Move from ${fromState} to ${toState}`;
 }
@@ -270,7 +262,7 @@ export function getHappyPath(): ProjectStatus[] {
     ProjectStatus.QA,
     ProjectStatus.Delivered,
     ProjectStatus.Approved,
-    ProjectStatus.Archived
+    ProjectStatus.Archived,
   ];
 }
 
@@ -292,6 +284,6 @@ export function createAuditEvent(
     from_state: fromState,
     to_state: toState,
     reason,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }

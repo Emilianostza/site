@@ -63,13 +63,12 @@ export async function fetchAssets(filter: FetchAssetsFilter = {}): Promise<{
       throw new Error(`Failed to fetch assets: ${error.message}`);
     }
 
-    const nextCursor = data && data.length >= (filter.limit || 20)
-      ? data[data.length - 1].created_at
-      : undefined;
+    const nextCursor =
+      data && data.length >= (filter.limit || 20) ? data[data.length - 1].created_at : undefined;
 
     return {
       assets: data || [],
-      nextCursor
+      nextCursor,
     };
   } catch (err) {
     console.error('[AssetsAPI] Fetch failed:', err);
@@ -82,11 +81,7 @@ export async function fetchAssets(filter: FetchAssetsFilter = {}): Promise<{
  */
 export async function getAsset(id: string): Promise<AssetDTO> {
   try {
-    const { data, error } = await supabase
-      .from('assets')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('assets').select('*').eq('id', id).single();
 
     if (error) {
       throw new Error(`Failed to get asset: ${error.message}`);
@@ -130,8 +125,8 @@ export async function createAsset(data: CreateAssetRequest): Promise<AssetDTO> {
           file_size: data.fileSize,
           content_type: data.contentType,
           status: 'uploading',
-          asset_version: 1
-        }
+          asset_version: 1,
+        },
       ])
       .select()
       .single();
@@ -159,10 +154,7 @@ export interface UpdateAssetRequest {
   processingMetadata?: Record<string, unknown>;
 }
 
-export async function updateAsset(
-  id: string,
-  updates: UpdateAssetRequest
-): Promise<AssetDTO> {
+export async function updateAsset(id: string, updates: UpdateAssetRequest): Promise<AssetDTO> {
   try {
     const { data, error } = await supabase
       .from('assets')
@@ -174,11 +166,11 @@ export async function updateAsset(
         preview_url: updates.previewUrl,
         processing_metadata: updates.processingMetadata,
         ...(updates.status === 'processing' && {
-          processing_started_at: new Date().toISOString()
+          processing_started_at: new Date().toISOString(),
         }),
         ...(updates.status === 'published' && {
-          processing_completed_at: new Date().toISOString()
-        })
+          processing_completed_at: new Date().toISOString(),
+        }),
       })
       .eq('id', id)
       .select()
@@ -204,7 +196,7 @@ export async function publishAsset(id: string): Promise<AssetDTO> {
       .from('assets')
       .update({
         status: 'published',
-        processing_completed_at: new Date().toISOString()
+        processing_completed_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
@@ -230,7 +222,7 @@ export async function failAsset(id: string, reason?: string): Promise<AssetDTO> 
       .from('assets')
       .update({
         status: 'failed',
-        metadata: { failure_reason: reason }
+        metadata: { failure_reason: reason },
       })
       .eq('id', id)
       .select()
@@ -255,7 +247,7 @@ export async function deleteAsset(id: string): Promise<void> {
     const { error } = await supabase
       .from('assets')
       .update({
-        deleted_at: new Date().toISOString()
+        deleted_at: new Date().toISOString(),
       })
       .eq('id', id);
 
@@ -282,8 +274,8 @@ export async function getAssetDownloadUrl(assetId: string): Promise<string> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         fileKey: asset.file_key,
-        expiresIn: 3600 // 1 hour
-      })
+        expiresIn: 3600, // 1 hour
+      }),
     });
 
     const { url } = await response.json();
@@ -324,7 +316,7 @@ export async function getProjectAssetStats(projectId: string) {
       total: data?.length || 0,
       byType: {} as Record<string, number>,
       byStatus: {} as Record<string, number>,
-      totalSize: 0
+      totalSize: 0,
     };
 
     data?.forEach((asset: any) => {
@@ -353,11 +345,7 @@ export async function batchUpdateAssets(
   updates: UpdateAssetRequest
 ): Promise<AssetDTO[]> {
   try {
-    const { data, error } = await supabase
-      .from('assets')
-      .update(updates)
-      .in('id', ids)
-      .select();
+    const { data, error } = await supabase.from('assets').update(updates).in('id', ids).select();
 
     if (error) {
       throw new Error(`Failed to batch update assets: ${error.message}`);
@@ -375,11 +363,7 @@ export async function batchUpdateAssets(
  */
 export async function searchAssets(query: string, projectId?: string): Promise<AssetDTO[]> {
   try {
-    let q = supabase
-      .from('assets')
-      .select('*')
-      .is('deleted_at', null)
-      .ilike('name', `%${query}%`);
+    let q = supabase.from('assets').select('*').is('deleted_at', null).ilike('name', `%${query}%`);
 
     if (projectId) {
       q = q.eq('project_id', projectId);

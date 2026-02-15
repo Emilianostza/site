@@ -53,7 +53,7 @@ export enum AnalyticsEventType {
 
   // Search & Filter
   SearchPerformed = 'search_performed',
-  FilterApplied = 'filter_applied'
+  FilterApplied = 'filter_applied',
 }
 
 export interface AnalyticsEvent {
@@ -81,7 +81,7 @@ export function trackEvent(event: AnalyticsEvent): void {
   // Add timestamp if not provided
   const eventToSend: AnalyticsEvent = {
     ...event,
-    timestamp: event.timestamp || Date.now()
+    timestamp: event.timestamp || Date.now(),
   };
 
   // Log to console in dev mode
@@ -131,7 +131,7 @@ async function flushEvents(): Promise<void> {
     await fetch('/api/analytics/events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ events: eventsToSend })
+      body: JSON.stringify({ events: eventsToSend }),
     });
   } catch (err) {
     console.warn('[Analytics] Failed to send events:', err);
@@ -156,28 +156,28 @@ if (typeof window !== 'undefined') {
 export function trackPageView(path: string, title?: string): void {
   trackEvent({
     eventType: AnalyticsEventType.PageViewed,
-    properties: { path, title }
+    properties: { path, title },
   });
 }
 
 export function trackFormSubmit(formName: string, fields?: string[]): void {
   trackEvent({
     eventType: AnalyticsEventType.FormSubmitted,
-    properties: { form_name: formName, field_count: fields?.length }
+    properties: { form_name: formName, field_count: fields?.length },
   });
 }
 
 export function trackButtonClick(buttonName: string, context?: string): void {
   trackEvent({
     eventType: AnalyticsEventType.ButtonClicked,
-    properties: { button_name: buttonName, context }
+    properties: { button_name: buttonName, context },
   });
 }
 
 export function trackError(errorMessage: string, errorType?: string, context?: string): void {
   trackEvent({
     eventType: AnalyticsEventType.ErrorOccurred,
-    properties: { error_message: errorMessage, error_type: errorType, context }
+    properties: { error_message: errorMessage, error_type: errorType, context },
   });
 }
 
@@ -189,7 +189,7 @@ export function trackProjectEvent(
   trackEvent({
     eventType,
     projectId,
-    properties
+    properties,
   });
 }
 
@@ -202,7 +202,7 @@ export function trackAssetEvent(
   trackEvent({
     eventType,
     projectId,
-    properties: { asset_id: assetId, ...properties }
+    properties: { asset_id: assetId, ...properties },
   });
 }
 

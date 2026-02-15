@@ -72,20 +72,21 @@ export interface MetricsFilter {
  * Calculate engagement metrics
  */
 export function calculateEngagementMetrics(events: any[], dateFrom: string, dateTo: string) {
-  const userSignins = events.filter(e => e.eventType === 'user_signed_in').length;
-  const userSignouts = events.filter(e => e.eventType === 'user_signed_out').length;
-  const pageViews = events.filter(e => e.eventType === 'page_viewed').length;
-  const uniqueUsers = new Set(events.map(e => e.userId).filter(Boolean)).size;
+  const userSignins = events.filter((e) => e.eventType === 'user_signed_in').length;
+  const userSignouts = events.filter((e) => e.eventType === 'user_signed_out').length;
+  const pageViews = events.filter((e) => e.eventType === 'page_viewed').length;
+  const uniqueUsers = new Set(events.map((e) => e.userId).filter(Boolean)).size;
 
   // Estimate session duration (5 min per page view, simplified)
-  const estimatedSessionDuration = pageViews > 0 ? Math.round((pageViews * 5) / Math.max(userSignins, 1)) : 0;
+  const estimatedSessionDuration =
+    pageViews > 0 ? Math.round((pageViews * 5) / Math.max(userSignins, 1)) : 0;
 
   return {
     activeUsers: uniqueUsers,
     newUsers: userSignins,
     sessionDuration: estimatedSessionDuration,
     pageViewsTotal: pageViews,
-    pageViewsAvgPerSession: userSignins > 0 ? Math.round(pageViews / userSignins) : 0
+    pageViewsAvgPerSession: userSignins > 0 ? Math.round(pageViews / userSignins) : 0,
   };
 }
 
@@ -93,14 +94,17 @@ export function calculateEngagementMetrics(events: any[], dateFrom: string, date
  * Calculate project workflow metrics
  */
 export function calculateProjectMetrics(events: any[]) {
-  const projectCreated = events.filter(e => e.eventType === 'project_created').length;
-  const projectApproved = events.filter(e => e.eventType === 'project_approved').length;
-  const projectDelivered = events.filter(e => e.eventType === 'project_delivered').length;
-  const projectRejected = events.filter(e => e.eventType === 'project_rejected').length;
+  const projectCreated = events.filter((e) => e.eventType === 'project_created').length;
+  const projectApproved = events.filter((e) => e.eventType === 'project_approved').length;
+  const projectDelivered = events.filter((e) => e.eventType === 'project_delivered').length;
+  const projectRejected = events.filter((e) => e.eventType === 'project_rejected').length;
 
-  const approvalRate = projectCreated > 0 ? Math.round((projectApproved / projectCreated) * 100) : 0;
-  const deliveryRate = projectApproved > 0 ? Math.round((projectDelivered / projectApproved) * 100) : 0;
-  const rejectionRate = projectCreated > 0 ? Math.round((projectRejected / projectCreated) * 100) : 0;
+  const approvalRate =
+    projectCreated > 0 ? Math.round((projectApproved / projectCreated) * 100) : 0;
+  const deliveryRate =
+    projectApproved > 0 ? Math.round((projectDelivered / projectApproved) * 100) : 0;
+  const rejectionRate =
+    projectCreated > 0 ? Math.round((projectRejected / projectCreated) * 100) : 0;
 
   // Estimate avg duration (7 days default)
   const avgProjectDuration = 7;
@@ -111,7 +115,7 @@ export function calculateProjectMetrics(events: any[]) {
     approvalRate,
     avgProjectDuration,
     deliveryRate,
-    rejectionRate
+    rejectionRate,
   };
 }
 
@@ -119,11 +123,12 @@ export function calculateProjectMetrics(events: any[]) {
  * Calculate asset upload metrics
  */
 export function calculateAssetMetrics(events: any[]) {
-  const uploadStarted = events.filter(e => e.eventType === 'asset_upload_started').length;
-  const uploadCompleted = events.filter(e => e.eventType === 'asset_upload_completed').length;
-  const uploadFailed = events.filter(e => e.eventType === 'asset_upload_failed').length;
+  const uploadStarted = events.filter((e) => e.eventType === 'asset_upload_started').length;
+  const uploadCompleted = events.filter((e) => e.eventType === 'asset_upload_completed').length;
+  const uploadFailed = events.filter((e) => e.eventType === 'asset_upload_failed').length;
 
-  const uploadSuccessRate = uploadStarted > 0 ? Math.round((uploadCompleted / uploadStarted) * 100) : 0;
+  const uploadSuccessRate =
+    uploadStarted > 0 ? Math.round((uploadCompleted / uploadStarted) * 100) : 0;
 
   // Calculate avg size from properties (estimate 2 MB per asset)
   const avgUploadSize = 2;
@@ -136,7 +141,7 @@ export function calculateAssetMetrics(events: any[]) {
     uploadSuccessRate,
     avgUploadSize,
     failedUploads: uploadFailed,
-    avgProcessingTime
+    avgProcessingTime,
   };
 }
 
@@ -144,11 +149,12 @@ export function calculateAssetMetrics(events: any[]) {
  * Calculate financial metrics
  */
 export function calculateFinancialMetrics(events: any[]) {
-  const payoutCreated = events.filter(e => e.eventType === 'payout_requested').length;
-  const payoutApproved = events.filter(e => e.eventType === 'payout_approved').length;
-  const payoutPaid = events.filter(e => e.eventType === 'payout_paid').length;
+  const payoutCreated = events.filter((e) => e.eventType === 'payout_requested').length;
+  const payoutApproved = events.filter((e) => e.eventType === 'payout_approved').length;
+  const payoutPaid = events.filter((e) => e.eventType === 'payout_paid').length;
 
-  const payoutApprovalRate = payoutCreated > 0 ? Math.round((payoutApproved / payoutCreated) * 100) : 0;
+  const payoutApprovalRate =
+    payoutCreated > 0 ? Math.round((payoutApproved / payoutCreated) * 100) : 0;
   const paymentRate = payoutApproved > 0 ? Math.round((payoutPaid / payoutApproved) * 100) : 0;
 
   // Estimate metrics (will be fetched from real data in Phase 3)
@@ -156,8 +162,8 @@ export function calculateFinancialMetrics(events: any[]) {
   const avgPayoutAmount = payoutApproved > 0 ? Math.round(totalRevenue / payoutApproved) : 0;
   const uniquePhotographers = new Set(
     events
-      .filter(e => ['payout_requested', 'payout_approved', 'payout_paid'].includes(e.eventType))
-      .map(e => e.properties?.photographer_id)
+      .filter((e) => ['payout_requested', 'payout_approved', 'payout_paid'].includes(e.eventType))
+      .map((e) => e.properties?.photographer_id)
       .filter(Boolean)
   ).size;
 
@@ -169,7 +175,7 @@ export function calculateFinancialMetrics(events: any[]) {
     payoutsPaid: payoutPaid,
     paymentRate,
     avgPayoutAmount,
-    photographers: uniquePhotographers
+    photographers: uniquePhotographers,
   };
 }
 
@@ -177,21 +183,22 @@ export function calculateFinancialMetrics(events: any[]) {
  * Calculate QA workflow metrics
  */
 export function calculateQAMetrics(events: any[]) {
-  const qaSubmitted = events.filter(e => e.eventType === 'qa_submitted').length;
-  const qaApproved = events.filter(e => e.eventType === 'qa_approved').length;
-  const qaChangesRequested = events.filter(e => e.eventType === 'qa_changes_requested').length;
-  const qaRejected = events.filter(e => e.eventType === 'qa_rejected').length;
+  const qaSubmitted = events.filter((e) => e.eventType === 'qa_submitted').length;
+  const qaApproved = events.filter((e) => e.eventType === 'qa_approved').length;
+  const qaChangesRequested = events.filter((e) => e.eventType === 'qa_changes_requested').length;
+  const qaRejected = events.filter((e) => e.eventType === 'qa_rejected').length;
 
   const totalQAEvents = qaSubmitted + qaApproved + qaChangesRequested + qaRejected;
   const qaApprovalRate = qaSubmitted > 0 ? Math.round((qaApproved / qaSubmitted) * 100) : 0;
-  const reworkRate = qaSubmitted > 0 ? Math.round(((qaChangesRequested + qaRejected) / qaSubmitted) * 100) : 0;
+  const reworkRate =
+    qaSubmitted > 0 ? Math.round(((qaChangesRequested + qaRejected) / qaSubmitted) * 100) : 0;
 
   return {
     qaSubmissions: qaSubmitted,
     qaApprovals: qaApproved,
     qaApprovalRate,
     qaRework: qaChangesRequested + qaRejected,
-    reworkRate
+    reworkRate,
   };
 }
 
@@ -219,14 +226,16 @@ export function aggregateDashboardMetrics(
     period,
     dateFrom,
     dateTo,
-    generatedAt: new Date().toISOString()
+    generatedAt: new Date().toISOString(),
   };
 }
 
 /**
  * Format metrics for display
  */
-export function formatMetricsForDisplay(metrics: DashboardMetrics): Record<string, string | number> {
+export function formatMetricsForDisplay(
+  metrics: DashboardMetrics
+): Record<string, string | number> {
   return {
     'Active Users': metrics.activeUsers,
     'Page Views': metrics.pageViewsTotal,
@@ -241,7 +250,7 @@ export function formatMetricsForDisplay(metrics: DashboardMetrics): Record<strin
     'Payment Rate': `${metrics.paymentRate}%`,
     'QA Approval Rate': `${metrics.qaApprovalRate}%`,
     'Rework Rate': `${metrics.reworkRate}%`,
-    'Photographers': metrics.photographers
+    Photographers: metrics.photographers,
   };
 }
 
@@ -256,7 +265,10 @@ export interface MetricsTrend {
   isPositive: boolean;
 }
 
-export function calculateMetricsTrend(current: DashboardMetrics, previous: DashboardMetrics): MetricsTrend[] {
+export function calculateMetricsTrend(
+  current: DashboardMetrics,
+  previous: DashboardMetrics
+): MetricsTrend[] {
   const metrics = [
     { key: 'activeUsers', label: 'Active Users' },
     { key: 'pageViewsTotal', label: 'Page Views' },
@@ -265,20 +277,21 @@ export function calculateMetricsTrend(current: DashboardMetrics, previous: Dashb
     { key: 'deliveryRate', label: 'Delivery Rate' },
     { key: 'uploadSuccessRate', label: 'Upload Success Rate' },
     { key: 'payoutsApproved', label: 'Payouts Approved' },
-    { key: 'paymentRate', label: 'Payment Rate' }
+    { key: 'paymentRate', label: 'Payment Rate' },
   ];
 
   return metrics.map(({ key, label }) => {
     const currentVal = current[key as keyof DashboardMetrics] as number;
     const previousVal = previous[key as keyof DashboardMetrics] as number;
-    const change = previousVal > 0 ? Math.round(((currentVal - previousVal) / previousVal) * 100) : 0;
+    const change =
+      previousVal > 0 ? Math.round(((currentVal - previousVal) / previousVal) * 100) : 0;
 
     return {
       metric: label,
       current: currentVal,
       previous: previousVal,
       change,
-      isPositive: change >= 0
+      isPositive: change >= 0,
     };
   });
 }
@@ -298,6 +311,6 @@ export function exportMetricsAsCSV(metrics: DashboardMetrics): string {
   const headers = ['Metric', 'Value'];
   const rows = Object.entries(data).map(([metric, value]) => [metric, value]);
 
-  const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+  const csv = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
   return csv;
 }

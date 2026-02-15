@@ -151,7 +151,7 @@ export const ProjectsProvider = {
     // Mock data
     const mockService = await getMockProjectsService();
     return await mockService.deleteProject(id);
-  }
+  },
 };
 
 /**
@@ -228,5 +228,5 @@ export const AssetsProvider = {
     // Mock data
     const mockService = await getMockAssetsService();
     return await mockService.deleteAsset(id);
-  }
+  },
 };

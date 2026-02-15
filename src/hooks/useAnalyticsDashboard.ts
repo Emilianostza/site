@@ -16,7 +16,12 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { DashboardMetrics, MetricsTrend, aggregateDashboardMetrics, calculateMetricsTrend } from '@/services/analytics/dashboard';
+import {
+  DashboardMetrics,
+  MetricsTrend,
+  aggregateDashboardMetrics,
+  calculateMetricsTrend,
+} from '@/services/analytics/dashboard';
 import { apiClient } from '@/services/api/client';
 
 interface UseAnalyticsDashboardOptions {
@@ -47,13 +52,15 @@ interface UseAnalyticsDashboardResult {
 /**
  * Hook to fetch and manage analytics dashboard metrics
  */
-export function useAnalyticsDashboard(options: UseAnalyticsDashboardOptions = {}): UseAnalyticsDashboardResult {
+export function useAnalyticsDashboard(
+  options: UseAnalyticsDashboardOptions = {}
+): UseAnalyticsDashboardResult {
   const {
     period: initialPeriod = 'daily',
     autoRefresh = true,
     refreshInterval = 60000, // 1 minute
     orgId,
-    projectId
+    projectId,
   } = options;
 
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>(initialPeriod);
@@ -84,53 +91,61 @@ export function useAnalyticsDashboard(options: UseAnalyticsDashboardOptions = {}
 
     return {
       dateFrom: dateFrom.toISOString(),
-      dateTo: now.toISOString()
+      dateTo: now.toISOString(),
     };
   }, [period]);
 
   /**
    * Fetch analytics events and calculate metrics
    */
-  const fetchMetrics = useCallback(async (isPreviousPeriod = false) => {
-    try {
-      const { dateFrom, dateTo } = getDateRange();
+  const fetchMetrics = useCallback(
+    async (isPreviousPeriod = false) => {
+      try {
+        const { dateFrom, dateTo } = getDateRange();
 
-      // Adjust date range for previous period comparison
-      let adjustedDateFrom = dateFrom;
-      let adjustedDateTo = dateTo;
+        // Adjust date range for previous period comparison
+        let adjustedDateFrom = dateFrom;
+        let adjustedDateTo = dateTo;
 
-      if (isPreviousPeriod) {
-        const fromDate = new Date(dateFrom);
-        const toDate = new Date(dateTo);
-        const rangeMs = toDate.getTime() - fromDate.getTime();
+        if (isPreviousPeriod) {
+          const fromDate = new Date(dateFrom);
+          const toDate = new Date(dateTo);
+          const rangeMs = toDate.getTime() - fromDate.getTime();
 
-        adjustedDateTo = new Date(fromDate.getTime()).toISOString();
-        adjustedDateFrom = new Date(fromDate.getTime() - rangeMs).toISOString();
+          adjustedDateTo = new Date(fromDate.getTime()).toISOString();
+          adjustedDateFrom = new Date(fromDate.getTime() - rangeMs).toISOString();
+        }
+
+        // Fetch events from analytics API
+        const params = new URLSearchParams();
+        params.append('date_from', adjustedDateFrom);
+        params.append('date_to', adjustedDateTo);
+        if (orgId) params.append('org_id', orgId);
+        if (projectId) params.append('project_id', projectId);
+
+        const response = await apiClient.get<any>(`/analytics/metrics?${params.toString()}`);
+
+        // If response already contains aggregated metrics, use them
+        if (response.metrics) {
+          return response.metrics as DashboardMetrics;
+        }
+
+        // Otherwise, aggregate from raw events
+        const events = response.events || [];
+        const aggregated = aggregateDashboardMetrics(
+          events,
+          period,
+          adjustedDateFrom,
+          adjustedDateTo
+        );
+
+        return aggregated;
+      } catch (err) {
+        throw err instanceof Error ? err : new Error('Failed to fetch metrics');
       }
-
-      // Fetch events from analytics API
-      const params = new URLSearchParams();
-      params.append('date_from', adjustedDateFrom);
-      params.append('date_to', adjustedDateTo);
-      if (orgId) params.append('org_id', orgId);
-      if (projectId) params.append('project_id', projectId);
-
-      const response = await apiClient.get<any>(`/analytics/metrics?${params.toString()}`);
-
-      // If response already contains aggregated metrics, use them
-      if (response.metrics) {
-        return response.metrics as DashboardMetrics;
-      }
-
-      // Otherwise, aggregate from raw events
-      const events = response.events || [];
-      const aggregated = aggregateDashboardMetrics(events, period, adjustedDateFrom, adjustedDateTo);
-
-      return aggregated;
-    } catch (err) {
-      throw err instanceof Error ? err : new Error('Failed to fetch metrics');
-    }
-  }, [period, orgId, projectId, getDateRange]);
+    },
+    [period, orgId, projectId, getDateRange]
+  );
 
   /**
    * Load current and previous metrics
@@ -141,10 +156,7 @@ export function useAnalyticsDashboard(options: UseAnalyticsDashboardOptions = {}
       setLoading(true);
 
       // Fetch current and previous period metrics in parallel
-      const [current, previous] = await Promise.all([
-        fetchMetrics(false),
-        fetchMetrics(true)
-      ]);
+      const [current, previous] = await Promise.all([fetchMetrics(false), fetchMetrics(true)]);
 
       setMetrics(current);
       setPreviousMetrics(previous);
@@ -164,10 +176,7 @@ export function useAnalyticsDashboard(options: UseAnalyticsDashboardOptions = {}
       setIsRefreshing(true);
       setError(null);
 
-      const [current, previous] = await Promise.all([
-        fetchMetrics(false),
-        fetchMetrics(true)
-      ]);
+      const [current, previous] = await Promise.all([fetchMetrics(false), fetchMetrics(true)]);
 
       setMetrics(current);
       setPreviousMetrics(previous);
@@ -210,7 +219,7 @@ export function useAnalyticsDashboard(options: UseAnalyticsDashboardOptions = {}
     isRefreshing,
     refresh,
     clearError: () => setError(null),
-    setPeriod
+    setPeriod,
   };
 }
 
@@ -230,9 +239,9 @@ export function useTrackEvent() {
       body: JSON.stringify({
         eventType,
         timestamp: Date.now(),
-        properties
-      })
-    }).catch(err => console.warn('[Analytics] Failed to track event:', err));
+        properties,
+      }),
+    }).catch((err) => console.warn('[Analytics] Failed to track event:', err));
   }, []);
 }
 
@@ -255,9 +264,9 @@ export function usePageViewTracking(pagePath: string, pageTitle?: string) {
             properties: {
               path: pagePath,
               title: pageTitle || document.title,
-              referrer: document.referrer
-            }
-          })
+              referrer: document.referrer,
+            },
+          }),
         });
       } catch (err) {
         console.warn('[Analytics] Failed to track page view:', err);
@@ -278,13 +287,16 @@ export function usePageViewTracking(pagePath: string, pageTitle?: string) {
 export function useFormSubmissionTracking(formName: string) {
   const trackEvent = useTrackEvent();
 
-  return useCallback((fields?: string[]) => {
-    trackEvent('form_submitted', {
-      form_name: formName,
-      field_count: fields?.length ?? 0,
-      timestamp: Date.now()
-    });
-  }, [formName, trackEvent]);
+  return useCallback(
+    (fields?: string[]) => {
+      trackEvent('form_submitted', {
+        form_name: formName,
+        field_count: fields?.length ?? 0,
+        timestamp: Date.now(),
+      });
+    },
+    [formName, trackEvent]
+  );
 }
 
 /**
@@ -305,10 +317,10 @@ export function useButtonClickTracking() {
         properties: {
           button_name: buttonName,
           context,
-          page: window.location.pathname
-        }
-      })
-    }).catch(err => console.warn('[Analytics] Failed to track button click:', err));
+          page: window.location.pathname,
+        },
+      }),
+    }).catch((err) => console.warn('[Analytics] Failed to track button click:', err));
   }, []);
 }
 
@@ -333,10 +345,10 @@ export function useErrorTracking() {
           error_message: errorMessage,
           error_type: errorType,
           stack: error instanceof Error ? error.stack : undefined,
-          page: window.location.pathname
-        }
-      })
-    }).catch(err => console.warn('[Analytics] Failed to track error:', err));
+          page: window.location.pathname,
+        },
+      }),
+    }).catch((err) => console.warn('[Analytics] Failed to track error:', err));
   }, []);
 }
 
@@ -358,9 +370,9 @@ export function useSearchTracking() {
         properties: {
           query,
           scope,
-          page: window.location.pathname
-        }
-      })
-    }).catch(err => console.warn('[Analytics] Failed to track search:', err));
+          page: window.location.pathname,
+        },
+      }),
+    }).catch((err) => console.warn('[Analytics] Failed to track search:', err));
   }, []);
 }

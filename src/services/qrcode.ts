@@ -105,18 +105,18 @@ export const QR_CODE_SPECS = {
   digital: {
     width: 300,
     margin: 2,
-    errorCorrectionLevel: 'M' as const
+    errorCorrectionLevel: 'M' as const,
   },
   // Medium QR for printed material
   print: {
     width: 600,
     margin: 3,
-    errorCorrectionLevel: 'H' as const // Higher error correction for printed materials
+    errorCorrectionLevel: 'H' as const, // Higher error correction for printed materials
   },
   // Large QR for banners/signage
   signage: {
     width: 1200,
     margin: 4,
-    errorCorrectionLevel: 'H' as const
-  }
+    errorCorrectionLevel: 'H' as const,
+  },
 };

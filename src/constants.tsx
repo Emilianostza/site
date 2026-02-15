@@ -10,7 +10,7 @@ export const NAV_ITEMS = [
       { label: 'Restaurants', path: '/industries/restaurants' },
       { label: 'Museums', path: '/industries/museums' },
       { label: 'E-commerce', path: '/industries/ecommerce' },
-    ]
+    ],
   },
   { label: 'Gallery', path: '/gallery' },
   { label: 'How it Works', path: '/how-it-works' },
@@ -27,14 +27,14 @@ export const INDUSTRIES: Record<string, IndustryConfig> = {
     outcomes: [
       'Increase appetite appeal with realistic 3D food models',
       'Integrate directly into digital menus and delivery apps',
-      'Generate QR codes for table-side AR experiences'
+      'Generate QR codes for table-side AR experiences',
     ],
     permissions: [
       'Edit title/description/tags',
       'Create/revoke share links',
       'Generate QR codes',
-      'Download delivered bundles'
-    ]
+      'Download delivered bundles',
+    ],
   },
   museums: {
     id: 'museums',
@@ -45,14 +45,14 @@ export const INDUSTRIES: Record<string, IndustryConfig> = {
     outcomes: [
       'Preserve fragile artifacts digitally',
       'Expand accessibility to global audiences',
-      'Strict access controls (Public, Unlisted, Restricted)'
+      'Strict access controls (Public, Unlisted, Restricted)',
     ],
     permissions: [
       'Edit metadata (Accession ID)',
       'Approve/reject with comments',
       'Share links with password/expiry',
-      'Downloads OFF by default'
-    ]
+      'Downloads OFF by default',
+    ],
   },
   ecommerce: {
     id: 'ecommerce',
@@ -63,36 +63,36 @@ export const INDUSTRIES: Record<string, IndustryConfig> = {
     outcomes: [
       'Boost conversion rates by up to 40%',
       'Reduce return rates with accurate visualization',
-      'AR-ready formats for iOS and Android'
+      'AR-ready formats for iOS and Android',
     ],
     permissions: [
       'Edit SKU/Metadata',
       'Download exports (GLB/USDZ)',
       'Configure embeds',
-      'Campaign QR codes'
-    ]
-  }
+      'Campaign QR codes',
+    ],
+  },
 };
 
 export const HOW_IT_WORKS_STEPS = [
   {
     title: 'Intake',
     desc: 'Submit your request details and logistics preferences.',
-    icon: <Box className="w-6 h-6" />
+    icon: <Box className="w-6 h-6" />,
   },
   {
     title: 'Employee Capture',
     desc: 'Our trained experts arrive on-site or receive your shipment.',
-    icon: <Scan className="w-6 h-6" />
+    icon: <Scan className="w-6 h-6" />,
   },
   {
     title: 'Processing & QA',
     desc: 'Assets are processed into optimized 3D web formats.',
-    icon: <Globe className="w-6 h-6" />
+    icon: <Globe className="w-6 h-6" />,
   },
   {
     title: 'Review & Publish',
     desc: 'Approve assets in the portal and publish instantly.',
-    icon: <ShoppingBag className="w-6 h-6" />
-  }
+    icon: <ShoppingBag className="w-6 h-6" />,
+  },
 ];

@@ -66,10 +66,7 @@ export async function createAsset(data: CreateAssetInput): Promise<Asset> {
  * Update asset metadata.
  * Name, status, etc.
  */
-export async function updateAsset(
-  id: string,
-  data: Partial<Omit<Asset, 'id'>>
-): Promise<Asset> {
+export async function updateAsset(id: string, data: Partial<Omit<Asset, 'id'>>): Promise<Asset> {
   return apiClient.patch<Asset>(`/assets/${id}`, data);
 }
 

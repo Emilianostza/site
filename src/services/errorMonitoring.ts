@@ -56,7 +56,7 @@ export const ErrorCategories: Record<string, { severity: ErrorSeverity; alert: b
   // Critical (system down)
   SYSTEM_FAILURE: { severity: 'CRITICAL', alert: true },
   DEPENDENCY_DOWN: { severity: 'CRITICAL', alert: true },
-  UNRECOVERABLE_ERROR: { severity: 'CRITICAL', alert: true }
+  UNRECOVERABLE_ERROR: { severity: 'CRITICAL', alert: true },
 };
 
 /**
@@ -118,10 +118,10 @@ export function withErrorMonitoring<T>(
   category: string,
   context?: Record<string, unknown>
 ): Promise<T> {
-  return fn().catch(error => {
+  return fn().catch((error) => {
     const categoryConfig = ErrorCategories[category] || {
       severity: 'MEDIUM',
-      alert: true
+      alert: true,
     };
 
     errorMonitor.reportError({
@@ -130,7 +130,7 @@ export function withErrorMonitoring<T>(
       code: error.code,
       context,
       stack: error.stack,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     throw error;
@@ -140,10 +140,7 @@ export function withErrorMonitoring<T>(
 /**
  * Error-aware promise wrapper
  */
-export async function handleError<T>(
-  promise: Promise<T>,
-  fallback?: T
-): Promise<T | undefined> {
+export async function handleError<T>(promise: Promise<T>, fallback?: T): Promise<T | undefined> {
   try {
     return await promise;
   } catch (error) {
@@ -151,7 +148,7 @@ export async function handleError<T>(
       message: (error as Error).message,
       severity: 'MEDIUM',
       stack: (error as Error).stack,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     return fallback;
   }

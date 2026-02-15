@@ -63,13 +63,12 @@ export async function fetchProjects(filter: FetchProjectsFilter = {}): Promise<{
     }
 
     // Calculate next cursor if we have a full page
-    const nextCursor = data && data.length >= (filter.limit || 20)
-      ? data[data.length - 1].created_at
-      : undefined;
+    const nextCursor =
+      data && data.length >= (filter.limit || 20) ? data[data.length - 1].created_at : undefined;
 
     return {
       projects: data || [],
-      nextCursor
+      nextCursor,
     };
   } catch (err) {
     console.error('[ProjectsAPI] Fetch failed:', err);
@@ -82,11 +81,7 @@ export async function fetchProjects(filter: FetchProjectsFilter = {}): Promise<{
  */
 export async function getProject(id: string): Promise<ProjectDTO> {
   try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
 
     if (error) {
       throw new Error(`Failed to get project: ${error.message}`);
@@ -125,8 +120,8 @@ export async function createProject(data: CreateProjectRequest): Promise<Project
           industry: data.industry,
           tier: data.tier,
           request_id: data.requestId,
-          status: 'pending'
-        }
+          status: 'pending',
+        },
       ])
       .select()
       .single();
@@ -167,7 +162,7 @@ export async function updateProject(
         status: updates.status,
         tier: updates.tier,
         assigned_to: updates.assignedTo,
-        custom_fields: updates.customFields
+        custom_fields: updates.customFields,
       })
       .eq('id', id)
       .select()
@@ -193,7 +188,7 @@ export async function approveProject(id: string): Promise<ProjectDTO> {
       .from('projects')
       .update({
         status: 'approved',
-        approved_at: new Date().toISOString()
+        approved_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
@@ -219,7 +214,7 @@ export async function startProject(id: string): Promise<ProjectDTO> {
       .from('projects')
       .update({
         status: 'in_progress',
-        started_at: new Date().toISOString()
+        started_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
@@ -245,7 +240,7 @@ export async function deliverProject(id: string): Promise<ProjectDTO> {
       .from('projects')
       .update({
         status: 'delivered',
-        delivered_at: new Date().toISOString()
+        delivered_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
@@ -271,7 +266,7 @@ export async function rejectProject(id: string, reason?: string): Promise<Projec
       .from('projects')
       .update({
         status: 'rejected',
-        metadata: { rejection_reason: reason }
+        metadata: { rejection_reason: reason },
       })
       .eq('id', id)
       .select()
@@ -296,7 +291,7 @@ export async function deleteProject(id: string): Promise<void> {
     const { error } = await supabase
       .from('projects')
       .update({
-        deleted_at: new Date().toISOString()
+        deleted_at: new Date().toISOString(),
       })
       .eq('id', id);
 
@@ -342,7 +337,7 @@ export async function getProjectWithDetails(id: string) {
     return {
       project,
       assets: assets || [],
-      assignments: assignments || []
+      assignments: assignments || [],
     };
   } catch (err) {
     console.error('[ProjectsAPI] Get details failed:', err);
@@ -368,17 +363,17 @@ export async function exportProjects(
     if (format === 'csv') {
       // Convert to CSV
       const headers = ['ID', 'Name', 'Industry', 'Status', 'Tier', 'Created'];
-      const rows = projects.map(p => [
+      const rows = projects.map((p) => [
         p.id,
         p.name,
         p.industry,
         p.status,
         p.tier,
-        new Date(p.created_at).toISOString()
+        new Date(p.created_at).toISOString(),
       ]);
 
       content = [headers, ...rows]
-        .map(row => row.map(cell => `"${cell}"`).join(','))
+        .map((row) => row.map((cell) => `"${cell}"`).join(','))
         .join('\n');
 
       filename = `projects-${new Date().toISOString().split('T')[0]}.csv`;

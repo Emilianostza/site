@@ -24,7 +24,7 @@ export const TIER_PRICING: Record<TierType, { min: number; max: number }> = {
   [TierType.Basic]: { min: 5000, max: 10000 }, // $50-100
   [TierType.Standard]: { min: 10000, max: 20000 }, // $100-200
   [TierType.Premium]: { min: 20000, max: 50000 }, // $200-500
-  [TierType.Enterprise]: { min: 50000, max: 100000 } // $500-1000
+  [TierType.Enterprise]: { min: 50000, max: 100000 }, // $500-1000
 };
 
 // Asset type complexity multipliers
@@ -33,7 +33,7 @@ export const ASSET_TYPE_MULTIPLIERS: Record<AssetType, number> = {
   [AssetType.Model3D]: 2.0, // 2x more complex
   [AssetType.Mesh]: 2.5, // Even more complex
   [AssetType.PointCloud]: 2.5,
-  [AssetType.Video]: 1.5 // Moderately complex
+  [AssetType.Video]: 1.5, // Moderately complex
 };
 
 /**
@@ -122,7 +122,7 @@ export function calculateTakeHome(
   return {
     gross: grossAmount,
     fee,
-    net: Math.max(0, net)
+    net: Math.max(0, net),
   };
 }
 

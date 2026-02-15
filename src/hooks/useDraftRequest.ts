@@ -60,7 +60,7 @@ function saveDraftToStorage(data: Record<string, unknown>): void {
   try {
     const draft: RequestDraft = {
       data,
-      savedAt: Date.now()
+      savedAt: Date.now(),
     };
     sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
   } catch (err) {
@@ -124,6 +124,6 @@ export function useDraftRequest() {
     saveDraft,
     clearDraft,
     isExpired,
-    isDraftAvailable: !isExpired && draft !== null
+    isDraftAvailable: !isExpired && draft !== null,
   };
 }

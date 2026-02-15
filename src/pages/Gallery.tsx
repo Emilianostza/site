@@ -4,12 +4,42 @@ import { Industry } from '@/types';
 import { Box, PlayCircle } from 'lucide-react';
 
 const MOCK_MODELS = [
-  { id: 1, title: 'Signature Burger', industry: Industry.Restaurant, img: 'https://picsum.photos/seed/burger/400/400' },
-  { id: 2, title: 'Ancient Vase', industry: Industry.Museum, img: 'https://picsum.photos/seed/vase/400/400' },
-  { id: 3, title: 'Running Shoe', industry: Industry.Ecommerce, img: 'https://picsum.photos/seed/shoe/400/400' },
-  { id: 4, title: 'Espresso Machine', industry: Industry.Ecommerce, img: 'https://picsum.photos/seed/coffee/400/400' },
-  { id: 5, title: 'Cocktail', industry: Industry.Restaurant, img: 'https://picsum.photos/seed/drink/400/400' },
-  { id: 6, title: 'Fossil Specimen', industry: Industry.Museum, img: 'https://picsum.photos/seed/fossil/400/400' },
+  {
+    id: 1,
+    title: 'Signature Burger',
+    industry: Industry.Restaurant,
+    img: 'https://picsum.photos/seed/burger/400/400',
+  },
+  {
+    id: 2,
+    title: 'Ancient Vase',
+    industry: Industry.Museum,
+    img: 'https://picsum.photos/seed/vase/400/400',
+  },
+  {
+    id: 3,
+    title: 'Running Shoe',
+    industry: Industry.Ecommerce,
+    img: 'https://picsum.photos/seed/shoe/400/400',
+  },
+  {
+    id: 4,
+    title: 'Espresso Machine',
+    industry: Industry.Ecommerce,
+    img: 'https://picsum.photos/seed/coffee/400/400',
+  },
+  {
+    id: 5,
+    title: 'Cocktail',
+    industry: Industry.Restaurant,
+    img: 'https://picsum.photos/seed/drink/400/400',
+  },
+  {
+    id: 6,
+    title: 'Fossil Specimen',
+    industry: Industry.Museum,
+    img: 'https://picsum.photos/seed/fossil/400/400',
+  },
 ];
 
 const Gallery: React.FC = () => {
@@ -17,22 +47,31 @@ const Gallery: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const initialFilter = params.get('industry');
 
-  const [filter, setFilter] = useState<string>(initialFilter ? 
-    (initialFilter === 'restaurants' ? Industry.Restaurant : 
-     initialFilter === 'museums' ? Industry.Museum : 
-     initialFilter === 'ecommerce' ? Industry.Ecommerce : 'All') 
-    : 'All');
+  const [filter, setFilter] = useState<string>(
+    initialFilter
+      ? initialFilter === 'restaurants'
+        ? Industry.Restaurant
+        : initialFilter === 'museums'
+          ? Industry.Museum
+          : initialFilter === 'ecommerce'
+            ? Industry.Ecommerce
+            : 'All'
+      : 'All'
+  );
 
-  const filteredModels = filter === 'All' 
-    ? MOCK_MODELS 
-    : MOCK_MODELS.filter(m => m.industry === filter);
+  const filteredModels =
+    filter === 'All' ? MOCK_MODELS : MOCK_MODELS.filter((m) => m.industry === filter);
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 min-h-screen py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Capture Gallery</h1>
-          <p className="text-slate-600 dark:text-slate-400">Explore high-fidelity 3D assets captured by our team.</p>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            Capture Gallery
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Explore high-fidelity 3D assets captured by our team.
+          </p>
         </div>
 
         {/* Filters */}
@@ -55,7 +94,10 @@ const Gallery: React.FC = () => {
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredModels.map((model) => (
-            <div key={model.id} className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all cursor-pointer">
+            <div
+              key={model.id}
+              className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all cursor-pointer"
+            >
               <div className="relative aspect-square bg-slate-100 dark:bg-slate-700">
                 <img src={model.img} alt={model.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

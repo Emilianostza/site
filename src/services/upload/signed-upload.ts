@@ -56,14 +56,14 @@ export async function getSignedUploadUrl(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('managed_capture_auth_token') || ''}`
+      Authorization: `Bearer ${localStorage.getItem('managed_capture_auth_token') || ''}`,
     },
     body: JSON.stringify({
       project_id: projectId,
       filename,
       file_size: fileSize,
-      content_type: contentType
-    })
+      content_type: contentType,
+    }),
   });
 
   if (!response.ok) {
@@ -95,7 +95,7 @@ export async function uploadToSignedUrl(
           type: 'progress',
           loaded: e.loaded,
           total: e.total,
-          percent: percentComplete
+          percent: percentComplete,
         });
       }
     });
@@ -107,7 +107,7 @@ export async function uploadToSignedUrl(
           type: 'complete',
           loaded: file.size,
           total: file.size,
-          percent: 100
+          percent: 100,
         });
         resolve();
       } else {
@@ -122,7 +122,7 @@ export async function uploadToSignedUrl(
         loaded: 0,
         total: file.size,
         percent: 0,
-        error: `Upload failed: ${xhr.statusText}`
+        error: `Upload failed: ${xhr.statusText}`,
       });
       reject(new Error('Upload failed'));
     });
@@ -152,7 +152,7 @@ export async function uploadAssetFile(
       type: 'start',
       loaded: 0,
       total: file.size,
-      percent: 0
+      percent: 0,
     });
 
     const signedResponse = await getSignedUploadUrl(
@@ -168,7 +168,7 @@ export async function uploadAssetFile(
     // Step 3: Return file key for Asset creation
     return {
       fileKey: signedResponse.file_key,
-      assetId: signedResponse.asset_id // If backend created asset automatically
+      assetId: signedResponse.asset_id, // If backend created asset automatically
     };
   } catch (err) {
     onProgress?.({
@@ -176,7 +176,7 @@ export async function uploadAssetFile(
       loaded: 0,
       total: file.size,
       percent: 0,
-      error: err instanceof Error ? err.message : 'Upload failed'
+      error: err instanceof Error ? err.message : 'Upload failed',
     });
     throw err;
   }
@@ -186,11 +186,16 @@ export async function uploadAssetFile(
  * Allowed file types for uploads
  */
 export const ALLOWED_ASSET_TYPES = {
-  '3d_model': ['application/x-zip-compressed', 'application/zip', 'model/gltf-binary', 'application/octet-stream'],
-  'photo': ['image/jpeg', 'image/png', 'image/webp', 'image/tiff'],
-  'mesh': ['application/x-zip-compressed', 'application/zip', 'model/obj', 'model/gltf-binary'],
-  'point_cloud': ['application/x-zip-compressed', 'application/zip', 'application/octet-stream'],
-  'video': ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm']
+  '3d_model': [
+    'application/x-zip-compressed',
+    'application/zip',
+    'model/gltf-binary',
+    'application/octet-stream',
+  ],
+  photo: ['image/jpeg', 'image/png', 'image/webp', 'image/tiff'],
+  mesh: ['application/x-zip-compressed', 'application/zip', 'model/obj', 'model/gltf-binary'],
+  point_cloud: ['application/x-zip-compressed', 'application/zip', 'application/octet-stream'],
+  video: ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'],
 };
 
 /**
@@ -205,7 +210,7 @@ export function validateUploadFile(
   if (file.size > maxBytes) {
     return {
       valid: false,
-      error: `File too large. Max: ${maxSizeMB}MB, Got: ${Math.round(file.size / 1024 / 1024)}MB`
+      error: `File too large. Max: ${maxSizeMB}MB, Got: ${Math.round(file.size / 1024 / 1024)}MB`,
     };
   }
 
@@ -218,13 +223,13 @@ export function validateUploadFile(
     'image/webp',
     'video/mp4',
     'model/gltf-binary',
-    'application/octet-stream'
+    'application/octet-stream',
   ];
 
   if (!allowedTypes.includes(file.type) && !file.name.match(/\.(zip|jpg|png|webp|mp4|glb|obj)$/i)) {
     return {
       valid: false,
-      error: `File type not supported: ${file.type || 'unknown'}`
+      error: `File type not supported: ${file.type || 'unknown'}`,
     };
   }
 

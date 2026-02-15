@@ -21,9 +21,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('@/components/editor/AssetUploader', () => ({
   AssetUploader: ({ onUpload }: { onUpload: (url: string) => void }) => (
-    <button onClick={() => onUpload('https://example.com/model.glb')}>
-      Upload Model
-    </button>
+    <button onClick={() => onUpload('https://example.com/model.glb')}>Upload Model</button>
   ),
 }));
 
@@ -191,9 +189,7 @@ describe('ModelEditor Component', () => {
       await waitFor(() => {
         // Find lighting tab button (Sun icon)
         const tabs = document.querySelectorAll('button[title]');
-        const lightingTab = Array.from(tabs).find(t =>
-          t.getAttribute('title') === 'Lighting'
-        );
+        const lightingTab = Array.from(tabs).find((t) => t.getAttribute('title') === 'Lighting');
 
         if (lightingTab) {
           fireEvent.click(lightingTab);
@@ -224,9 +220,7 @@ describe('ModelEditor Component', () => {
       await waitFor(() => {
         // Click lighting tab
         const tabs = document.querySelectorAll('button[title]');
-        const lightingTab = Array.from(tabs).find(t =>
-          t.getAttribute('title') === 'Lighting'
-        );
+        const lightingTab = Array.from(tabs).find((t) => t.getAttribute('title') === 'Lighting');
 
         if (lightingTab) {
           fireEvent.click(lightingTab);
@@ -294,9 +288,7 @@ describe('ModelEditor Component', () => {
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
-        const shareButton = document.querySelector(
-          'button[title="Share / Publish"]'
-        );
+        const shareButton = document.querySelector('button[title="Share / Publish"]');
 
         if (shareButton) {
           fireEvent.click(shareButton);
@@ -318,18 +310,14 @@ describe('ModelEditor Component', () => {
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
-        const shareButton = document.querySelector(
-          'button[title="Share / Publish"]'
-        );
+        const shareButton = document.querySelector('button[title="Share / Publish"]');
 
         if (shareButton) {
           fireEvent.click(shareButton);
 
           // Find and click copy button
           const copyButtons = screen.queryAllByRole('button');
-          const copyButton = copyButtons.find(btn =>
-            btn.querySelector('svg')
-          );
+          const copyButton = copyButtons.find((btn) => btn.querySelector('svg'));
 
           if (copyButton) {
             fireEvent.click(copyButton);

@@ -14,7 +14,14 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { PortalRole } from '@/types';
-import { User, Organization, LoginResponseDTO, Permission, hasPermission as checkPermission, userFromDTO } from '@/types/auth';
+import {
+  User,
+  Organization,
+  LoginResponseDTO,
+  Permission,
+  hasPermission as checkPermission,
+  userFromDTO,
+} from '@/types/auth';
 import { apiClient } from '@/services/api';
 import * as AuthAPI from '@/services/api/auth';
 
@@ -88,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (refreshToken) {
               try {
                 const response = await AuthAPI.refreshToken({
-                  refresh_token: refreshToken,  // Keep snake_case for API compatibility
+                  refresh_token: refreshToken, // Keep snake_case for API compatibility
                 });
                 setToken(response.token, user?.orgId);
               } catch (err) {
@@ -148,7 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('[Auth] Refreshing token automatically...');
           try {
             const response = await AuthAPI.refreshToken({
-              refresh_token: refreshToken,  // Keep snake_case for API compatibility
+              refresh_token: refreshToken, // Keep snake_case for API compatibility
             });
             setToken(response.token, user?.orgId);
           } catch (err) {
@@ -202,7 +209,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           dataRetentionDays: 365,
           metadata: {},
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
       } catch (orgErr) {
         console.warn('[Auth] Failed to load organization', orgErr);
@@ -265,7 +272,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const response = await AuthAPI.refreshToken({
-        refresh_token: refreshToken,  // Keep snake_case for API compatibility
+        refresh_token: refreshToken, // Keep snake_case for API compatibility
       });
       setToken(response.token, user?.orgId);
       return true;

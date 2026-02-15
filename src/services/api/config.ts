@@ -11,7 +11,7 @@ export const API_CONFIG = {
   useMockData: env.useMockData,
   baseUrl: env.apiBaseUrl,
   timeout: env.apiTimeout,
-  mockDelay: 500
+  mockDelay: 500,
 } as const;
 
 /**

@@ -18,7 +18,7 @@ export enum QAStatus {
   UnderReview = 'under_review',
   ChangesRequested = 'changes_requested',
   Approved = 'approved',
-  Rejected = 'rejected'
+  Rejected = 'rejected',
 }
 
 export interface QAChecklistItem {
@@ -71,13 +71,13 @@ export async function getQACheck(projectId: string): Promise<QACheckResponse | n
 /**
  * Approve QA check (reviewer confirms all items pass)
  */
-export async function approveQA(
-  qaCheckId: string,
-  notes?: string
-): Promise<QACheckResponse> {
-  const response = await apiClient.patch<{ data: QACheckResponse }>(`/qa/checks/${qaCheckId}/approve`, {
-    notes
-  });
+export async function approveQA(qaCheckId: string, notes?: string): Promise<QACheckResponse> {
+  const response = await apiClient.patch<{ data: QACheckResponse }>(
+    `/qa/checks/${qaCheckId}/approve`,
+    {
+      notes,
+    }
+  );
   return response.data;
 }
 
@@ -89,10 +89,13 @@ export async function requestQAChanges(
   changedItems: QAChecklistItem[],
   notes: string
 ): Promise<QACheckResponse> {
-  const response = await apiClient.patch<{ data: QACheckResponse }>(`/qa/checks/${qaCheckId}/request-changes`, {
-    changed_items: changedItems,
-    notes
-  });
+  const response = await apiClient.patch<{ data: QACheckResponse }>(
+    `/qa/checks/${qaCheckId}/request-changes`,
+    {
+      changed_items: changedItems,
+      notes,
+    }
+  );
   return response.data;
 }
 
@@ -100,9 +103,12 @@ export async function requestQAChanges(
  * Reject QA check entirely (major issues)
  */
 export async function rejectQA(qaCheckId: string, reason: string): Promise<QACheckResponse> {
-  const response = await apiClient.patch<{ data: QACheckResponse }>(`/qa/checks/${qaCheckId}/reject`, {
-    reason
-  });
+  const response = await apiClient.patch<{ data: QACheckResponse }>(
+    `/qa/checks/${qaCheckId}/reject`,
+    {
+      reason,
+    }
+  );
   return response.data;
 }
 
@@ -113,9 +119,12 @@ export async function resubmitForQA(
   qaCheckId: string,
   updatedAssetIds: string[]
 ): Promise<QACheckResponse> {
-  const response = await apiClient.patch<{ data: QACheckResponse }>(`/qa/checks/${qaCheckId}/resubmit`, {
-    asset_ids: updatedAssetIds
-  });
+  const response = await apiClient.patch<{ data: QACheckResponse }>(
+    `/qa/checks/${qaCheckId}/resubmit`,
+    {
+      asset_ids: updatedAssetIds,
+    }
+  );
   return response.data;
 }
 
@@ -130,30 +139,33 @@ export async function getAssetQAHistory(assetId: string): Promise<QACheckRespons
 /**
  * QA status descriptions
  */
-export const QA_STATUS_DESCRIPTIONS: Record<QAStatus, { label: string; description: string; color: string }> = {
+export const QA_STATUS_DESCRIPTIONS: Record<
+  QAStatus,
+  { label: string; description: string; color: string }
+> = {
   [QAStatus.Pending]: {
     label: 'Pending QA',
     description: 'Waiting for QA review',
-    color: 'bg-gray-100 text-gray-800'
+    color: 'bg-gray-100 text-gray-800',
   },
   [QAStatus.UnderReview]: {
     label: 'Under Review',
     description: 'QA reviewer is checking assets',
-    color: 'bg-blue-100 text-blue-800'
+    color: 'bg-blue-100 text-blue-800',
   },
   [QAStatus.ChangesRequested]: {
     label: 'Changes Requested',
     description: 'Reviewer found issues, technician needs to fix',
-    color: 'bg-yellow-100 text-yellow-800'
+    color: 'bg-yellow-100 text-yellow-800',
   },
   [QAStatus.Approved]: {
     label: 'QA Approved',
     description: 'All assets meet quality standards',
-    color: 'bg-green-100 text-green-800'
+    color: 'bg-green-100 text-green-800',
   },
   [QAStatus.Rejected]: {
     label: 'QA Rejected',
     description: 'Assets do not meet quality standards',
-    color: 'bg-red-100 text-red-800'
-  }
+    color: 'bg-red-100 text-red-800',
+  },
 };

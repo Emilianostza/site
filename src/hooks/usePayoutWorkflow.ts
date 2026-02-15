@@ -13,7 +13,12 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { PayoutStatus } from '@/types/domain';
-import { approvePayout, rejectPayout, markPayoutAsPaid, getPhotographerPayoutSummary } from '@/services/api/payouts';
+import {
+  approvePayout,
+  rejectPayout,
+  markPayoutAsPaid,
+  getPhotographerPayoutSummary,
+} from '@/services/api/payouts';
 import { PAYOUT_STATUS_DESCRIPTIONS } from '@/services/api/payouts';
 
 export function usePayoutWorkflow(
@@ -25,7 +30,8 @@ export function usePayoutWorkflow(
   const [error, setError] = useState<string | null>(null);
 
   // Permissions based on role and current status
-  const canApprove = userRole === 'admin' || (userRole === 'finance' && currentStatus === PayoutStatus.Pending);
+  const canApprove =
+    userRole === 'admin' || (userRole === 'finance' && currentStatus === PayoutStatus.Pending);
   const canReject = userRole === 'admin' && currentStatus === PayoutStatus.Pending;
   const canMarkPaid = userRole === 'admin' && currentStatus === PayoutStatus.Approved;
 
@@ -119,7 +125,7 @@ export function usePayoutWorkflow(
     markPaid,
 
     // Clear error
-    clearError: () => setError(null)
+    clearError: () => setError(null),
   };
 }
 
@@ -155,6 +161,6 @@ export function usePhotographerPayoutSummary(photographerId: string) {
     summary,
     loading,
     error,
-    refresh
+    refresh,
   };
 }

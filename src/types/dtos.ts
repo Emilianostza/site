@@ -8,7 +8,14 @@
  * Pattern: snake_case keys for JSON serialization
  */
 
-import { ProjectStatus, AssetStatus, AssetType, PayoutStatus, TierType, AuditEventType } from '@/types/domain';
+import {
+  ProjectStatus,
+  AssetStatus,
+  AssetType,
+  PayoutStatus,
+  TierType,
+  AuditEventType,
+} from '@/types/domain';
 
 // ============================================================================
 // PAGINATION

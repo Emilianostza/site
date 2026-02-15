@@ -9,17 +9,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
 
   // Don't show public nav on app routes
-  const isAppRoute = location.pathname.startsWith('/app') || location.pathname.startsWith('/portal');
+  const isAppRoute =
+    location.pathname.startsWith('/app') || location.pathname.startsWith('/portal');
 
   if (isAppRoute) {
     return <>{children}</>;
   }
 
   return (
-    <div className="flex flex-col min-h-screen" {...(import.meta.env.DEV && { 'data-component': 'Layout', 'data-file': 'src/components/Layout.tsx' })}>
+    <div
+      className="flex flex-col min-h-screen"
+      {...(import.meta.env.DEV && {
+        'data-component': 'Layout',
+        'data-file': 'src/components/Layout.tsx',
+      })}
+    >
       <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2 font-bold text-xl text-slate-900 dark:text-white">
+          <Link
+            to="/"
+            className="flex items-center space-x-2 font-bold text-xl text-slate-900 dark:text-white"
+          >
             <Box className="w-8 h-8 text-brand-600 dark:text-brand-400" />
             <span>Managed Capture</span>
           </Link>
@@ -31,7 +41,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <Link
                   to={item.path}
                   className={`text-sm font-medium transition-colors py-2 block ${location.pathname.startsWith(item.path) && item.path !== '/industries' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400'}`}
-                  {...(location.pathname.startsWith(item.path) && item.path !== '/industries' ? { 'aria-current': 'page' as const } : {})}
+                  {...(location.pathname.startsWith(item.path) && item.path !== '/industries'
+                    ? { 'aria-current': 'page' as const }
+                    : {})}
                 >
                   {item.label}
                 </Link>
@@ -54,7 +66,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 )}
               </div>
             ))}
-            <Link to="/app/login" className="text-sm font-medium text-slate-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400">
+            <Link
+              to="/app/login"
+              className="text-sm font-medium text-slate-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400"
+            >
               Log in
             </Link>
             <DarkModeToggle />
@@ -88,7 +103,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`text-base font-medium block ${location.pathname.startsWith(item.path) && item.path !== '/industries' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 dark:text-slate-300'}`}
-                    {...(location.pathname.startsWith(item.path) && item.path !== '/industries' ? { 'aria-current': 'page' as const } : {})}
+                    {...(location.pathname.startsWith(item.path) && item.path !== '/industries'
+                      ? { 'aria-current': 'page' as const }
+                      : {})}
                   >
                     {item.label}
                   </Link>
@@ -109,7 +126,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </div>
               ))}
               <div className="h-px bg-slate-100 dark:bg-slate-700 my-2" />
-              <Link to="/app/login" className="text-base font-medium text-slate-900 dark:text-white">
+              <Link
+                to="/app/login"
+                className="text-base font-medium text-slate-900 dark:text-white"
+              >
                 Log in
               </Link>
               <Link
@@ -124,9 +144,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         )}
       </header>
 
-      <main className="flex-grow">
-        {children}
-      </main>
+      <main className="flex-grow">{children}</main>
 
       <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 py-12">
         <div className="container mx-auto px-4">
@@ -144,27 +162,63 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div>
               <h4 className="font-semibold text-white mb-4">Industries</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/industries/restaurants" className="hover:text-white transition-colors">Restaurants</Link></li>
-                <li><Link to="/industries/museums" className="hover:text-white transition-colors">Museums</Link></li>
-                <li><Link to="/industries/ecommerce" className="hover:text-white transition-colors">E-commerce</Link></li>
+                <li>
+                  <Link to="/industries/restaurants" className="hover:text-white transition-colors">
+                    Restaurants
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/industries/museums" className="hover:text-white transition-colors">
+                    Museums
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/industries/ecommerce" className="hover:text-white transition-colors">
+                    E-commerce
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold text-white mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/how-it-works" className="hover:text-white transition-colors">How it Works</Link></li>
-                <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link to="/security" className="hover:text-white transition-colors">Trust Center</Link></li>
+                <li>
+                  <Link to="/how-it-works" className="hover:text-white transition-colors">
+                    How it Works
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/pricing" className="hover:text-white transition-colors">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/security" className="hover:text-white transition-colors">
+                    Trust Center
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold text-white mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-                <li><div className="flex items-center gap-2 mt-4"><ShieldCheck className="w-4 h-4" /> SOC 2 Compliant</div></li>
+                <li>
+                  <Link to="/privacy" className="hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms" className="hover:text-white transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <div className="flex items-center gap-2 mt-4">
+                    <ShieldCheck className="w-4 h-4" /> SOC 2 Compliant
+                  </div>
+                </li>
               </ul>
             </div>
           </div>

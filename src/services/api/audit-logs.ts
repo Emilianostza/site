@@ -56,14 +56,17 @@ export async function fetchAuditLogs(filter: AuditLogFilter): Promise<{
 
   return {
     logs: response.data,
-    nextCursor: (response as any).next_cursor
+    nextCursor: (response as any).next_cursor,
   };
 }
 
 /**
  * Fetch audit logs for a specific resource (project, asset, payout, etc.)
  */
-export async function fetchResourceAuditLog(resourceType: string, resourceId: string): Promise<AuditLogDTO[]> {
+export async function fetchResourceAuditLog(
+  resourceType: string,
+  resourceId: string
+): Promise<AuditLogDTO[]> {
   const response = await apiClient.get<AuditLogDTO[]>(
     `/audit-logs?resource_type=${resourceType}&resource_id=${resourceId}`
   );
@@ -82,10 +85,13 @@ export async function getAuditLog(id: string): Promise<AuditLogDTO> {
  * Export audit logs (CSV or JSON) for compliance
  * Returns download URL
  */
-export async function exportAuditLogs(format: 'csv' | 'json', filter?: AuditLogFilter): Promise<{ url: string }> {
+export async function exportAuditLogs(
+  format: 'csv' | 'json',
+  filter?: AuditLogFilter
+): Promise<{ url: string }> {
   const response = await apiClient.post<{ url: string }>('/audit-logs/export', {
     format,
-    filter
+    filter,
   });
   return response;
 }
@@ -105,62 +111,65 @@ export function auditLogFromDTO(dto: AuditLogDTO): AuditLog {
     resourceId: dto.resource_id,
     fromState: dto.from_state,
     toState: dto.to_state,
-    metadata: dto.metadata
+    metadata: dto.metadata,
   };
 }
 
 /**
  * Event type descriptions for UI
  */
-export const EVENT_DESCRIPTIONS: Record<AuditEventType, { label: string; icon: string; color: string }> = {
+export const EVENT_DESCRIPTIONS: Record<
+  AuditEventType,
+  { label: string; icon: string; color: string }
+> = {
   [AuditEventType.ProjectCreated]: {
     label: 'Project Created',
     icon: '📋',
-    color: 'bg-blue-50'
+    color: 'bg-blue-50',
   },
   [AuditEventType.ProjectApproved]: {
     label: 'Project Approved',
     icon: '✅',
-    color: 'bg-green-50'
+    color: 'bg-green-50',
   },
   [AuditEventType.ProjectDelivered]: {
     label: 'Project Delivered',
     icon: '🚚',
-    color: 'bg-green-50'
+    color: 'bg-green-50',
   },
   [AuditEventType.ProjectRejected]: {
     label: 'Project Rejected',
     icon: '❌',
-    color: 'bg-red-50'
+    color: 'bg-red-50',
   },
   [AuditEventType.AssetUploaded]: {
     label: 'Asset Uploaded',
     icon: '📸',
-    color: 'bg-purple-50'
+    color: 'bg-purple-50',
   },
   [AuditEventType.AssetProcessed]: {
     label: 'Asset Processed',
     icon: '⚙️',
-    color: 'bg-purple-50'
+    color: 'bg-purple-50',
   },
   [AuditEventType.AssetPublished]: {
     label: 'Asset Published',
     icon: '🌍',
-    color: 'bg-blue-50'
+    color: 'bg-blue-50',
   },
   [AuditEventType.PayoutCreated]: {
     label: 'Payout Created',
     icon: '💰',
-    color: 'bg-yellow-50'
+    color: 'bg-yellow-50',
   },
   [AuditEventType.PayoutApproved]: {
     label: 'Payout Approved',
     icon: '👍',
-    color: 'bg-green-50'
+    color: 'bg-green-50',
   },
   [AuditEventType.PayoutPaid]: {
     label: 'Payout Paid',
     icon: '💳',
-    color: 'bg-green-50'
-  }
+    color: 'bg-green-50',
+  },
 };

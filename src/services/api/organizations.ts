@@ -39,10 +39,7 @@ export async function create(org: {
 /**
  * Update organization settings (admin only)
  */
-export async function update(
-  orgId: string,
-  updates: Partial<Organization>
-): Promise<Organization> {
+export async function update(orgId: string, updates: Partial<Organization>): Promise<Organization> {
   const data = await apiClient.patch(`/organizations/${orgId}`, updates);
   return organizationFromDTO(data);
 }

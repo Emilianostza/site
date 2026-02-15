@@ -29,7 +29,11 @@
  */
 
 import { useState, useCallback } from 'react';
-import { uploadAssetFile, validateUploadFile, UploadProgressEvent } from '@/services/upload/signed-upload';
+import {
+  uploadAssetFile,
+  validateUploadFile,
+  UploadProgressEvent,
+} from '@/services/upload/signed-upload';
 
 export interface UseFileUploadResult {
   // State
@@ -39,7 +43,10 @@ export interface UseFileUploadResult {
   uploadedFileName?: string;
 
   // Actions
-  uploadFile: (projectId: string, file: File) => Promise<{ fileKey: string; assetId?: string; fileName: string; fileSize: number }>;
+  uploadFile: (
+    projectId: string,
+    file: File
+  ) => Promise<{ fileKey: string; assetId?: string; fileName: string; fileSize: number }>;
   reset: () => void;
   clearError: () => void;
 }
@@ -50,49 +57,46 @@ export function useFileUpload(): UseFileUploadResult {
   const [error, setError] = useState<string | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>();
 
-  const uploadFile = useCallback(
-    async (projectId: string, file: File) => {
-      // Validate
-      const validation = validateUploadFile(file);
-      if (!validation.valid) {
-        setError(validation.error || 'Validation failed');
-        throw new Error(validation.error);
-      }
+  const uploadFile = useCallback(async (projectId: string, file: File) => {
+    // Validate
+    const validation = validateUploadFile(file);
+    if (!validation.valid) {
+      setError(validation.error || 'Validation failed');
+      throw new Error(validation.error);
+    }
 
-      setIsUploading(true);
-      setProgress(0);
-      setError(null);
+    setIsUploading(true);
+    setProgress(0);
+    setError(null);
 
-      try {
-        // Upload with progress tracking
-        const result = await uploadAssetFile(projectId, file, (event: UploadProgressEvent) => {
-          if (event.type === 'progress') {
-            setProgress(event.percent);
-          } else if (event.type === 'error') {
-            setError(event.error || 'Upload failed');
-          }
-        });
+    try {
+      // Upload with progress tracking
+      const result = await uploadAssetFile(projectId, file, (event: UploadProgressEvent) => {
+        if (event.type === 'progress') {
+          setProgress(event.percent);
+        } else if (event.type === 'error') {
+          setError(event.error || 'Upload failed');
+        }
+      });
 
-        // Success
-        setProgress(100);
-        setUploadedFileName(file.name);
+      // Success
+      setProgress(100);
+      setUploadedFileName(file.name);
 
-        return {
-          fileKey: result.fileKey,
-          assetId: result.assetId,
-          fileName: file.name,
-          fileSize: file.size
-        };
-      } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Upload failed';
-        setError(errorMsg);
-        throw err;
-      } finally {
-        setIsUploading(false);
-      }
-    },
-    []
-  );
+      return {
+        fileKey: result.fileKey,
+        assetId: result.assetId,
+        fileName: file.name,
+        fileSize: file.size,
+      };
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Upload failed';
+      setError(errorMsg);
+      throw err;
+    } finally {
+      setIsUploading(false);
+    }
+  }, []);
 
   const reset = useCallback(() => {
     setIsUploading(false);
@@ -112,6 +116,6 @@ export function useFileUpload(): UseFileUploadResult {
     uploadedFileName,
     uploadFile,
     reset,
-    clearError
+    clearError,
   };
 }

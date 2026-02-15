@@ -23,13 +23,13 @@ const Industry: React.FC = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{config.title}</h1>
             <p className="text-lg text-slate-300 mb-8">{config.subtitle}</p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link 
+              <Link
                 to={`/request?industry=${config.id}`}
                 className="px-6 py-3 rounded-lg bg-brand-600 font-bold hover:bg-brand-500 transition-colors text-center"
               >
                 Request Capture
               </Link>
-              <Link 
+              <Link
                 to={`/gallery?industry=${config.id}`}
                 className="px-6 py-3 rounded-lg bg-white/10 border border-white/20 font-bold hover:bg-white/20 transition-colors text-center"
               >
@@ -67,16 +67,19 @@ const Industry: React.FC = () => {
       <section className="py-20 bg-slate-50 border-t border-slate-200">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-16 items-center">
           <div className="order-2 md:order-1 relative">
-             <img src={config.demoImage} alt="Demo 3D Model" className="rounded-xl shadow-lg" />
-             <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-xl border border-slate-100 max-w-xs">
-                <div className="text-sm font-bold text-slate-900 mb-1">Interactive Viewer</div>
-                <div className="text-xs text-slate-500">Customers can rotate, zoom, and explore every detail.</div>
-             </div>
+            <img src={config.demoImage} alt="Demo 3D Model" className="rounded-xl shadow-lg" />
+            <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-xl border border-slate-100 max-w-xs">
+              <div className="text-sm font-bold text-slate-900 mb-1">Interactive Viewer</div>
+              <div className="text-xs text-slate-500">
+                Customers can rotate, zoom, and explore every detail.
+              </div>
+            </div>
           </div>
           <div className="order-1 md:order-2">
             <h2 className="text-3xl font-bold text-slate-900 mb-6">What your team can do</h2>
             <p className="text-slate-600 mb-8">
-              We manage the capture, you control the distribution. Our portal gives you specific permissions tailored to the {config.id} workflow.
+              We manage the capture, you control the distribution. Our portal gives you specific
+              permissions tailored to the {config.id} workflow.
             </p>
             <ul className="space-y-4">
               {config.permissions.map((perm, idx) => (
@@ -87,25 +90,31 @@ const Industry: React.FC = () => {
               ))}
             </ul>
             <div className="mt-10">
-              <Link to="/request" className="text-brand-600 font-bold hover:text-brand-700 flex items-center gap-2">
+              <Link
+                to="/request"
+                className="text-brand-600 font-bold hover:text-brand-700 flex items-center gap-2"
+              >
                 Start a project <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
         </div>
       </section>
-      
+
       {/* FAQ Placeholder */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">
+            Frequently Asked Questions
+          </h2>
           <div className="space-y-4">
             <details className="group border border-slate-200 rounded-lg open:bg-slate-50">
               <summary className="flex cursor-pointer items-center justify-between p-4 font-medium text-slate-900">
                 How long does capture take?
               </summary>
               <div className="p-4 pt-0 text-slate-600">
-                On-site capture typically takes 1-2 hours per 10 objects. Processing and QA take 3-5 business days.
+                On-site capture typically takes 1-2 hours per 10 objects. Processing and QA take 3-5
+                business days.
               </div>
             </details>
             <details className="group border border-slate-200 rounded-lg open:bg-slate-50">
@@ -113,7 +122,8 @@ const Industry: React.FC = () => {
                 Do I need to prepare the objects?
               </summary>
               <div className="p-4 pt-0 text-slate-600">
-                Yes, items should be clean and staged. For reflective items, our team will bring specialized scanning sprays if permitted.
+                Yes, items should be clean and staged. For reflective items, our team will bring
+                specialized scanning sprays if permitted.
               </div>
             </details>
           </div>

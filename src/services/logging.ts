@@ -51,14 +51,14 @@ class Logger {
       timestamp: new Date().toISOString(),
       level,
       message,
-      context
+      context,
     };
 
     if (error) {
       entry.error = {
         message: error.message,
         stack: error.stack,
-        code: (error as any).code
+        code: (error as any).code,
       };
     }
 
@@ -71,7 +71,7 @@ class Logger {
         INFO: '\x1b[32m', // green
         WARN: '\x1b[33m', // yellow
         ERROR: '\x1b[31m', // red
-        FATAL: '\x1b[35m' // magenta
+        FATAL: '\x1b[35m', // magenta
       };
       const reset = '\x1b[0m';
       console.log(`${colors[level]}[${level}]${reset} ${message}`, context);
@@ -118,7 +118,7 @@ export const LogCategory = {
   API: 'api',
   PERFORMANCE: 'performance',
   SECURITY: 'security',
-  ERROR: 'error'
+  ERROR: 'error',
 };
 
 /**
@@ -152,23 +152,18 @@ export const LogMessages = {
   // Security
   SUSPICIOUS_ACCESS: 'Suspicious access attempt',
   TIER_LIMIT_EXCEEDED: 'Tier limit exceeded',
-  PERMISSION_DENIED: 'Permission denied'
+  PERMISSION_DENIED: 'Permission denied',
 };
 
 /**
  * Log API request (middleware)
  */
-export function logRequest(
-  method: string,
-  path: string,
-  userId?: string,
-  requestId?: string
-) {
+export function logRequest(method: string, path: string, userId?: string, requestId?: string) {
   logger.debug(`API Request: ${method} ${path}`, {
     method,
     path,
     user_id: userId,
-    request_id: requestId
+    request_id: requestId,
   });
 }
 
@@ -193,7 +188,7 @@ export function logResponse(
       status,
       duration_ms: durationMs,
       user_id: userId,
-      request_id: requestId
+      request_id: requestId,
     });
   } else {
     logger.warn(message, {
@@ -202,7 +197,7 @@ export function logResponse(
       status,
       duration_ms: durationMs,
       user_id: userId,
-      request_id: requestId
+      request_id: requestId,
     });
   }
 }
@@ -210,10 +205,6 @@ export function logResponse(
 /**
  * Log business event
  */
-export function logEvent(
-  category: string,
-  message: string,
-  context: Record<string, unknown>
-) {
+export function logEvent(category: string, message: string, context: Record<string, unknown>) {
   logger.info(`[${category}] ${message}`, context);
 }

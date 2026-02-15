@@ -13,7 +13,11 @@
 
 import { useState, useCallback } from 'react';
 import { ProjectStatus } from '@/types/domain';
-import { canTransition, getNextStates, STATUS_DESCRIPTIONS } from '@/services/workflow/state-machine';
+import {
+  canTransition,
+  getNextStates,
+  STATUS_DESCRIPTIONS,
+} from '@/services/workflow/state-machine';
 import { apiClient } from '@/services/api/client';
 
 interface WorkflowActions {
@@ -49,7 +53,7 @@ export function useProjectWorkflow(
     canDeliver: canTransition(currentStatus, ProjectStatus.Delivered, userRole, hasAssignment),
     canReject: canTransition(currentStatus, ProjectStatus.Rejected, userRole, hasAssignment),
     canArchive: canTransition(currentStatus, ProjectStatus.Archived, userRole, hasAssignment),
-    nextStates: getNextStates(currentStatus, userRole, hasAssignment)
+    nextStates: getNextStates(currentStatus, userRole, hasAssignment),
   };
 
   // Status transition action
@@ -65,7 +69,7 @@ export function useProjectWorkflow(
       try {
         await apiClient.patch(`/projects/${projectId}`, {
           status: toStatus,
-          transition_reason: reason
+          transition_reason: reason,
         });
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Status transition failed';
@@ -84,7 +88,7 @@ export function useProjectWorkflow(
     start: () => transitionStatus(ProjectStatus.InProgress),
     deliver: () => transitionStatus(ProjectStatus.Delivered),
     reject: (reason) => transitionStatus(ProjectStatus.Rejected, reason),
-    archive: () => transitionStatus(ProjectStatus.Archived)
+    archive: () => transitionStatus(ProjectStatus.Archived),
   };
 
   return {
@@ -101,6 +105,6 @@ export function useProjectWorkflow(
     ...actions,
 
     // Clear error
-    clearError: () => setError(null)
+    clearError: () => setError(null),
   };
 }

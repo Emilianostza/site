@@ -11,18 +11,28 @@
  */
 
 import { useState } from 'react';
-import { BarChart3, TrendingUp, Users, Zap, FileText, DollarSign, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  BarChart3,
+  TrendingUp,
+  Users,
+  Zap,
+  FileText,
+  DollarSign,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import { useAnalyticsDashboard } from '@/hooks/useAnalyticsDashboard';
 import { MetricCard, MetricGrid, MetricCardSkeleton } from '@/components/analytics/MetricCard';
 import { exportMetricsAsCSV, exportMetricsAsJSON } from '@/services/analytics/dashboard';
 
 export function AnalyticsDashboard() {
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  const { metrics, loading, error, isRefreshing, refresh, trends, clearError } = useAnalyticsDashboard({
-    period,
-    autoRefresh: true,
-    refreshInterval: 60000 // 1 minute
-  });
+  const { metrics, loading, error, isRefreshing, refresh, trends, clearError } =
+    useAnalyticsDashboard({
+      period,
+      autoRefresh: true,
+      refreshInterval: 60000, // 1 minute
+    });
 
   const handleExport = (format: 'csv' | 'json') => {
     if (!metrics) return;
@@ -106,7 +116,7 @@ export function AnalyticsDashboard() {
       {/* Period Selector */}
       <div className="flex items-center gap-2 bg-white p-4 rounded-lg border border-gray-200">
         <span className="text-sm font-medium text-gray-700">Period:</span>
-        {(['daily', 'weekly', 'monthly'] as const).map(p => (
+        {(['daily', 'weekly', 'monthly'] as const).map((p) => (
           <button
             key={p}
             onClick={() => setPeriod(p)}
@@ -160,7 +170,7 @@ export function AnalyticsDashboard() {
               <MetricCard
                 title="Active Users"
                 value={metrics.activeUsers}
-                trend={trends.find(t => t.metric === 'Active Users')}
+                trend={trends.find((t) => t.metric === 'Active Users')}
                 icon={<Users size={20} />}
                 color="blue"
               />
@@ -174,7 +184,7 @@ export function AnalyticsDashboard() {
               <MetricCard
                 title="Page Views"
                 value={metrics.pageViewsTotal}
-                trend={trends.find(t => t.metric === 'Page Views')}
+                trend={trends.find((t) => t.metric === 'Page Views')}
                 icon={<FileText size={20} />}
                 color="purple"
               />
@@ -198,7 +208,7 @@ export function AnalyticsDashboard() {
               <MetricCard
                 title="Projects Created"
                 value={metrics.projectsCreated}
-                trend={trends.find(t => t.metric === 'Projects Created')}
+                trend={trends.find((t) => t.metric === 'Projects Created')}
                 icon={<FileText size={20} />}
                 color="brand"
               />
@@ -206,7 +216,7 @@ export function AnalyticsDashboard() {
                 title="Approval Rate"
                 value={`${metrics.approvalRate}%`}
                 subtitle={`${metrics.projectsApproved} approved`}
-                trend={trends.find(t => t.metric === 'Approval Rate')}
+                trend={trends.find((t) => t.metric === 'Approval Rate')}
                 icon={<CheckCircle2 size={20} />}
                 color="green"
               />
@@ -214,7 +224,7 @@ export function AnalyticsDashboard() {
                 title="Delivery Rate"
                 value={`${metrics.deliveryRate}%`}
                 subtitle={`${metrics.projectsApproved} total approved`}
-                trend={trends.find(t => t.metric === 'Delivery Rate')}
+                trend={trends.find((t) => t.metric === 'Delivery Rate')}
                 icon={<TrendingUp size={20} />}
                 color="green"
               />
@@ -239,7 +249,7 @@ export function AnalyticsDashboard() {
                 title="Upload Success Rate"
                 value={`${metrics.uploadSuccessRate}%`}
                 subtitle={`${metrics.failedUploads} failed`}
-                trend={trends.find(t => t.metric === 'Upload Success Rate')}
+                trend={trends.find((t) => t.metric === 'Upload Success Rate')}
                 icon={<CheckCircle2 size={20} />}
                 color="green"
               />
@@ -270,7 +280,7 @@ export function AnalyticsDashboard() {
               <MetricCard
                 title="Payouts Approved"
                 value={metrics.payoutsApproved}
-                trend={trends.find(t => t.metric === 'Payouts Approved')}
+                trend={trends.find((t) => t.metric === 'Payouts Approved')}
                 icon={<CheckCircle2 size={20} />}
                 color="green"
               />
@@ -278,7 +288,7 @@ export function AnalyticsDashboard() {
                 title="Payment Rate"
                 value={`${metrics.paymentRate}%`}
                 subtitle={`${metrics.payoutsPaid} paid`}
-                trend={trends.find(t => t.metric === 'Payment Rate')}
+                trend={trends.find((t) => t.metric === 'Payment Rate')}
                 icon={<TrendingUp size={20} />}
                 color="green"
               />
@@ -310,7 +320,7 @@ export function AnalyticsDashboard() {
                 title="QA Approval Rate"
                 value={`${metrics.qaApprovalRate}%`}
                 subtitle={`${metrics.qaApprovals} approved`}
-                trend={trends.find(t => t.metric === 'QA Approval Rate')}
+                trend={trends.find((t) => t.metric === 'QA Approval Rate')}
                 icon={<CheckCircle2 size={20} />}
                 color="green"
               />

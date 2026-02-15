@@ -50,13 +50,13 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
           body: JSON.stringify({
             eventType,
             timestamp: Date.now(),
-            properties
-          })
+            properties,
+          }),
         });
 
         if (!response.ok && retryCount < maxRetries) {
           // Retry on server error
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
           return sendAnalyticsEvent(eventType, properties, retryCount + 1);
         }
 
@@ -64,7 +64,7 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
       } catch (err) {
         if (retryCount < maxRetries) {
           // Retry on network error
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
           return sendAnalyticsEvent(eventType, properties, retryCount + 1);
         }
 
@@ -79,16 +79,13 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
    * Track a user action (click, submit, etc.)
    */
   const trackAction = useCallback(
-    (
-      actionName: string,
-      context?: Record<string, unknown>
-    ): void => {
+    (actionName: string, context?: Record<string, unknown>): void => {
       sendAnalyticsEvent('user_action', {
         action_name: actionName,
         page: window.location.pathname,
         timestamp: Date.now(),
-        ...context
-      }).catch(err => {
+        ...context,
+      }).catch((err) => {
         console.warn('[Analytics] Failed to track action:', err);
       });
     },
@@ -99,11 +96,7 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
    * Track an error with context
    */
   const trackError = useCallback(
-    (
-      error: Error | string,
-      errorType?: string,
-      context?: Record<string, unknown>
-    ): void => {
+    (error: Error | string, errorType?: string, context?: Record<string, unknown>): void => {
       const errorMessage = error instanceof Error ? error.message : String(error);
       const stack = error instanceof Error ? error.stack : undefined;
 
@@ -114,8 +107,8 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
         page: window.location.pathname,
         url: window.location.href,
         timestamp: Date.now(),
-        ...context
-      }).catch(err => {
+        ...context,
+      }).catch((err) => {
         console.warn('[Analytics] Failed to track error:', err);
       });
     },
@@ -126,11 +119,7 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
    * Track page view with optional metadata
    */
   const trackPageView = useCallback(
-    (
-      path?: string,
-      title?: string,
-      metadata?: Record<string, unknown>
-    ): void => {
+    (path?: string, title?: string, metadata?: Record<string, unknown>): void => {
       const currentPath = path || window.location.pathname;
       const pageTitle = title || document.title;
 
@@ -139,8 +128,8 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
         title: pageTitle,
         referrer: document.referrer,
         timestamp: Date.now(),
-        ...metadata
-      }).catch(err => {
+        ...metadata,
+      }).catch((err) => {
         console.warn('[Analytics] Failed to track page view:', err);
       });
     },
@@ -151,18 +140,14 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
    * Track form submission
    */
   const trackFormSubmit = useCallback(
-    (
-      formName: string,
-      fieldCount?: number,
-      success?: boolean
-    ): void => {
+    (formName: string, fieldCount?: number, success?: boolean): void => {
       sendAnalyticsEvent('form_submitted', {
         form_name: formName,
         field_count: fieldCount,
         success,
         page: window.location.pathname,
-        timestamp: Date.now()
-      }).catch(err => {
+        timestamp: Date.now(),
+      }).catch((err) => {
         console.warn('[Analytics] Failed to track form submission:', err);
       });
     },
@@ -173,20 +158,15 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
    * Track file upload progress
    */
   const trackFileUpload = useCallback(
-    (
-      fileName: string,
-      fileSize: number,
-      success: boolean,
-      duration?: number
-    ): void => {
+    (fileName: string, fileSize: number, success: boolean, duration?: number): void => {
       sendAnalyticsEvent('file_uploaded', {
         file_name: fileName,
         file_size: fileSize,
         success,
         duration, // milliseconds
         page: window.location.pathname,
-        timestamp: Date.now()
-      }).catch(err => {
+        timestamp: Date.now(),
+      }).catch((err) => {
         console.warn('[Analytics] Failed to track file upload:', err);
       });
     },
@@ -197,18 +177,14 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
    * Track search/filter operation
    */
   const trackSearch = useCallback(
-    (
-      query: string,
-      scope?: string,
-      resultsCount?: number
-    ): void => {
+    (query: string, scope?: string, resultsCount?: number): void => {
       sendAnalyticsEvent('search_performed', {
         query,
         scope,
         results_count: resultsCount,
         page: window.location.pathname,
-        timestamp: Date.now()
-      }).catch(err => {
+        timestamp: Date.now(),
+      }).catch((err) => {
         console.warn('[Analytics] Failed to track search:', err);
       });
     },
@@ -233,8 +209,8 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
         to_state: toState,
         page: window.location.pathname,
         timestamp: Date.now(),
-        ...metadata
-      }).catch(err => {
+        ...metadata,
+      }).catch((err) => {
         console.warn('[Analytics] Failed to track workflow transition:', err);
       });
     },
@@ -249,7 +225,7 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
       fn: (...args: T) => Promise<R> | R,
       trackingName: string,
       context?: Record<string, unknown>
-    ): (...args: T) => Promise<R | undefined> => {
+    ): ((...args: T) => Promise<R | undefined>) => {
       return async (...args: T): Promise<R | undefined> => {
         const startTime = Date.now();
 
@@ -259,7 +235,7 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
           // Track successful execution
           trackAction(`${trackingName}_success`, {
             ...context,
-            duration: Date.now() - startTime
+            duration: Date.now() - startTime,
           });
 
           return result;
@@ -267,7 +243,7 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
           // Track error
           trackError(err as Error, `${trackingName}_error`, {
             ...context,
-            duration: Date.now() - startTime
+            duration: Date.now() - startTime,
           });
 
           throw err;
@@ -289,7 +265,7 @@ export function useAnalyticsIntegration(options: AnalyticsTrackOptions = {}) {
     trackWorkflowTransition,
 
     // Utilities
-    wrapWithTracking
+    wrapWithTracking,
   };
 }
 

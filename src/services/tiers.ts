@@ -59,12 +59,15 @@ export interface TierFeatures {
 /**
  * Tier definitions
  */
-export const TIER_DEFINITIONS: Record<ServiceTier, {
-  name: string;
-  description: string;
-  price_usd_per_month: number;
-  features: TierFeatures;
-}> = {
+export const TIER_DEFINITIONS: Record<
+  ServiceTier,
+  {
+    name: string;
+    description: string;
+    price_usd_per_month: number;
+    features: TierFeatures;
+  }
+> = {
   [ServiceTier.Basic]: {
     name: 'Basic',
     description: 'Perfect for trying out 3D photogrammetry',
@@ -103,8 +106,8 @@ export const TIER_DEFINITIONS: Record<ServiceTier, {
 
       // Accessibility
       accessibility_enhanced: false,
-      multi_language: 1
-    }
+      multi_language: 1,
+    },
   },
 
   [ServiceTier.Business]: {
@@ -145,8 +148,8 @@ export const TIER_DEFINITIONS: Record<ServiceTier, {
 
       // Accessibility
       accessibility_enhanced: true,
-      multi_language: 5
-    }
+      multi_language: 5,
+    },
   },
 
   [ServiceTier.Enterprise]: {
@@ -187,8 +190,8 @@ export const TIER_DEFINITIONS: Record<ServiceTier, {
 
       // Accessibility
       accessibility_enhanced: true,
-      multi_language: 20
-    }
+      multi_language: 20,
+    },
   },
 
   [ServiceTier.Museum]: {
@@ -229,9 +232,9 @@ export const TIER_DEFINITIONS: Record<ServiceTier, {
 
       // Accessibility (museums require high accessibility)
       accessibility_enhanced: true,
-      multi_language: 10
-    }
-  }
+      multi_language: 10,
+    },
+  },
 };
 
 /**
@@ -251,10 +254,7 @@ export function getTierInfo(tier: ServiceTier) {
 /**
  * Check if feature is enabled for tier
  */
-export function isTierFeatureEnabled(
-  tier: ServiceTier,
-  feature: keyof TierFeatures
-): boolean {
+export function isTierFeatureEnabled(tier: ServiceTier, feature: keyof TierFeatures): boolean {
   const features = getTierFeatures(tier);
   const value = features[feature];
 
@@ -331,7 +331,5 @@ export function getTiersSortedByPrice(): ServiceTier[] {
  */
 export function getUpgradeOptions(currentTier: ServiceTier): ServiceTier[] {
   const current = getTierInfo(currentTier).price_usd_per_month;
-  return getAllTiers().filter(
-    tier => getTierInfo(tier).price_usd_per_month > current
-  );
+  return getAllTiers().filter((tier) => getTierInfo(tier).price_usd_per_month > current);
 }

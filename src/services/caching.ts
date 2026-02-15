@@ -49,7 +49,7 @@ export const CACHE_TTLS: Record<ServiceTier, number> = {
   [ServiceTier.Basic]: 5 * 60 * 1000, // 5 minutes
   [ServiceTier.Business]: 15 * 60 * 1000, // 15 minutes
   [ServiceTier.Enterprise]: 60 * 60 * 1000, // 1 hour
-  [ServiceTier.Museum]: 30 * 60 * 1000 // 30 minutes
+  [ServiceTier.Museum]: 30 * 60 * 1000, // 30 minutes
 };
 
 /**
@@ -88,7 +88,7 @@ export const CACHE_STRATEGIES: Record<string, CacheConfig> = {
   POST: { enabled: false },
   PUT: { enabled: false },
   DELETE: { enabled: false },
-  PATCH: { enabled: false }
+  PATCH: { enabled: false },
 };
 
 /**
@@ -100,7 +100,7 @@ class CacheManager {
   private stats = {
     hits: 0,
     misses: 0,
-    evictions: 0
+    evictions: 0,
   };
 
   /**
@@ -111,7 +111,7 @@ class CacheManager {
     if (params && Object.keys(params).length > 0) {
       const sorted = Object.keys(params)
         .sort()
-        .map(k => `${k}=${JSON.stringify(params[k])}`)
+        .map((k) => `${k}=${JSON.stringify(params[k])}`)
         .join('&');
       key += `?${sorted}`;
     }
@@ -172,7 +172,7 @@ class CacheManager {
       timestamp: Date.now(),
       ttl,
       hits: 0,
-      lastAccessed: Date.now()
+      lastAccessed: Date.now(),
     });
   }
 
@@ -180,9 +180,7 @@ class CacheManager {
    * Invalidate cache by pattern (e.g., "/projects/:id" matches "/projects/123")
    */
   invalidate(pattern: string): void {
-    const regex = new RegExp(
-      `^${pattern.replace(/:[^/]+/g, '[^/]+')}($|\\?)`
-    );
+    const regex = new RegExp(`^${pattern.replace(/:[^/]+/g, '[^/]+')}($|\\?)`);
 
     const keysToDelete: string[] = [];
     for (const key of this.cache.keys()) {
@@ -191,7 +189,7 @@ class CacheManager {
       }
     }
 
-    keysToDelete.forEach(key => this.cache.delete(key));
+    keysToDelete.forEach((key) => this.cache.delete(key));
   }
 
   /**
@@ -212,7 +210,7 @@ class CacheManager {
       hitRate: total > 0 ? (this.stats.hits / total) * 100 : 0,
       evictions: this.stats.evictions,
       totalSize: this.cache.size,
-      maxSize: this.maxSize
+      maxSize: this.maxSize,
     };
   }
 
@@ -270,11 +268,7 @@ export function getCacheConfig(endpoint: string): CacheConfig | null {
  * const projects = await cached();
  * ```
  */
-export function withCache<T>(
-  fn: () => Promise<T>,
-  key: string,
-  ttl: number
-): () => Promise<T> {
+export function withCache<T>(fn: () => Promise<T>, key: string, ttl: number): () => Promise<T> {
   return async () => {
     // Check cache first
     const cached = cache.get<T>(key);

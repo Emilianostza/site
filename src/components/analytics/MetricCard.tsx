@@ -34,7 +34,7 @@ const colorClasses = {
   orange: 'bg-orange-50 border-orange-200 text-orange-700',
   purple: 'bg-purple-50 border-purple-200 text-purple-700',
   red: 'bg-red-50 border-red-200 text-red-700',
-  brand: 'bg-brand-50 border-brand-200 text-brand-700'
+  brand: 'bg-brand-50 border-brand-200 text-brand-700',
 };
 
 export function MetricCard({
@@ -44,7 +44,7 @@ export function MetricCard({
   trend,
   icon,
   color = 'brand',
-  layout = 'compact'
+  layout = 'compact',
 }: MetricCardProps) {
   const colorClass = colorClasses[color];
 
@@ -60,9 +60,7 @@ export function MetricCard({
             {trend && (
               <span
                 className={`text-xs font-semibold px-2 py-1 rounded ${
-                  trend.isPositive
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
+                  trend.isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                 }`}
               >
                 {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.change)}%
@@ -73,11 +71,7 @@ export function MetricCard({
           {subtitle && <p className="text-xs text-gray-600 mt-1">{subtitle}</p>}
         </div>
 
-        {icon && (
-          <div className="text-2xl text-gray-400 ml-3">
-            {icon}
-          </div>
-        )}
+        {icon && <div className="text-2xl text-gray-400 ml-3">{icon}</div>}
       </div>
     </div>
   );
@@ -98,14 +92,10 @@ export function MetricGrid({ children, columns = 3 }: MetricGridProps) {
   const gridClass = {
     2: 'grid-cols-1 md:grid-cols-2',
     3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
   }[columns];
 
-  return (
-    <div className={`grid ${gridClass} gap-4`}>
-      {children}
-    </div>
-  );
+  return <div className={`grid ${gridClass} gap-4`}>{children}</div>;
 }
 
 /**
