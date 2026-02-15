@@ -81,7 +81,8 @@ function validateEnv(): EnvConfig {
   // Storage bucket should be configured
   if (storageBucket === 's3.example.com/managed-capture') {
     const warning = isDev ? 'warn' : 'error';
-    if (warning === 'error') {
+    // Only fail in production if we are NOT using mock data
+    if (warning === 'error' && !useMockData) {
       errors.push('VITE_STORAGE_BUCKET must be configured in production');
     } else if (isDev) {
       console.warn('[Config] VITE_STORAGE_BUCKET using default placeholder');
@@ -105,7 +106,7 @@ function validateEnv(): EnvConfig {
 
   // Fail fast in development if there are errors
   if (errors.length > 0) {
-    const message = `❌ Environment Configuration Errors:\n${errors.map(e => `  • ${e}`).join('\n')}`;
+    const message = `❌ Environment Configuration Errors:\n${errors.map((e) => `  • ${e}`).join('\n')}`;
     if (isDev) {
       console.error(message);
       // In dev, show alert so user notices
