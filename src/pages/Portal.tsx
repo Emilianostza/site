@@ -21,6 +21,7 @@ import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
 import { AssetListTable } from '@/components/portal/AssetListTable';
 import { useAuth } from '@/contexts/AuthContext';
 import { X } from 'lucide-react';
+import { SEO } from '@/components/common/SEO';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const { logout } = useAuth();
@@ -123,6 +124,10 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
         'data-file': 'src/pages/Portal.tsx',
       })}
     >
+      <SEO
+        title={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} | Dashboard`}
+        description="Manage your 3D assets and projects."
+      />
       <NewProjectModal
         isOpen={isModalOpen || Boolean(editingProject)}
         onClose={() => {

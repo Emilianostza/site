@@ -35,6 +35,7 @@ const LoadingFallback: React.FC = () => (
 );
 
 import { CodeInspector } from '@/components/devtools/CodeInspector';
+import { SEO } from '@/components/common/SEO';
 
 const AppContent: React.FC = () => {
   const { toasts, removeToast } = useToast();
@@ -42,6 +43,7 @@ const AppContent: React.FC = () => {
   return (
     <>
       <Router>
+        <SEO title="Home" />
         <ScrollToTop />
         {import.meta.env.DEV && <CodeInspector />}
         <Layout>

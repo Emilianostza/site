@@ -20,6 +20,8 @@ import {
 import { AssetUploader } from '@/components/editor/AssetUploader';
 import { AssetsProvider } from '@/services/dataProvider';
 import { useToast } from '@/contexts/ToastContext';
+import QRCode from 'react-qr-code';
+import { SEO } from '@/components/common/SEO';
 
 const ModelEditor: React.FC = () => {
   const { assetId } = useParams<{ assetId: string }>();
@@ -45,6 +47,53 @@ const ModelEditor: React.FC = () => {
   const [exposure, setExposure] = useState(1.0);
   const [shadowIntensity, setShadowIntensity] = useState(1.0);
   const [autoRotate, setAutoRotate] = useState(false);
+
+  // Material Properties
+  const [baseColor, setBaseColor] = useState('#ffffff');
+  const [roughness, setRoughness] = useState(0.5);
+  const [metalness, setMetalness] = useState(0.0);
+
+  // Helper: Hex to RGBA
+  const hexToRgba = (hex: string) => {
+    let c: any;
+    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+      c = hex.substring(1).split('');
+      if (c.length === 3) {
+        c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+      }
+      c = '0x' + c.join('');
+      return [((c >> 16) & 255) / 255, ((c >> 8) & 255) / 255, (c & 255) / 255, 1.0];
+    }
+    return [1, 1, 1, 1];
+  };
+
+  // Apply Material Changes
+  useEffect(() => {
+    const viewer = document.querySelector('model-viewer') as any;
+    if (!viewer) return;
+
+    const updateMaterial = () => {
+      if (!viewer.model || !viewer.model.materials || viewer.model.materials.length === 0) return;
+
+      const material = viewer.model.materials[0];
+      const pbr = material.pbrMetallicRoughness;
+
+      // Update Base Color
+      pbr.setBaseColorFactor(hexToRgba(baseColor));
+
+      // Update Roughness & Metalness
+      pbr.setRoughnessFactor(roughness);
+      pbr.setMetallicFactor(metalness);
+    };
+
+    // Apply when model loads or state changes
+    viewer.addEventListener('load', updateMaterial);
+    updateMaterial();
+
+    return () => {
+      viewer.removeEventListener('load', updateMaterial);
+    };
+  }, [baseColor, roughness, metalness, modelSrc]);
 
   // Initialize
   useEffect(() => {
@@ -100,6 +149,9 @@ const ModelEditor: React.FC = () => {
     setScale({ x: 1, y: 1, z: 1 });
     setExposure(1.0);
     setShadowIntensity(1.0);
+    setBaseColor('#ffffff');
+    setRoughness(0.5);
+    setMetalness(0.0);
     const viewer = document.querySelector('model-viewer') as any;
     if (viewer) viewer.cameraOrbit = '45deg 55deg 2.5m';
   };
@@ -136,6 +188,10 @@ const ModelEditor: React.FC = () => {
         'data-file': 'src/pages/editor/ModelEditor.tsx',
       })}
     >
+      <SEO
+        title={assetId === 'new' ? 'New Scene' : `Edit ${assetId}`}
+        description="Edit your 3D scene settings, materials, and lighting."
+      />
       {/* Top Bar */}
       <header className="fixed top-0 w-full h-14 bg-stone-900 border-b border-stone-800 flex items-center justify-between px-4 z-50">
         <div className="flex items-center gap-4">
@@ -421,10 +477,68 @@ const ModelEditor: React.FC = () => {
             )}
 
             {activeTab === 'materials' && (
-              <div className="text-center py-10 text-stone-500">
-                <Layers className="w-10 h-10 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Material editing coming in V2</p>
-              </div>
+              <>
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold text-stone-500 uppercase">Base Material</h3>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-sm text-stone-300">Base Color</label>
+                      <span className="text-xs text-stone-500">{baseColor}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="color"
+                        value={baseColor}
+                        onChange={(e) => setBaseColor(e.target.value)}
+                        className="w-10 h-10 p-0 border-0 rounded cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={baseColor}
+                        onChange={(e) => setBaseColor(e.target.value)}
+                        className="flex-1 bg-stone-950 border border-stone-800 rounded px-3 text-sm text-stone-300 font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold text-stone-500 uppercase">Properties</h3>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-sm text-stone-300">Roughness</label>
+                      <span className="text-xs text-stone-500">{roughness.toFixed(2)}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={roughness}
+                      onChange={(e) => setRoughness(parseFloat(e.target.value))}
+                      className="w-full h-1 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-sm text-stone-300">Metalness</label>
+                      <span className="text-xs text-stone-500">{metalness.toFixed(2)}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={metalness}
+                      onChange={(e) => setMetalness(parseFloat(e.target.value))}
+                      className="w-full h-1 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
             {activeTab === 'lighting' && (
@@ -540,6 +654,7 @@ const ModelEditor: React.FC = () => {
                   <button
                     onClick={handleCopyLink}
                     className="bg-stone-800 hover:bg-stone-700 text-white px-3 py-2 rounded-lg flex items-center justify-center transition-colors"
+                    aria-label="Copy Link" // Added for testing and a11y
                   >
                     {copied ? (
                       <Check className="w-4 h-4 text-green-500" />
@@ -562,11 +677,13 @@ const ModelEditor: React.FC = () => {
 
               {/* QR Code */}
               <div className="flex items-center gap-4 pt-4 border-t border-stone-800/50">
-                <div className="w-16 h-16 bg-white p-1 rounded-lg">
-                  {/* Placeholder QR */}
-                  <div className="w-full h-full bg-stone-900 flex items-center justify-center text-[8px] text-stone-500 text-center leading-tight">
-                    QR Code
-                  </div>
+                <div className="w-16 h-16 bg-white p-1 rounded-lg flex items-center justify-center">
+                  <QRCode
+                    value={window.location.href}
+                    size={56}
+                    style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                    viewBox={`0 0 256 256`}
+                  />
                 </div>
                 <div className="flex-1">
                   <div className="font-bold text-stone-200 text-sm mb-1">Mobile AR Experience</div>
