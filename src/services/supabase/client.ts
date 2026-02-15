@@ -16,7 +16,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { env } from '@/config/env';
 
-if (!env.supabaseUrl || !env.supabaseAnonKey) {
+if (!env.useMockData && (!env.supabaseUrl || !env.supabaseAnonKey)) {
   throw new Error(
     'Missing Supabase configuration. ' +
       'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.'
@@ -26,20 +26,24 @@ if (!env.supabaseUrl || !env.supabaseAnonKey) {
 /**
  * Initialize Supabase client
  */
-export const supabase: SupabaseClient = createClient(env.supabaseUrl, env.supabaseAnonKey, {
-  auth: {
-    // Auto-refresh token before expiry
-    autoRefreshToken: true,
-    // Persist session in localStorage
-    persistSession: true,
-    // Detect session from URL query params (OAuth redirect)
-    detectSessionInUrl: true,
-    // Storage adapter (browser localStorage)
-    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-    // Storage key prefix
-    storageKey: 'supabase.auth',
-  },
-});
+export const supabase: SupabaseClient = createClient(
+  env.supabaseUrl || 'https://placeholder.supabase.co',
+  env.supabaseAnonKey || 'placeholder-key',
+  {
+    auth: {
+      // Auto-refresh token before expiry
+      autoRefreshToken: true,
+      // Persist session in localStorage
+      persistSession: true,
+      // Detect session from URL query params (OAuth redirect)
+      detectSessionInUrl: true,
+      // Storage adapter (browser localStorage)
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      // Storage key prefix
+      storageKey: 'supabase.auth',
+    },
+  }
+);
 
 /**
  * Session listener for authentication state changes
