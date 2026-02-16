@@ -16,7 +16,9 @@ const Login: React.FC = () => {
     if (user) {
       // Fix: user.role is an object (UserRole), so we must check .type property
       const roleType = user.role.type as PortalRole;
-      if ([PortalRole.CustomerOwner, PortalRole.CustomerViewer].includes(roleType)) {
+      if (roleType === PortalRole.SuperAdmin) {
+        navigate('/app/super-admin');
+      } else if ([PortalRole.CustomerOwner, PortalRole.CustomerViewer].includes(roleType)) {
         navigate('/portal/dashboard');
       } else {
         navigate('/app/dashboard');
@@ -134,7 +136,7 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="group w-full bg-brand-600 text-white py-3.5 rounded-lg font-bold hover:bg-brand-700 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:scale-105 active:scale-100 disabled:hover:scale-100"
             >
               {loading ? (
                 <>
@@ -143,7 +145,8 @@ const Login: React.FC = () => {
                 </>
               ) : (
                 <>
-                  Sign In <ArrowRight className="w-4 h-4" />
+                  Sign In{' '}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </button>

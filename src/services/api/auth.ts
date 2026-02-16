@@ -24,6 +24,12 @@ import { LoginRequestDTO, LoginResponseDTO, userToDTO, UserProfileDTO, User } fr
 export type LoginRequest = LoginRequestDTO;
 export type LoginResponse = LoginResponseDTO;
 
+export interface GetUsersRequest {
+  role?: string;
+}
+
+export type GetUsersResponse = User[];
+
 export interface RefreshTokenRequest {
   refresh_token: string;
 }
@@ -118,7 +124,7 @@ const MOCK_USERS_MAP: Record<string, any> = {
     id: 'user-emiliano-admin',
     email: 'emilianostza@gmail.com',
     name: 'Emiliano (Admin)',
-    role: { type: 'admin', orgId: 'org-emiliano' },
+    role: { type: 'super_admin', orgId: 'org-emiliano' },
     orgId: 'org-emiliano',
     status: 'active' as const,
     mfaEnabled: false,
@@ -254,6 +260,27 @@ function mockGetTokenTTL(token: string): number {
   const now = Date.now();
   const remaining = Math.max(0, (expirationTime - now) / 1000);
   return Math.floor(remaining);
+}
+
+async function mockGetUsers(request: GetUsersRequest = {}): Promise<GetUsersResponse> {
+  await delay(500);
+  // MOCK_USERS_MAP values are likely any, but we know they match User structure
+  let users = Object.values(MOCK_USERS_MAP) as User[];
+
+  if (request.role) {
+    // rudimentary filtering
+    users = users.filter((u) => {
+      // u.role is UserRole object, so u.role.type is valid
+      if (request.role === 'employee')
+        return ['admin', 'technician', 'approver', 'sales_lead', 'super_admin'].includes(
+          u.role.type
+        );
+      if (request.role === 'customer')
+        return ['customer_owner', 'customer_viewer'].includes(u.role.type);
+      return u.role.type === request.role;
+    });
+  }
+  return users;
 }
 
 // ============================================================================
@@ -486,6 +513,37 @@ function realGetTokenTTL(token: string): number {
   }
 }
 
+async function realGetUsers(request: GetUsersRequest = {}): Promise<GetUsersResponse> {
+  const { supabase } = await import('@/services/supabase/client');
+
+  const query = supabase.from('user_profiles').select('*');
+
+  // Real implementation would need more complex role filtering since role is JSON or separate column
+  // For now, return all
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Failed to fetch users', error);
+    return [];
+  }
+
+  return data.map((profile) => {
+    const user: User = {
+      id: profile.id,
+      orgId: profile.org_id || '',
+      email: profile.email || '', // Email might not be in profile depending on schema, usually in auth.users
+      name: profile.name || '',
+      role: buildRoleFromProfile(profile),
+      status: (profile.status as User['status']) || 'active',
+      mfaEnabled: profile.mfa_enabled || false,
+      failedLoginAttempts: profile.failed_login_attempts || 0,
+      createdAt: profile.created_at || new Date().toISOString(),
+      updatedAt: profile.updated_at || new Date().toISOString(),
+    };
+    return user;
+  });
+}
+
 // ============================================================================
 // PUBLIC API - ROUTES BASED ON FEATURE FLAG
 // ============================================================================
@@ -521,6 +579,16 @@ export async function refreshToken(request: RefreshTokenRequest): Promise<Refres
     return mockRefreshToken(request);
   }
   return realRefreshToken(request);
+}
+
+/**
+ * Get all users (Super Admin only)
+ */
+export async function getUsers(request: GetUsersRequest = {}): Promise<GetUsersResponse> {
+  if (USE_MOCK_DATA) {
+    return mockGetUsers(request);
+  }
+  return realGetUsers(request);
 }
 
 /**

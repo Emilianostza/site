@@ -11,12 +11,12 @@
 
 :root {
   /* Brand Colors */
-  --brand-50: #f0f9ff;
-  --brand-100: #e0f2fe;
-  --brand-500: #0ea5e9;
-  --brand-600: #0284c7;
-  --brand-700: #0369a1;
-  --brand-900: #0c4a6e;
+  --brand-50: #f8fafc;
+  --brand-100: #f1f5f9;
+  --brand-500: #3b82f6; /* Softened from #0ea5e9 */
+  --brand-600: #2563eb; /* Softened from #0284c7 */
+  --brand-700: #1d4ed8;
+  --brand-900: #1e3a8a;
 
   /* Accent Colors */
   --accent-orange: #ff6b35;
@@ -121,9 +121,9 @@ p {
 
 .gradient-mesh {
   background:
-    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(255, 107, 53, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(255, 107, 53, 0.05) 0px, transparent 50%);
 }
 
 .text-gradient {
@@ -341,7 +341,7 @@ p {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
 
@@ -350,12 +350,21 @@ p {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hero Section */
@@ -476,9 +485,37 @@ p {
   border-width: 0;
 }
 
-.focus-visible:focus {
-  outline: 2px solid var(--brand-500);
+/* Enhanced focus states for better accessibility */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 3px solid var(--brand-500);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--brand-500);
   outline-offset: 2px;
+}
+
+.dark *:focus-visible {
+  outline-color: var(--brand-400);
+}
+
+/* Custom focus ring for buttons */
+.btn-primary:focus-visible,
+button.bg-brand-600:focus-visible,
+button.bg-indigo-600:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--brand-500);
 }
 
 /* High contrast mode support */

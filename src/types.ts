@@ -15,6 +15,7 @@ export enum PortalRole {
   Approver = 'approver',
   SalesLead = 'sales_lead',
   Admin = 'admin',
+  SuperAdmin = 'super_admin',
 }
 
 /**

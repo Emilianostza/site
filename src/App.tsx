@@ -23,6 +23,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const RestaurantMenu = lazy(() => import('./pages/templates/RestaurantMenu'));
 const ModelEditor = lazy(() => import('./pages/editor/ModelEditor'));
 const SceneDashboard = lazy(() => import('./pages/editor/SceneDashboard'));
+const SuperAdmin = lazy(() => import('./pages/SuperAdmin'));
 
 // Loading component
 const LoadingFallback: React.FC = () => (
@@ -106,9 +107,22 @@ const AppContent: React.FC = () => {
                   path="/app/editor/:assetId"
                   element={
                     <ProtectedRoute
-                      requiredRoles={[PortalRole.Technician, PortalRole.Approver, PortalRole.Admin]}
+                      requiredRoles={[
+                        PortalRole.Technician,
+                        PortalRole.Approver,
+                        PortalRole.Admin,
+                        PortalRole.SuperAdmin,
+                      ]}
                     >
                       <SceneDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/app/super-admin"
+                  element={
+                    <ProtectedRoute requiredRoles={[PortalRole.SuperAdmin]}>
+                      <SuperAdmin />
                     </ProtectedRoute>
                   }
                 />
