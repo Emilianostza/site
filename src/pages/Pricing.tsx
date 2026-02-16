@@ -202,8 +202,8 @@ const Pricing: React.FC = () => {
           </div>
 
           {/* Comparison table for more details */}
-          <div className="mt-16 p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">
+          <div className="mt-16 p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-shadow">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
               Full Feature Comparison
             </h3>
             <div className="overflow-x-auto">
@@ -276,47 +276,47 @@ const Pricing: React.FC = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-lg mb-4">
+            <div className="group flex flex-col items-center p-6 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-all hover:scale-105">
+              <div className="w-14 h-14 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
                 1
               </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-center">
+              <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                 Submit Request
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-400 text-center leading-relaxed">
                 Tell us about your objects, location, and needs
               </p>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-lg mb-4">
+            <div className="group flex flex-col items-center p-6 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-all hover:scale-105">
+              <div className="w-14 h-14 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
                 2
               </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-center">
+              <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                 Schedule Capture
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-400 text-center leading-relaxed">
                 We confirm date and send capture specialists
               </p>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-lg mb-4">
+            <div className="group flex flex-col items-center p-6 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-all hover:scale-105">
+              <div className="w-14 h-14 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
                 3
               </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-center">
+              <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                 We Capture
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-400 text-center leading-relaxed">
                 Professional photogrammetry scan (1–4 hours)
               </p>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-lg mb-4">
+            <div className="group flex flex-col items-center p-6 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-all hover:scale-105">
+              <div className="w-14 h-14 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 group-hover:shadow-lg transition-all">
                 4
               </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-center">
+              <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                 Receive Models
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-400 text-center leading-relaxed">
                 Ready-to-use 3D files, viewer, and AR assets
               </p>
             </div>

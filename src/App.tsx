@@ -24,6 +24,9 @@ const RestaurantMenu = lazy(() => import('./pages/templates/RestaurantMenu'));
 const ModelEditor = lazy(() => import('./pages/editor/ModelEditor'));
 const SceneDashboard = lazy(() => import('./pages/editor/SceneDashboard'));
 const SuperAdmin = lazy(() => import('./pages/SuperAdmin'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Security = lazy(() => import('./pages/Security'));
 
 // Loading component
 const LoadingFallback: React.FC = () => (
@@ -59,30 +62,9 @@ const AppContent: React.FC = () => {
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/request" element={<RequestForm />} />
-                <Route
-                  path="/security"
-                  element={
-                    <div className="container mx-auto py-20 px-4 text-center">
-                      <h1 className="text-3xl font-bold dark:text-white">Trust & Security</h1>
-                    </div>
-                  }
-                />
-                <Route
-                  path="/privacy"
-                  element={
-                    <div className="container mx-auto py-20 px-4 text-center">
-                      <h1 className="text-3xl font-bold dark:text-white">Privacy Policy</h1>
-                    </div>
-                  }
-                />
-                <Route
-                  path="/terms"
-                  element={
-                    <div className="container mx-auto py-20 px-4 text-center">
-                      <h1 className="text-3xl font-bold dark:text-white">Terms of Service</h1>
-                    </div>
-                  }
-                />
+                <Route path="/security" element={<Security />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
 
                 {/* Auth Routes (public) */}
                 <Route path="/app/login" element={<Login />} />

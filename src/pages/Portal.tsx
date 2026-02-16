@@ -12,6 +12,7 @@ import {
   Shield,
   CreditCard,
   Check,
+  LogOut,
 } from 'lucide-react';
 import { Asset, Project } from '@/types';
 import { NewProjectModal } from '@/components/portal/NewProjectModal';
@@ -23,11 +24,13 @@ import DarkModeToggle from '@/components/DarkModeToggle';
 import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
 import { AssetListTable } from '@/components/portal/AssetListTable';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { X } from 'lucide-react';
 import { SEO } from '@/components/common/SEO';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const { logout } = useAuth();
+  const { success, error: toastError } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'customers' | 'settings'>(
     'dashboard'
@@ -36,9 +39,39 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
     'profile' | 'security' | 'notifications' | 'billing'
   >('profile');
 
+  // Password Update State
+  const [passwordForm, setPasswordForm] = useState({
+    current: '',
+    new: '',
+    confirm: '',
+  });
+
   const handleLogout = async () => {
     await logout();
     navigate('/app/login');
+  };
+
+  const handleUpdatePassword = () => {
+    if (!passwordForm.current || !passwordForm.new || !passwordForm.confirm) {
+      toastError('Please fill in all password fields.');
+      return;
+    }
+
+    if (passwordForm.new !== passwordForm.confirm) {
+      toastError('New passwords do not match.');
+      return;
+    }
+
+    if (passwordForm.new.length < 8) {
+      toastError('Password must be at least 8 characters.');
+      return;
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      success('Password updated successfully.');
+      setPasswordForm({ current: '', new: '', confirm: '' });
+    }, 1000);
   };
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -550,6 +583,10 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                           </label>
                           <input
                             type="password"
+                            value={passwordForm.current}
+                            onChange={(e) =>
+                              setPasswordForm({ ...passwordForm, current: e.target.value })
+                            }
                             className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
                           />
                         </div>
@@ -560,6 +597,10 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                             </label>
                             <input
                               type="password"
+                              value={passwordForm.new}
+                              onChange={(e) =>
+                                setPasswordForm({ ...passwordForm, new: e.target.value })
+                              }
                               className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
                             />
                           </div>
@@ -569,12 +610,19 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                             </label>
                             <input
                               type="password"
+                              value={passwordForm.confirm}
+                              onChange={(e) =>
+                                setPasswordForm({ ...passwordForm, confirm: e.target.value })
+                              }
                               className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
                             />
                           </div>
                         </div>
                         <div className="flex justify-end pt-2">
-                          <button className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                          <button
+                            onClick={handleUpdatePassword}
+                            className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                          >
                             Update Password
                           </button>
                         </div>

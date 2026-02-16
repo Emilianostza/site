@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS } from '@/constants';
-import { Menu, X, Box, ShieldCheck } from 'lucide-react';
+import { Menu, X, Box, ShieldCheck, ArrowRight } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -68,16 +68,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             ))}
             <Link
               to="/app/login"
-              className="text-sm font-medium text-slate-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400"
+              className="text-sm font-medium text-slate-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
             >
               Log in
             </Link>
             <DarkModeToggle />
             <Link
               to="/request"
-              className="px-4 py-2 rounded-full bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors"
+              className="group px-5 py-2.5 rounded-full bg-brand-600 text-white text-sm font-bold hover:bg-brand-700 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100 flex items-center gap-1.5"
             >
               Request Capture
+              <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all" />
             </Link>
           </nav>
 
@@ -134,7 +135,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </Link>
               <Link
                 to="/request"
-                className="text-base font-medium text-brand-600 dark:text-brand-400"
+                className="text-base font-bold text-white bg-brand-600 dark:bg-brand-500 px-4 py-2.5 rounded-lg hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Request Capture
@@ -146,34 +147,43 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       <main className="flex-grow">{children}</main>
 
-      <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 py-12">
+      <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300 py-16 border-t border-slate-800">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
             <div className="space-y-4">
-              <div className="flex items-center space-x-2 font-bold text-xl text-white">
-                <Box className="w-6 h-6 text-brand-500 dark:text-brand-400" />
+              <div className="flex items-center space-x-2 font-bold text-xl text-white group">
+                <Box className="w-6 h-6 text-brand-500 dark:text-brand-400 group-hover:rotate-12 transition-transform" />
                 <span>Managed Capture</span>
               </div>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-400 leading-relaxed">
                 Professional 3D capture services for enterprise. We digitize the physical world.
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Industries</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-bold text-white mb-4">Industries</h4>
+              <ul className="space-y-3 text-sm">
                 <li>
-                  <Link to="/industries/restaurants" className="hover:text-white transition-colors">
+                  <Link
+                    to="/industries/restaurants"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     Restaurants
                   </Link>
                 </li>
                 <li>
-                  <Link to="/industries/museums" className="hover:text-white transition-colors">
+                  <Link
+                    to="/industries/museums"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     Museums
                   </Link>
                 </li>
                 <li>
-                  <Link to="/industries/ecommerce" className="hover:text-white transition-colors">
+                  <Link
+                    to="/industries/ecommerce"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     E-commerce
                   </Link>
                 </li>
@@ -181,20 +191,29 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Support</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-bold text-white mb-4">Support</h4>
+              <ul className="space-y-3 text-sm">
                 <li>
-                  <Link to="/how-it-works" className="hover:text-white transition-colors">
+                  <Link
+                    to="/how-it-works"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     How it Works
                   </Link>
                 </li>
                 <li>
-                  <Link to="/pricing" className="hover:text-white transition-colors">
+                  <Link
+                    to="/pricing"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link to="/security" className="hover:text-white transition-colors">
+                  <Link
+                    to="/security"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     Trust Center
                   </Link>
                 </li>
@@ -202,28 +221,39 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-bold text-white mb-4">Legal</h4>
+              <ul className="space-y-3 text-sm">
                 <li>
-                  <Link to="/privacy" className="hover:text-white transition-colors">
+                  <Link
+                    to="/privacy"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/terms" className="hover:text-white transition-colors">
+                  <Link
+                    to="/terms"
+                    className="hover:text-brand-400 hover:translate-x-1 inline-block transition-all"
+                  >
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <div className="flex items-center gap-2 mt-4">
+                  <div className="flex items-center gap-2 mt-4 text-green-400">
                     <ShieldCheck className="w-4 h-4" /> SOC 2 Compliant
                   </div>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-800 dark:border-slate-700 mt-12 pt-8 text-center text-sm text-slate-500">
-            © 2026 Managed Capture 3D Platform. All rights reserved.
+          <div className="border-t border-slate-800 dark:border-slate-700 mt-12 pt-8 text-center">
+            <p className="text-sm text-slate-500 mb-2">
+              © 2026 Managed Capture 3D Platform. All rights reserved.
+            </p>
+            <p className="text-xs text-slate-600">
+              Bringing the physical world into the digital age, one object at a time.
+            </p>
           </div>
         </div>
       </footer>

@@ -262,9 +262,10 @@ const RequestForm: React.FC = () => {
 
             <button
               onClick={() => navigate('/')}
-              className="inline-flex items-center gap-2 px-8 py-3 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700 transition-colors shadow-lg hover:shadow-xl"
+              className="group inline-flex items-center gap-2 px-8 py-3.5 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700 transition-all shadow-lg hover:shadow-2xl hover:scale-105 active:scale-100"
             >
-              Return Home <ArrowRight className="w-4 h-4" />
+              Return Home{' '}
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
@@ -324,13 +325,13 @@ const RequestForm: React.FC = () => {
                       key={ind}
                       type="button"
                       onClick={() => updateField('industry', ind)}
-                      className={`p-6 rounded-xl border-2 text-left transition-all ${
+                      className={`group p-6 rounded-xl border-2 text-left transition-all hover:scale-105 active:scale-100 ${
                         formData.industry === ind
-                          ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20'
-                          : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-500'
+                          ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20 shadow-lg shadow-brand-500/20'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-500 hover:shadow-md'
                       }`}
                     >
-                      <span className="font-bold text-lg block mb-1 text-slate-900 dark:text-white">
+                      <span className="font-bold text-lg block mb-1 text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                         {ind}
                       </span>
                       <span className="text-sm text-slate-500 dark:text-slate-400">
@@ -660,15 +661,16 @@ const RequestForm: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="flex items-center bg-brand-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors"
+                  className="group flex items-center bg-brand-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-100"
                 >
-                  Next Step <ChevronRight className="w-4 h-4 ml-1" />
+                  Next Step{' '}
+                  <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                 </button>
               ) : (
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center bg-brand-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="group flex items-center bg-brand-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-brand-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-100 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   {submitting ? (
                     <>
@@ -677,7 +679,8 @@ const RequestForm: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      Submit Request <ArrowRight className="w-4 h-4 ml-1" />
+                      Submit Request{' '}
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
                 </button>
