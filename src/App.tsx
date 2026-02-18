@@ -27,6 +27,7 @@ const SuperAdmin = lazy(() => import('./pages/SuperAdmin'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Security = lazy(() => import('./pages/Security'));
+const ARViewer = lazy(() => import('./pages/viewer/ARViewer'));
 
 // Loading component
 const LoadingFallback: React.FC = () => (
@@ -137,6 +138,9 @@ const AppContent: React.FC = () => {
 
                 {/* Editor (public route exists for demo, protected version above) */}
                 <Route path="/editor/:assetId" element={<ModelEditor />} />
+
+                {/* Public WebAR viewer — scanned from QR codes */}
+                <Route path="/view/:assetId" element={<ARViewer />} />
 
                 {/* 404 Catch all */}
                 <Route path="*" element={<NotFound />} />

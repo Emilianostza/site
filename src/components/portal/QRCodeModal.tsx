@@ -17,8 +17,8 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, asset
 
   if (!isOpen || !asset) return null;
 
-  // Generate the URL for the asset (Scene Dashboard)
-  const assetUrl = `${window.location.origin}/#/app/editor/${asset.id}`;
+  // Public WebAR viewer URL — safe to share with end-customers (no auth required)
+  const assetUrl = `${window.location.origin}/view/${asset.id}`;
 
   // QR Code API (using goqr.me or qrserver)
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(assetUrl)}&bgcolor=ffffff`;
