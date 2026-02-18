@@ -1,5 +1,4 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 
 interface SEOProps {
   title: string;
@@ -9,6 +8,8 @@ interface SEOProps {
   type?: string;
 }
 
+// React 19 supports rendering <title> and <meta> directly from components —
+// they are automatically hoisted to <head> without a provider.
 export const SEO: React.FC<SEOProps> = ({
   title,
   description = 'Managed Capture 3D Platform - Create and share immersive AR experiences.',
@@ -20,7 +21,7 @@ export const SEO: React.FC<SEOProps> = ({
   const fullTitle = `${title} | ${siteTitle}`;
 
   return (
-    <Helmet>
+    <>
       {/* Standard Metadata */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
@@ -39,6 +40,6 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
-    </Helmet>
+    </>
   );
 };

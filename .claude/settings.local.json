@@ -14,7 +14,8 @@
       "Bash(git commit:*)",
       "Bash(npm run test:run:*)",
       "Bash(powershell -Command:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(npm uninstall:*)"
     ]
   }
 }

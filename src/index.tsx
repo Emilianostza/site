@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from '@/App';
-import { HelmetProvider } from 'react-helmet-async';
 
 // Global error handlers for unhandled promise rejections and errors
 window.addEventListener('unhandledrejection', (event) => {
@@ -21,8 +20,6 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <HelmetProvider>
-      <App />
-    </HelmetProvider>
+    <App />
   </React.StrictMode>
 );
