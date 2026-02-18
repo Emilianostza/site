@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Box, Utensils, Landmark, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Utensils, Landmark, ShoppingBag } from 'lucide-react';
 import { HOW_IT_WORKS_STEPS } from '@/constants';
 import Accordion from '@/components/Accordion';
 
@@ -13,138 +13,196 @@ const Home: React.FC = () => {
       })}
     >
       {/* Hero */}
-      <section className="relative bg-slate-900 text-white overflow-hidden pt-10 min-h-[90vh] flex items-center">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black opacity-80"></div>
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+      <section className="relative bg-zinc-950 text-white overflow-hidden min-h-[92vh] flex items-center">
+        {/* Background layers */}
+        <div className="absolute inset-0 bg-grid opacity-[0.35] pointer-events-none" />
+        {/* Ambient glow orbs */}
+        <div className="absolute -top-40 -left-32 w-[500px] h-[500px] bg-brand-700/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/3 -right-24 w-[400px] h-[400px] bg-purple-700/15 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-20 left-1/3 w-[300px] h-[300px] bg-cyan-700/10 blur-[80px] rounded-full pointer-events-none" />
 
-        <div className="relative container mx-auto px-4 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
-          <div className="text-left z-10">
-            <div className="inline-block px-4 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 backdrop-blur-sm text-sm font-semibold text-brand-300 mb-8 animate-fade-in-up">
-              🚀 Now serving all major cities
-            </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-white animate-slide-up leading-tight">
-              Expert 3D capture,
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-purple-400">
-                delivered to your door
+        <div className="relative container mx-auto px-4 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+          {/* ── Left: Copy ─────────────────────── */}
+          <div className="flex flex-col gap-7 z-10">
+            {/* Announcement badge */}
+            <div className="inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-xs font-semibold text-zinc-300 animate-fade-in">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500" />
               </span>
-            </h1>
+              Now serving EU — Estonia · Greece · France
+            </div>
+
+            {/* Headline */}
+            <div className="animate-slide-up">
+              <h1 className="font-display text-5xl md:text-[4.5rem] font-bold tracking-tight leading-[1.08] text-white">
+                Expert 3D capture,
+                <br />
+                <span className="text-gradient">delivered to you.</span>
+              </h1>
+            </div>
+
+            {/* Subheading */}
             <p
-              className="text-xl md:text-2xl text-slate-300 mb-8 max-w-lg leading-relaxed animate-slide-up"
-              style={{ animationDelay: '0.1s' }}
+              className="text-lg md:text-xl text-zinc-400 max-w-md leading-relaxed animate-fade-in-up"
+              style={{ animationDelay: '150ms' }}
             >
-              We capture your objects on-site and deliver production-ready 3D assets in 24 hrs.
-              Perfect for e-commerce & styling.
+              We come to your location, capture your objects, and deliver production-ready 3D &amp;
+              AR assets in under a week. No equipment. No expertise needed.
             </p>
 
+            {/* CTAs */}
             <div
-              className="flex flex-col sm:flex-row gap-4 animate-slide-up"
-              style={{ animationDelay: '0.2s' }}
+              className="flex flex-col sm:flex-row gap-3 animate-fade-in-up"
+              style={{ animationDelay: '250ms' }}
             >
               <Link
                 to="/request"
-                className="group px-8 py-4 rounded-full bg-brand-600 text-white font-bold text-lg hover:bg-brand-500 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_40px_rgba(79,70,229,0.6)] hover:-translate-y-1 hover:scale-105"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold text-base transition-all duration-200 hover:-translate-y-px hover:shadow-glow shadow-xs"
               >
-                Start Request{' '}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                Start a Request
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/gallery"
-                className="group px-8 py-4 rounded-full bg-white/10 text-white font-bold text-lg border border-white/20 hover:bg-white/20 hover:border-white/40 backdrop-blur-md transition-all flex items-center justify-center gap-2 hover:scale-105"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-semibold text-base transition-all duration-200 backdrop-blur-sm"
               >
-                View Gallery{' '}
-                <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -ml-5 group-hover:ml-0 transition-all" />
+                View 3D Gallery
+                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all duration-200" />
               </Link>
+            </div>
+
+            {/* Stats strip */}
+            <div
+              className="flex flex-wrap gap-6 pt-2 animate-fade-in-up"
+              style={{ animationDelay: '350ms' }}
+            >
+              {[
+                { value: '500+', label: 'Photographers' },
+                { value: '10k+', label: 'Projects delivered' },
+                { value: '3', label: 'EU countries' },
+              ].map((s) => (
+                <div key={s.label} className="flex flex-col">
+                  <span className="font-display text-2xl font-bold text-white">{s.value}</span>
+                  <span className="text-xs text-zinc-500 mt-0.5">{s.label}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* 3D Model Animation */}
+          {/* ── Right: 3D Viewer ───────────────── */}
           <div
-            className="relative h-[500px] w-full flex items-center justify-center animate-fade-in"
-            style={{ animationDelay: '0.3s' }}
+            className="relative h-[520px] w-full flex items-center justify-center animate-blur-in"
+            style={{ animationDelay: '200ms' }}
           >
-            {/* 3D Model Viewer */}
-            <model-viewer
-              src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-              ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
-              poster="https://modelviewer.dev/shared-assets/models/Astronaut.png"
-              alt="A 3D model of an astronaut"
-              shadow-intensity="1"
-              camera-controls
-              auto-rotate
-              ar
-              style={{ width: '100%', height: '100%', minHeight: '500px' } as any}
-            ></model-viewer>
+            {/* Viewer frame */}
+            <div className="relative w-full h-full rounded-3xl overflow-hidden border border-white/8 shadow-modal bg-zinc-900/40 backdrop-blur-sm">
+              <model-viewer
+                src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+                ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
+                poster="https://modelviewer.dev/shared-assets/models/Astronaut.png"
+                alt="Interactive 3D model — rotate to explore"
+                shadow-intensity="1"
+                camera-controls
+                auto-rotate
+                ar
+                style={{ width: '100%', height: '100%' } as React.CSSProperties}
+              />
 
-            {/* Decorative Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-500/20 blur-[100px] rounded-full -z-10 pointer-events-none"></div>
+              {/* Viewer UI chrome */}
+              <div className="absolute top-4 left-4 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-red-500/70" />
+                <span className="w-2 h-2 rounded-full bg-yellow-500/70" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500/70" />
+              </div>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-xs text-zinc-400 whitespace-nowrap">
+                Drag to rotate · Pinch to zoom · Tap AR to view in your space
+              </div>
+            </div>
+
+            {/* Floating glow behind the viewer */}
+            <div className="absolute inset-0 -z-10 rounded-3xl bg-brand-600/10 blur-[60px]" />
           </div>
         </div>
+
+        {/* Bottom fade into next section */}
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-white dark:from-zinc-950 to-transparent pointer-events-none" />
       </section>
 
       {/* Industries */}
-      <section className="py-24 bg-white relative">
-        <div className="container mx-auto px-4 max-w-6xl relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Built for your industry
+      <section className="py-24 bg-white dark:bg-zinc-950 relative">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center mb-14">
+            <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
+              Industries
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-4">
+              Built for your vertical
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Specialized workflows for every vertical.
+            <p className="text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto">
+              Specialized capture workflows, access controls, and deliverables — designed for each
+              industry.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
                 icon: Utensils,
-                bgColor: 'bg-orange-50 dark:bg-orange-900/20',
-                iconColor: 'text-orange-600 dark:text-orange-400',
-                borderColor: 'hover:border-orange-200 dark:hover:border-orange-800',
+                accent: 'text-orange-500 dark:text-orange-400',
+                iconBg: 'bg-orange-50 dark:bg-orange-500/10',
+                stat: '+35% avg. order value',
                 title: 'Restaurants',
-                desc: 'Interactive menus that boost conversion.',
+                desc: 'Turn signature dishes into interactive 3D models for digital menus, QR table experiences, and delivery apps.',
                 link: '/industries/restaurants',
               },
               {
                 icon: Landmark,
-                bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-                iconColor: 'text-purple-600 dark:text-purple-400',
-                borderColor: 'hover:border-purple-200 dark:hover:border-purple-800',
+                accent: 'text-purple-500 dark:text-purple-400',
+                iconBg: 'bg-purple-50 dark:bg-purple-500/10',
+                stat: 'Archival-grade accuracy',
                 title: 'Museums',
-                desc: 'Archival-quality digitization for everyone.',
+                desc: 'Digitize sensitive artifacts with expert handling, strict access controls, and global accessibility.',
                 link: '/industries/museums',
               },
               {
                 icon: ShoppingBag,
-                bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-                iconColor: 'text-blue-600 dark:text-blue-400',
-                borderColor: 'hover:border-blue-200 dark:hover:border-blue-800',
+                accent: 'text-brand-600 dark:text-brand-400',
+                iconBg: 'bg-brand-50 dark:bg-brand-500/10',
+                stat: 'Up to 40% fewer returns',
                 title: 'E-commerce',
-                desc: 'Reduce returns with true-to-life 3D/AR.',
+                desc: 'Boost conversion and cut returns with true-to-life 3D and AR-ready product pages for iOS & Android.',
                 link: '/industries/ecommerce',
               },
             ].map((item, i) => (
               <Link
                 key={i}
                 to={item.link}
-                className={`group p-8 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 ${item.borderColor} shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105`}
+                className="group relative flex flex-col p-7 rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-200 dark:hover:border-zinc-700 hover:shadow-hover transition-all duration-300"
               >
-                <div
-                  className={`w-14 h-14 rounded-xl ${item.bgColor} flex items-center justify-center ${item.iconColor} mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
+                {/* Stat chip */}
+                <span
+                  className={`self-start text-xs font-semibold px-2.5 py-1 rounded-full ${item.iconBg} ${item.accent} mb-5`}
                 >
-                  <item.icon className="w-7 h-7" />
+                  {item.stat}
+                </span>
+
+                <div
+                  className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center ${item.accent} mb-4 group-hover:scale-105 transition-transform duration-300`}
+                >
+                  <item.icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+
+                <h3 className="font-display text-lg font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed flex-1">
                   {item.desc}
                 </p>
-                <div className="flex items-center text-slate-900 dark:text-white font-bold text-sm group-hover:gap-2 transition-all group-hover:text-brand-600 dark:group-hover:text-brand-400">
-                  Learn more{' '}
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-zinc-400 dark:text-zinc-600 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors mt-5">
+                  Learn more
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
             ))}
@@ -153,66 +211,89 @@ const Home: React.FC = () => {
       </section>
 
       {/* How it Works */}
-      <section className="py-24 bg-slate-50 border-y border-slate-200">
-        <div className="container mx-auto px-4 max-w-6xl">
+      <section className="relative py-28 bg-zinc-950 overflow-hidden">
+        {/* Subtle grid background */}
+        <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" />
+        {/* Gradient glow top-center */}
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-600/20 blur-[80px] rounded-full pointer-events-none" />
+
+        <div className="relative container mx-auto px-4 max-w-6xl">
+          {/* Header */}
           <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              How our managed service works
+            <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20">
+              The Process
+            </p>
+            <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-5 leading-tight">
+              From request to <span className="text-gradient">live 3D asset</span>
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              From your first request to deliverable 3D models—we manage every step. No learning
-              curve, no equipment, no risk.
+            <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+              We manage every step — no learning curve, no equipment, no risk. You get
+              production-ready 3D in days.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Steps grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+            {/* Connecting line — desktop only */}
+            <div className="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent pointer-events-none" />
+
             {HOW_IT_WORKS_STEPS.map((step, idx) => (
-              <div key={idx} className="relative group">
-                {/* Step number badge */}
-                <div className="absolute -top-6 -left-3 w-12 h-12 rounded-full bg-brand-600 dark:bg-brand-500 text-white flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                  {idx + 1}
+              <div key={idx} className="relative group flex flex-col items-center text-center">
+                {/* Icon bubble */}
+                <div className="relative mb-6 z-10">
+                  <div className="w-20 h-20 rounded-2xl bg-zinc-900 border border-zinc-700/60 group-hover:border-brand-600/60 flex items-center justify-center text-brand-400 group-hover:text-brand-300 group-hover:bg-brand-950/60 transition-all duration-300 shadow-lg group-hover:shadow-glow">
+                    <span className="[&>svg]:w-7 [&>svg]:h-7">{step.icon}</span>
+                  </div>
+                  {/* Step number chip */}
+                  <span className="absolute -top-2.5 -right-2.5 w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center shadow-md">
+                    {idx + 1}
+                  </span>
                 </div>
 
-                <div className="flex flex-col items-center text-center pt-4 h-full p-6 rounded-2xl border border-transparent hover:border-brand-200 dark:hover:border-brand-800 hover:bg-white dark:hover:bg-slate-800/50 transition-all duration-300">
-                  <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
-                    {step.icon}
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
-                {idx < HOW_IT_WORKS_STEPS.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 left-1/2 w-full h-px bg-gradient-to-r from-slate-300 via-brand-300 to-slate-300 dark:from-slate-700 dark:via-brand-700 dark:to-slate-700 -z-10"></div>
-                )}
+                <h3 className="text-base font-semibold text-white mb-2 group-hover:text-brand-300 transition-colors">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-zinc-500 leading-relaxed max-w-[180px]">{step.desc}</p>
               </div>
             ))}
           </div>
 
-          {/* CTA after process */}
-          <div className="mt-16 text-center">
-            <p className="text-slate-600 dark:text-slate-400 mb-6 text-lg">
-              Ready to get started? No credit card required.
+          {/* CTA */}
+          <div className="mt-16 flex flex-col items-center gap-3">
+            <p className="text-zinc-500 text-sm">
+              Typical turnaround:{' '}
+              <span className="text-zinc-300 font-medium">5–8 business days</span>
             </p>
-            <Link
-              to="/request"
-              className="group inline-flex px-8 py-4 rounded-full bg-brand-600 text-white font-bold text-lg hover:bg-brand-500 transition-all shadow-lg hover:shadow-2xl items-center gap-2 hover:scale-105 hover:-translate-y-1"
-            >
-              Request a Capture Today{' '}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-1">
+              <Link
+                to="/request"
+                className="group inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold text-base transition-all duration-200 hover:-translate-y-px hover:shadow-glow"
+              >
+                Request a Capture
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                to="/how-it-works"
+                className="text-sm text-zinc-500 hover:text-zinc-300 underline underline-offset-4 transition-colors"
+              >
+                See full process breakdown
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+      <section className="py-24 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
         <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
-            Common Questions
-          </h2>
+          <div className="text-center mb-12">
+            <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
+              FAQ
+            </p>
+            <h2 className="font-display text-3xl font-bold text-zinc-900 dark:text-white">
+              Common questions
+            </h2>
+          </div>
           <Accordion
             items={[
               {
@@ -249,9 +330,9 @@ const Home: React.FC = () => {
                 title: 'Can I integrate this into my existing website?',
                 content: (
                   <p>
-                    Yes, we provide a simple generic embed code (iframe) or a React component that
-                    you can drop into any website. It works with Shopify, WordPress, Squarespace,
-                    and custom stacks.
+                    Yes, we provide a simple embed code (iframe) or a React component that you can
+                    drop into any website. It works with Shopify, WordPress, Squarespace, and custom
+                    stacks.
                   </p>
                 ),
               },
@@ -260,47 +341,54 @@ const Home: React.FC = () => {
           <div className="mt-10 text-center">
             <Link
               to="/pricing"
-              className="text-brand-600 dark:text-brand-400 font-semibold hover:underline"
+              className="text-sm text-brand-600 dark:text-brand-400 font-semibold hover:text-brand-700 dark:hover:text-brand-300 underline underline-offset-4 transition-colors"
             >
-              See more FAQs on our Pricing page
+              See more FAQs on our Pricing page →
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Trust & Social Proof - Moved higher for visibility */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-y border-slate-200 dark:border-slate-800">
-        <div className="container mx-auto px-4 flex flex-col items-center">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-              Trusted by Industry Leaders
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-              Join 50+ companies worldwide
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-20 w-full max-w-6xl">
-            {/* Mock Logos with enhanced hover states */}
-            <div className="group flex items-center justify-center opacity-50 hover:opacity-100 transition-all duration-300 hover:scale-110">
-              <div className="text-xl md:text-2xl font-bold font-serif text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                Louvre<span className="text-brand-600 dark:text-brand-400">Digital</span>
+      {/* Trust / Social Proof */}
+      <section className="py-14 bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-800">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-8">
+            Trusted by industry leaders across 3 continents
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              {
+                name: 'Louvre',
+                suffix: 'Digital',
+                style: 'font-serif',
+                suffixColor: 'text-brand-500',
+              },
+              {
+                name: 'NIKE',
+                suffix: 'LAB',
+                style: 'tracking-tight italic',
+                suffixColor: 'text-zinc-400',
+              },
+              { name: 'UBER', suffix: 'EATS', style: 'font-mono', suffixColor: 'text-emerald-500' },
+              {
+                name: 'Shopify',
+                suffix: 'Plus',
+                style: 'font-light',
+                suffixColor: 'text-zinc-500',
+              },
+            ].map((logo, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-center py-4 opacity-40 hover:opacity-100 transition-opacity duration-300"
+              >
+                <span
+                  className={`text-lg md:text-xl font-bold text-zinc-700 dark:text-zinc-400 ${logo.style}`}
+                >
+                  {logo.name}
+                  <span className={logo.suffixColor}>{logo.suffix}</span>
+                </span>
               </div>
-            </div>
-            <div className="group flex items-center justify-center opacity-50 hover:opacity-100 transition-all duration-300 hover:scale-110">
-              <div className="text-xl md:text-2xl font-bold font-sans tracking-tighter text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                NIKE<span className="italic font-light">LAB</span>
-              </div>
-            </div>
-            <div className="group flex items-center justify-center opacity-50 hover:opacity-100 transition-all duration-300 hover:scale-110">
-              <div className="text-xl md:text-2xl font-bold font-mono text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                UBER<span className="text-green-600 dark:text-green-400">EATS</span>
-              </div>
-            </div>
-            <div className="group flex items-center justify-center opacity-50 hover:opacity-100 transition-all duration-300 hover:scale-110">
-              <div className="text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                Shopify<span className="font-light">Plus</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

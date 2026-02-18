@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import Card from '@/components/Card';
+import { ChevronDown } from 'lucide-react';
 
 interface AccordionItemProps {
   title: string;
@@ -18,29 +17,35 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   className = '',
 }) => {
   return (
-    <Card hover={false} className={`overflow-hidden ${className}`}>
+    <div
+      className={`rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden transition-shadow duration-200 ${
+        isOpen ? 'shadow-soft' : ''
+      } ${className}`}
+    >
       <button
         onClick={onToggle}
-        className="w-full p-6 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-inset"
+        className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset"
         aria-expanded={isOpen}
       >
-        <span className="font-semibold text-slate-900 dark:text-white pr-4 text-lg">{title}</span>
-        {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-brand-600 dark:text-brand-400 flex-shrink-0 transition-transform duration-300" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-brand-600 dark:text-brand-400 flex-shrink-0 transition-transform duration-300" />
-        )}
+        <span className="font-semibold text-zinc-900 dark:text-zinc-100 pr-4 text-base leading-snug">
+          {title}
+        </span>
+        <ChevronDown
+          className={`w-4 h-4 text-zinc-400 dark:text-zinc-600 flex-shrink-0 transition-transform duration-300 ${
+            isOpen ? 'rotate-180 text-brand-500' : ''
+          }`}
+        />
       </button>
       <div
-        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`transition-all duration-300 ease-spring overflow-hidden ${
           isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="px-6 pb-6 text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/50 pt-4">
+        <div className="px-5 pb-5 text-sm text-zinc-500 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800 pt-4 leading-relaxed [&_p]:m-0">
           {content}
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
