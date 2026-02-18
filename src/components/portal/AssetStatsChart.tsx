@@ -38,9 +38,9 @@ export const AssetStatsChart: React.FC<AssetStatsChartProps> = ({ assets }) => {
       case 'In Review':
         return '#f97316'; // orange-500
       case 'Draft':
-        return '#94a3b8'; // slate-400
+        return '#94a3b8'; // zinc-400
       default:
-        return '#cbd5e1'; // slate-300
+        return '#cbd5e1'; // zinc-300
     }
   }
 
@@ -95,8 +95,8 @@ export const AssetStatsChart: React.FC<AssetStatsChartProps> = ({ assets }) => {
   }, [stats]);
 
   return (
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full flex flex-col">
-      <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-6">Asset Distribution</h3>
+    <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 h-full flex flex-col">
+      <h3 className="font-bold text-lg text-zinc-900 dark:text-white mb-6">Asset Distribution</h3>
 
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
         {/* Chart */}
@@ -111,15 +111,15 @@ export const AssetStatsChart: React.FC<AssetStatsChartProps> = ({ assets }) => {
                 fill="none"
                 stroke="#e2e8f0"
                 strokeWidth="0.4"
-                className="dark:stroke-slate-700"
+                className="dark:stroke-zinc-800"
               />
             )}
             {slices}
           </svg>
           {/* Center Text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</span>
-            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+            <span className="text-3xl font-bold text-zinc-900 dark:text-white">{stats.total}</span>
+            <span className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">
               Total
             </span>
           </div>
@@ -131,20 +131,20 @@ export const AssetStatsChart: React.FC<AssetStatsChartProps> = ({ assets }) => {
             <div key={item.name} className="flex items-center justify-between group">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-                <span className="text-sm text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                <span className="text-sm text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                   {item.name}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                <span className="text-sm font-bold text-zinc-900 dark:text-white">
                   {item.value}
                 </span>
-                <span className="text-xs text-slate-400">({Math.round(item.percentage)}%)</span>
+                <span className="text-xs text-zinc-400">({Math.round(item.percentage)}%)</span>
               </div>
             </div>
           ))}
           {stats.total === 0 && (
-            <div className="text-center text-slate-400 text-sm py-2">No assets found</div>
+            <div className="text-center text-zinc-400 text-sm py-2">No assets found</div>
           )}
         </div>
       </div>

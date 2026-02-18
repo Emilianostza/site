@@ -58,15 +58,15 @@ export const ActivityFeed: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full">
+    <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 h-full">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Activity</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Recent Activity</h3>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             Team updates and project progress
           </p>
         </div>
-        <div className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+        <div className="text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
           {activities.length} updates
         </div>
       </div>
@@ -75,13 +75,13 @@ export const ActivityFeed: React.FC = () => {
         {activities.map((activity, index) => (
           <div
             key={activity.id}
-            className={`flex flex-col md:flex-row gap-3 md:gap-4 p-3 md:p-4 rounded-lg border transition-colors ${activity.bgColor} border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 ${
+            className={`flex flex-col md:flex-row gap-3 md:gap-4 p-3 md:p-4 rounded-lg border transition-colors ${activity.bgColor} border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 ${
               activity.actionable ? 'ring-1 ring-yellow-400/50' : ''
             }`}
           >
             {/* Timeline connector */}
             {index < activities.length - 1 && (
-              <div className="absolute left-[31px] top-full h-2 w-0.5 bg-slate-200 dark:bg-slate-600 -z-10" />
+              <div className="absolute left-[31px] top-full h-2 w-0.5 bg-zinc-200 dark:bg-zinc-700 -z-10" />
             )}
 
             {/* Actor Avatar */}
@@ -95,7 +95,7 @@ export const ActivityFeed: React.FC = () => {
             <div className="flex-1 min-w-0 md:order-none order-1">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 md:gap-2 mb-1">
                 <div className="flex flex-wrap items-center gap-1 md:gap-2">
-                  <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                  <span className="font-semibold text-zinc-900 dark:text-white text-sm">
                     {activity.actor.name}
                   </span>
                   <span
@@ -110,12 +110,12 @@ export const ActivityFeed: React.FC = () => {
                   </div>
                 )}
               </div>
-              <p className="text-sm text-slate-700 dark:text-slate-300 leading-snug">
+              <p className="text-sm text-zinc-800 dark:text-zinc-300 leading-snug">
                 {activity.message}
               </p>
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-2 mt-2">
-                <p className="text-xs text-slate-500 dark:text-slate-400">{activity.detail}</p>
-                <span className="text-xs text-slate-400 dark:text-slate-500 md:whitespace-nowrap">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">{activity.detail}</p>
+                <span className="text-xs text-zinc-400 dark:text-zinc-500 md:whitespace-nowrap">
                   {activity.time}
                 </span>
               </div>
@@ -131,7 +131,7 @@ export const ActivityFeed: React.FC = () => {
         ))}
       </div>
 
-      <button className="mt-6 w-full py-2 px-3 text-center text-sm font-medium text-brand-600 dark:text-brand-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg transition-colors border border-slate-200 dark:border-slate-700">
+      <button className="mt-6 w-full py-2 px-3 text-center text-sm font-medium text-brand-600 dark:text-brand-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors border border-zinc-200 dark:border-zinc-800">
         View full activity log →
       </button>
     </div>

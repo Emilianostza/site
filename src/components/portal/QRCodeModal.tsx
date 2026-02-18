@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { X, Download, Copy, ExternalLink, QrCode } from 'lucide-react';
 import { Asset } from '@/types';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface QRCodeModalProps {
   isOpen: boolean;
@@ -9,6 +10,11 @@ interface QRCodeModalProps {
 }
 
 export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, asset }) => {
+  useEscapeKey(
+    useCallback(() => onClose(), [onClose]),
+    isOpen
+  );
+
   if (!isOpen || !asset) return null;
 
   // Generate the URL for the asset (Scene Dashboard)
@@ -40,32 +46,41 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, asset
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="qr-modal-title"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-sm shadow-2xl border border-zinc-200 dark:border-zinc-800 animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-700">
+        <div className="flex items-center justify-between p-6 border-b border-zinc-100 dark:border-zinc-800">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-brand-50 dark:bg-brand-900/20 rounded-lg">
-              <QrCode className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+              <QrCode className="w-5 h-5 text-brand-600 dark:text-brand-400" aria-hidden="true" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white">Scan QR Code</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Share this scene instantly
-              </p>
+              <h3 id="qr-modal-title" className="font-bold text-zinc-900 dark:text-white">
+                Scan QR Code
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">Share this scene instantly</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 transition-colors"
+            aria-label="Close"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus:outline-none"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
         {/* Body */}
         <div className="p-6 flex flex-col items-center">
-          <div className="bg-white p-4 rounded-xl shadow-inner border border-slate-100">
+          <div className="bg-white p-4 rounded-xl shadow-inner border border-zinc-100">
             <img
               src={qrCodeUrl}
               alt={`QR Code for ${asset.name}`}
@@ -73,29 +88,29 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, asset
             />
           </div>
 
-          <h4 className="mt-4 font-bold text-slate-900 dark:text-white text-lg">{asset.name}</h4>
-          <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">
+          <h4 className="mt-4 font-bold text-zinc-900 dark:text-white text-lg">{asset.name}</h4>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center mb-6">
             Scan to view 3D scene on mobile
           </p>
 
           <div className="flex gap-3 w-full">
             <button
               onClick={handleDownload}
-              className="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-lg font-bold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-sm"
+              className="flex-1 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 py-2.5 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-700 focus:outline-none"
             >
-              <Download className="w-4 h-4" /> Download
+              <Download className="w-4 h-4" aria-hidden="true" /> Download
             </button>
             <button
               onClick={handleCopyLink}
-              className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 py-2.5 rounded-lg font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2 text-sm"
+              className="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300 py-2.5 rounded-lg font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-400 focus:outline-none"
             >
-              <Copy className="w-4 h-4" /> Copy Link
+              <Copy className="w-4 h-4" aria-hidden="true" /> Copy Link
             </button>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-b-2xl border-t border-slate-100 dark:border-slate-700 text-center">
+        <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-b-2xl border-t border-zinc-100 dark:border-zinc-800 text-center">
           <a
             href={assetUrl}
             target="_blank"

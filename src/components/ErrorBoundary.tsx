@@ -1,107 +1,64 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { AlertTriangle, RotateCcw } from 'lucide-react';
 
-interface Props {
-  children: ReactNode;
-}
-
-interface State {
+interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
 
-class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-    error: null,
-  };
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  /** Optional custom fallback UI */
+  fallback?: React.ReactNode;
+}
 
-  static getDerivedStateFromError(error: Error): State {
-    return {
-      hasError: true,
-      error,
-    };
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
-
-    // Track error to analytics
-    this.trackErrorToAnalytics(error, errorInfo);
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
   }
 
-  private trackErrorToAnalytics(error: Error, errorInfo: ErrorInfo) {
-    try {
-      fetch('/api/analytics/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventType: 'error_occurred',
-          timestamp: Date.now(),
-          properties: {
-            error_type: 'component_error',
-            error_message: error.message,
-            stack: error.stack,
-            component_stack: errorInfo.componentStack,
-            url: window.location.href,
-            user_agent: navigator.userAgent,
-          },
-        }),
-      }).catch((err) => {
-        console.warn('[ErrorBoundary] Failed to track error to analytics:', err);
-      });
-    } catch (err) {
-      console.warn('[ErrorBoundary] Error tracking failed:', err);
-    }
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('[ErrorBoundary]', error, info.componentStack);
   }
 
   handleReset = () => {
-    this.setState({
-      hasError: false,
-      error: null,
-    });
+    this.setState({ hasError: false, error: null });
   };
 
   render() {
     if (this.state.hasError) {
+      if (this.props.fallback) return this.props.fallback;
+
       return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
-          <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 text-center">
-            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
-            </div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-              Oops! Something went wrong
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400 mb-6">
-              We encountered an unexpected error. Please try refreshing the page or contact support
-              if the problem persists.
-            </p>
-            {this.state.error && (
-              <details className="mb-6 text-left">
-                <summary className="cursor-pointer text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-                  Error details
-                </summary>
-                <pre className="mt-2 p-4 bg-slate-100 dark:bg-slate-900 rounded-lg text-xs overflow-auto text-red-600 dark:text-red-400">
-                  {this.state.error.toString()}
-                </pre>
-              </details>
-            )}
-            <div className="flex gap-4">
-              <button
-                onClick={this.handleReset}
-                className="flex-1 px-6 py-3 bg-brand-600 text-white rounded-full font-semibold hover:bg-brand-500 transition-colors"
-              >
-                Try Again
-              </button>
-              <button
-                onClick={() => (window.location.href = '/')}
-                className="flex-1 px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-full font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
-              >
-                Go Home
-              </button>
-            </div>
+        <div
+          role="alert"
+          className="min-h-[400px] flex flex-col items-center justify-center gap-4 p-8 text-center"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center">
+            <AlertTriangle className="w-7 h-7 text-red-500" aria-hidden="true" />
           </div>
+
+          <div className="max-w-sm">
+            <h2 className="text-lg font-bold text-zinc-900 dark:text-white mb-1">
+              Something went wrong
+            </h2>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {this.state.error?.message || 'An unexpected error occurred.'}
+            </p>
+          </div>
+
+          <button
+            onClick={this.handleReset}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-90 transition-opacity focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-700 focus:outline-none"
+          >
+            <RotateCcw className="w-4 h-4" aria-hidden="true" />
+            Try again
+          </button>
         </div>
       );
     }
@@ -109,5 +66,3 @@ class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-export default ErrorBoundary;

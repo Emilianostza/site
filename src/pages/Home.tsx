@@ -3,8 +3,16 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Utensils, Landmark, ShoppingBag } from 'lucide-react';
 import { HOW_IT_WORKS_STEPS } from '@/constants';
 import Accordion from '@/components/Accordion';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const Home: React.FC = () => {
+  const industriesRef = useScrollReveal<HTMLDivElement>();
+  const industriesGridRef = useScrollReveal<HTMLDivElement>();
+  const howItWorksRef = useScrollReveal<HTMLDivElement>();
+  const howItWorksGridRef = useScrollReveal<HTMLDivElement>();
+  const faqRef = useScrollReveal<HTMLDivElement>();
+  const trustRef = useScrollReveal<HTMLDivElement>();
+
   return (
     <div
       {...(import.meta.env.DEV && {
@@ -132,7 +140,7 @@ const Home: React.FC = () => {
       {/* Industries */}
       <section className="py-24 bg-white dark:bg-zinc-950 relative">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-14">
+          <div ref={industriesRef} className="reveal text-center mb-14">
             <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
               Industries
             </p>
@@ -145,7 +153,10 @@ const Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            ref={industriesGridRef}
+            className="reveal-stagger grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
             {[
               {
                 icon: Utensils,
@@ -219,7 +230,7 @@ const Home: React.FC = () => {
 
         <div className="relative container mx-auto px-4 max-w-6xl">
           {/* Header */}
-          <div className="text-center mb-20">
+          <div ref={howItWorksRef} className="reveal text-center mb-20">
             <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20">
               The Process
             </p>
@@ -233,7 +244,10 @@ const Home: React.FC = () => {
           </div>
 
           {/* Steps grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+          <div
+            ref={howItWorksGridRef}
+            className="reveal-stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative"
+          >
             {/* Connecting line — desktop only */}
             <div className="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent pointer-events-none" />
 
@@ -286,7 +300,7 @@ const Home: React.FC = () => {
       {/* FAQ Section */}
       <section className="py-24 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
         <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-12">
+          <div ref={faqRef} className="reveal text-center mb-12">
             <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
               FAQ
             </p>
@@ -352,43 +366,50 @@ const Home: React.FC = () => {
       {/* Trust / Social Proof */}
       <section className="py-14 bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-800">
         <div className="container mx-auto px-4 max-w-5xl">
-          <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-8">
-            Trusted by industry leaders across 3 continents
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              {
-                name: 'Louvre',
-                suffix: 'Digital',
-                style: 'font-serif',
-                suffixColor: 'text-brand-500',
-              },
-              {
-                name: 'NIKE',
-                suffix: 'LAB',
-                style: 'tracking-tight italic',
-                suffixColor: 'text-zinc-400',
-              },
-              { name: 'UBER', suffix: 'EATS', style: 'font-mono', suffixColor: 'text-emerald-500' },
-              {
-                name: 'Shopify',
-                suffix: 'Plus',
-                style: 'font-light',
-                suffixColor: 'text-zinc-500',
-              },
-            ].map((logo, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-center py-4 opacity-40 hover:opacity-100 transition-opacity duration-300"
-              >
-                <span
-                  className={`text-lg md:text-xl font-bold text-zinc-700 dark:text-zinc-400 ${logo.style}`}
+          <div ref={trustRef} className="reveal">
+            <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-8">
+              Trusted by industry leaders across 3 continents
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                {
+                  name: 'Louvre',
+                  suffix: 'Digital',
+                  style: 'font-serif',
+                  suffixColor: 'text-brand-500',
+                },
+                {
+                  name: 'NIKE',
+                  suffix: 'LAB',
+                  style: 'tracking-tight italic',
+                  suffixColor: 'text-zinc-400',
+                },
+                {
+                  name: 'UBER',
+                  suffix: 'EATS',
+                  style: 'font-mono',
+                  suffixColor: 'text-emerald-500',
+                },
+                {
+                  name: 'Shopify',
+                  suffix: 'Plus',
+                  style: 'font-light',
+                  suffixColor: 'text-zinc-500',
+                },
+              ].map((logo, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-center py-4 opacity-40 hover:opacity-100 transition-opacity duration-300"
                 >
-                  {logo.name}
-                  <span className={logo.suffixColor}>{logo.suffix}</span>
-                </span>
-              </div>
-            ))}
+                  <span
+                    className={`text-lg md:text-xl font-bold text-zinc-700 dark:text-zinc-400 ${logo.style}`}
+                  >
+                    {logo.name}
+                    <span className={logo.suffixColor}>{logo.suffix}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

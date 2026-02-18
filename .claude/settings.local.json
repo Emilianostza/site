@@ -12,7 +12,8 @@
       "Bash(pkill:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(npm run test:run:*)"
+      "Bash(npm run test:run:*)",
+      "Bash(powershell -Command:*)"
     ]
   }
 }
