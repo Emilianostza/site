@@ -79,14 +79,10 @@ function validateEnv(): EnvConfig {
   }
 
   // Storage bucket should be configured
+  // Downgrade to warning in all environments to prevent production blocking
   if (storageBucket === 's3.example.com/managed-capture') {
-    const warning = isDev ? 'warn' : 'error';
-    // Only fail in production if we are NOT using mock data
-    if (warning === 'error' && !useMockData) {
-      errors.push('VITE_STORAGE_BUCKET must be configured in production');
-    } else if (isDev) {
-      console.warn('[Config] VITE_STORAGE_BUCKET using default placeholder');
-    }
+    const message = '[Config] VITE_STORAGE_BUCKET using default placeholder (s3.example.com)';
+    console.warn(message);
   }
 
   // Supabase must be configured if not using mock data
@@ -107,8 +103,11 @@ function validateEnv(): EnvConfig {
   // Fail fast in development if there are errors
   if (errors.length > 0) {
     const message = `❌ Environment Configuration Errors:\n${errors.map((e) => `  • ${e}`).join('\n')}`;
+
+    // Log error in all environments
+    console.error(message);
+
     if (isDev) {
-      console.error(message);
       // In dev, show alert so user notices
       if (typeof window !== 'undefined') {
         setTimeout(() => {
@@ -116,7 +115,11 @@ function validateEnv(): EnvConfig {
         }, 0);
       }
     } else {
-      throw new Error(message);
+      // In production, log but do NOT throw to prevent blank/black screen
+      // This allows the app to attempt loading in a degraded state
+      console.warn(
+        '⚠️ Application starting with configuration errors. Some features may be broken.'
+      );
     }
   }
 
