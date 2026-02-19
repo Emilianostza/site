@@ -21,8 +21,8 @@ const PROJECTS: Project[] = [
   },
   {
     id: 'CUST-003',
-    name: 'Ancient Egypt Exhibit',
-    client: 'History Museum',
+    name: 'Heritage Object Shoot',
+    client: 'Cultural Heritage Center',
     status: ProjectStatus.Pending,
     items: 8,
     type: 'standard',

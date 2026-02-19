@@ -1,18 +1,9 @@
 import React from 'react';
 import { Industry, IndustryConfig } from '@/types';
-import { ShoppingBag, Box, Scan, Globe } from 'lucide-react';
+import { Box, Scan, Globe, ShoppingBag } from 'lucide-react';
 
 export const NAV_ITEMS = [
-  {
-    label: 'Industries',
-    path: '/industries',
-    children: [
-      { label: 'Restaurants', path: '/industries/restaurants' },
-      { label: 'Museums', path: '/industries/museums' },
-      { label: 'E-commerce', path: '/industries/ecommerce' },
-    ],
-  },
-  { label: 'Gallery', path: '/gallery' },
+  { label: 'Restaurants', path: '/industries/restaurants' },
   { label: 'How it Works', path: '/how-it-works' },
   { label: 'Pricing', path: '/pricing' },
 ];
@@ -35,41 +26,25 @@ export const INDUSTRIES: Record<string, IndustryConfig> = {
       'Generate QR codes',
       'Download delivered bundles',
     ],
-  },
-  museums: {
-    id: 'museums',
-    title: 'Digitize collections with managed capture',
-    subtitle: 'Expert handling, access controls, and dedicated staff for sensitive artifacts.',
-    heroImage: 'https://picsum.photos/seed/museum_hero/1200/600',
-    demoImage: 'https://picsum.photos/seed/vase_3d/800/600',
-    outcomes: [
-      'Preserve fragile artifacts digitally',
-      'Expand accessibility to global audiences',
-      'Strict access controls (Public, Unlisted, Restricted)',
-    ],
-    permissions: [
-      'Edit metadata (Accession ID)',
-      'Approve/reject with comments',
-      'Share links with password/expiry',
-      'Downloads OFF by default',
-    ],
-  },
-  ecommerce: {
-    id: 'ecommerce',
-    title: 'Managed 3D capture for high-conversion product pages',
-    subtitle: 'Fast-loading 3D models that reduce returns and increase engagement.',
-    heroImage: 'https://picsum.photos/seed/shoe_hero/1200/600',
-    demoImage: 'https://picsum.photos/seed/sneaker_3d/800/600',
-    outcomes: [
-      'Boost conversion rates by up to 40%',
-      'Reduce return rates with accurate visualization',
-      'AR-ready formats for iOS and Android',
-    ],
-    permissions: [
-      'Edit SKU/Metadata',
-      'Download exports (GLB/USDZ)',
-      'Configure embeds',
-      'Campaign QR codes',
+    samples: [
+      { name: 'Signature Burger', thumb: 'https://picsum.photos/seed/burger/600/500', tag: 'Food' },
+      { name: 'Truffle Pasta', thumb: 'https://picsum.photos/seed/pasta/600/500', tag: 'Food' },
+      {
+        name: 'Espresso Machine',
+        thumb: 'https://picsum.photos/seed/espresso/600/500',
+        tag: 'Product',
+      },
+      { name: 'Dessert Platter', thumb: 'https://picsum.photos/seed/dessert/600/500', tag: 'Food' },
+      {
+        name: 'Wine Bottle',
+        thumb: 'https://picsum.photos/seed/winebottle/600/500',
+        tag: 'Product',
+      },
+      {
+        name: 'Table Setting',
+        thumb: 'https://picsum.photos/seed/tablesetting/600/500',
+        tag: 'Scene',
+      },
     ],
   },
 };

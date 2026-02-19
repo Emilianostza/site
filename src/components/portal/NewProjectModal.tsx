@@ -179,7 +179,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
                 <input
                   type="text"
                   className="w-full p-3 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400"
-                  placeholder="e.g. Retail, Fashion, Restaurant, Museum"
+                  placeholder="e.g. Restaurant, Fashion, General"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                 />

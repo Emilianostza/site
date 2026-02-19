@@ -28,6 +28,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Security = lazy(() => import('./pages/Security'));
 const ARViewer = lazy(() => import('./pages/viewer/ARViewer'));
+const RestaurantPricing = lazy(() => import('./pages/RestaurantPricing'));
 
 // Loading component
 const LoadingFallback: React.FC = () => (
@@ -39,7 +40,6 @@ const LoadingFallback: React.FC = () => (
   </div>
 );
 
-import { CodeInspector } from '@/components/devtools/CodeInspector';
 import { SEO } from '@/components/common/SEO';
 
 const AppContent: React.FC = () => {
@@ -50,7 +50,7 @@ const AppContent: React.FC = () => {
       <Router>
         <SEO title="Home" />
         <ScrollToTop />
-        {import.meta.env.DEV && <CodeInspector />}
+
         <Layout>
           <ErrorBoundary>
             <Suspense fallback={<LoadingFallback />}>
@@ -61,7 +61,8 @@ const AppContent: React.FC = () => {
                 <Route path="/industries/:type" element={<Industry />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/pricing" element={<RestaurantPricing />} />
+                <Route path="/pricing/platform" element={<Pricing />} />
                 <Route path="/request" element={<RequestForm />} />
                 <Route path="/security" element={<Security />} />
                 <Route path="/privacy" element={<Privacy />} />
@@ -95,6 +96,7 @@ const AppContent: React.FC = () => {
                         PortalRole.Approver,
                         PortalRole.Admin,
                         PortalRole.SuperAdmin,
+                        PortalRole.CustomerOwner,
                       ]}
                     >
                       <SceneDashboard />

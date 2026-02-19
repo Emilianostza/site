@@ -38,7 +38,6 @@ const Login: React.FC = () => {
     { email: 'tech@company.com', role: 'employee', name: 'Technician' },
     { email: 'emilianostza@gmail.com', role: 'employee', name: 'Emiliano (Admin)' },
     { email: 'client@bistro.com', role: 'customer', name: 'Restaurant Owner' },
-    { email: 'client@museum.com', role: 'customer', name: 'Museum Curator' },
     { email: 'emilianostza+customer@gmail.com', role: 'customer', name: 'Emiliano (Customer)' },
   ];
 
@@ -164,7 +163,10 @@ const Login: React.FC = () => {
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setEmail(user.email)}
+                    onClick={() => {
+                      setEmail(user.email);
+                      setPassword('demo');
+                    }}
                     disabled={loading}
                     className="w-full text-left p-2 text-sm rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-brand-400 dark:hover:border-brand-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
@@ -174,7 +176,7 @@ const Login: React.FC = () => {
                 ))}
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
-              Demo users for testing (backend required)
+              Click any user to auto-fill credentials, then press Sign In
             </p>
           </div>
 

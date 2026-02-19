@@ -82,7 +82,7 @@ export interface Project {
   // Basic
   name: string;
   description?: string;
-  industry: string; // restaurants, museums, ecommerce, etc.
+  industry: string; // e.g. restaurants, general, etc.
 
   // Status & Timeline
   status: ProjectStatus;

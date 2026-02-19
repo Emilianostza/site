@@ -4,12 +4,12 @@ import {
   ArrowLeft,
   Box,
   Search,
-  Utensils,
   QrCode,
   AlertCircle,
   Plus,
   Maximize2,
   Minimize2,
+  Layers,
 } from 'lucide-react';
 import { Asset } from '@/types';
 import { QRCodeModal } from '@/components/portal/QRCodeModal';
@@ -17,26 +17,26 @@ import { EmbeddedModelEditor } from '@/components/editor/EmbeddedModelEditor';
 import { AssetsProvider } from '@/services/dataProvider';
 import { NewCaptureWizard } from '@/components/editor/NewCaptureWizard';
 
-interface MenuItem {
+interface SceneItem {
   id: string;
   name: string;
   description: string;
-  price: string;
+  type: string;
   thumb: string;
   modelUrl: string;
   category: string;
-  isMain: boolean;
+  hasModel: boolean;
 }
 
 const SceneDashboard: React.FC = () => {
   const { assetId } = useParams<{ assetId: string }>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState('Mains');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [selectedAssetForQR, setSelectedAssetForQR] = useState<Asset | null>(null);
 
   // Split Screen State
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<SceneItem | null>(null);
   const [isEditorExpanded, setIsEditorExpanded] = useState(false);
 
   // Simulate loading
@@ -53,48 +53,18 @@ const SceneDashboard: React.FC = () => {
     }
   }, []);
 
-  const categories = ['Starters', 'Mains', 'Desserts', 'Drinks', 'Sides'];
+  const categories = ['All', 'Models', 'Environments', 'Props', 'Animations'];
 
-  const [menuItems, setMenuItems] = useState([
+  const [sceneItems, setSceneItems] = useState<SceneItem[]>([
     {
-      id: 'item-1',
-      name: 'The Signature Burger',
-      description: 'Juicy beef patty, melted cheddar, caramelized onions, and our secret sauce.',
-      price: '$18.00',
-      thumb: 'https://picsum.photos/seed/burger/200/200',
+      id: 'asset-1',
+      name: 'Astronaut Figure',
+      description: 'High-fidelity humanoid model with full material set.',
+      type: 'Character',
+      thumb: 'https://modelviewer.dev/shared-assets/models/Astronaut.png',
       modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-      category: 'Mains',
-      isMain: true,
-    },
-    {
-      id: 'item-2',
-      name: 'Truffle Fries',
-      description: 'Crispy golden fries tossed with truffle oil and parmesan cheese.',
-      price: '$8.50',
-      thumb: 'https://picsum.photos/seed/fries/200/200',
-      modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-      category: 'Sides',
-      isMain: false,
-    },
-    {
-      id: 'item-3',
-      name: 'Classic Milkshake',
-      description: 'Creamy vanilla milkshake topped with whipped cream and a cherry.',
-      price: '$6.00',
-      thumb: 'https://picsum.photos/seed/shake/200/200',
-      modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-      category: 'Drinks',
-      isMain: false,
-    },
-    {
-      id: 'item-4',
-      name: 'Caesar Salad',
-      description: 'Fresh romaine lettuce, croutons, parmesan, and signature dressing.',
-      price: '$12.00',
-      thumb: 'https://picsum.photos/seed/salad/200/200',
-      modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-      category: 'Starters',
-      isMain: false,
+      category: 'Models',
+      hasModel: true,
     },
   ]);
 
@@ -103,15 +73,15 @@ const SceneDashboard: React.FC = () => {
     const loadAsset = async () => {
       // Early return for 'new' or no ID
       if (!assetId || assetId === 'new') {
-        if (!selectedItem && menuItems.length > 0) {
-          setSelectedItem(menuItems[0]);
+        if (!selectedItem && sceneItems.length > 0) {
+          setSelectedItem(sceneItems[0]);
         }
         return;
       }
 
       try {
         // Check if already in list
-        const existing = menuItems.find((i) => i.id === assetId);
+        const existing = sceneItems.find((i) => i.id === assetId);
         if (existing) {
           setSelectedItem(existing);
           return;
@@ -120,19 +90,19 @@ const SceneDashboard: React.FC = () => {
         // Fetch from provider
         const asset = await AssetsProvider.get(assetId);
         if (asset) {
-          const newItem = {
+          const newItem: SceneItem = {
             id: asset.id,
             name: asset.name,
             description: asset.type || 'Imported Asset',
-            price: '--',
+            type: asset.type || 'Model',
             thumb: (asset as { thumb?: string }).thumb || '',
-            modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb', // Fallback for mock
-            category: 'Mains', // Defaulting to Mains for now
-            isMain: true,
+            modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
+            category: 'Models',
+            hasModel: true,
           };
-          setMenuItems((prev) => [...prev, newItem]);
+          setSceneItems((prev) => [...prev, newItem]);
           setSelectedItem(newItem);
-          setActiveCategory('Mains');
+          setActiveCategory('Models');
         }
       } catch (err) {
         console.error('Failed to fetch asset', err);
@@ -141,17 +111,22 @@ const SceneDashboard: React.FC = () => {
     loadAsset();
   }, [assetId]);
 
+  const filteredItems =
+    activeCategory === 'All'
+      ? sceneItems
+      : sceneItems.filter((item) => item.category === activeCategory);
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-950 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-stone-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
         <div className="bg-red-900/20 border border-red-700 rounded-lg p-6 max-w-md">
           <div className="flex gap-3 mb-4">
             <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -172,35 +147,38 @@ const SceneDashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-stone-950 text-stone-200 font-sans flex flex-col overflow-hidden">
-      {/* Header / Navigation Overlay */}
-      <nav className="w-full z-50 bg-stone-900 border-b border-stone-800 flex-shrink-0 h-16 flex items-center justify-between px-4">
+    <div className="h-screen bg-zinc-950 text-zinc-200 font-sans flex flex-col overflow-hidden">
+      {/* Header */}
+      <nav className="w-full z-50 bg-zinc-900 border-b border-zinc-800 flex-shrink-0 h-16 flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <Link
             to="/app/dashboard"
-            className="p-2 -ml-2 hover:bg-stone-800 rounded-full text-stone-400 hover:text-white transition-colors"
+            className="p-2 -ml-2 hover:bg-zinc-800 rounded-full text-zinc-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
 
-          <div className="font-serif font-bold text-lg tracking-wide text-white">Menu Editor</div>
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-brand-400" />
+            <div className="font-semibold text-base text-white">Scene Editor</div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-stone-400 bg-stone-950 px-3 py-1.5 rounded-lg border border-stone-800">
-          <Utensils className="w-3 h-3 text-amber-500" />
-          <span>TableQR Demo</span>
-          <span className="text-stone-600">|</span>
-          <span className="text-green-400">Live</span>
+        <div className="flex items-center gap-3 text-xs text-zinc-400 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-zinc-300">
+            {assetId && assetId !== 'new' ? `Asset ${assetId}` : 'Preview'}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-stone-800 rounded-full text-stone-400 hover:text-white transition-colors">
+          <button className="p-2 hover:bg-zinc-800 rounded-full text-zinc-400 hover:text-white transition-colors">
             <Search className="w-5 h-5" />
           </button>
-          <div className="h-6 w-px bg-stone-800 mx-2"></div>
+          <div className="h-6 w-px bg-zinc-800 mx-2"></div>
           <button
             onClick={() => setIsEditorExpanded(!isEditorExpanded)}
-            className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isEditorExpanded ? 'bg-amber-600 text-white' : 'bg-stone-800 text-stone-400 hover:text-white'}`}
+            className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isEditorExpanded ? 'bg-brand-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}
           >
             {isEditorExpanded ? (
               <Minimize2 className="w-3 h-3" />
@@ -217,23 +195,23 @@ const SceneDashboard: React.FC = () => {
           <NewCaptureWizard />
         ) : (
           <>
-            {/* LEFT PANEL: Menu List */}
+            {/* LEFT PANEL: Asset List */}
             <div
               className={`
-                        bg-stone-950 border-r border-stone-800 transition-all duration-300 flex flex-col
-                        ${isEditorExpanded ? 'w-0 opacity-0 overflow-hidden' : 'w-full md:w-80 lg:w-96'} 
-                    `}
+                bg-zinc-950 border-r border-zinc-800 transition-all duration-300 flex flex-col
+                ${isEditorExpanded ? 'w-0 opacity-0 overflow-hidden' : 'w-full md:w-80 lg:w-96'}
+              `}
             >
               {/* Categories */}
-              <div className="p-2 border-b border-stone-800 overflow-x-auto no-scrollbar flex gap-2">
+              <div className="p-2 border-b border-zinc-800 overflow-x-auto no-scrollbar flex gap-2">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                       activeCategory === cat
-                        ? 'bg-amber-600 text-white'
-                        : 'bg-stone-900 text-stone-400 hover:text-white hover:bg-stone-800'
+                        ? 'bg-brand-600 text-white'
+                        : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
                     }`}
                   >
                     {cat}
@@ -243,45 +221,56 @@ const SceneDashboard: React.FC = () => {
 
               {/* Item List */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {menuItems
-                  .filter((item) => item.category === activeCategory)
-                  .map((item) => (
+                {filteredItems.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <Box className="w-10 h-10 text-zinc-700 mb-3" />
+                    <p className="text-sm text-zinc-500 font-medium">No assets in this category</p>
+                    <p className="text-xs text-zinc-600 mt-1">Add a scene asset to get started</p>
+                  </div>
+                ) : (
+                  filteredItems.map((item) => (
                     <div
                       key={item.id}
                       onClick={() => setSelectedItem(item)}
                       className={`
-                                    group flex items-center gap-3 p-2 rounded-xl border cursor-pointer transition-all duration-200
-                                    ${
-                                      selectedItem?.id === item.id
-                                        ? 'bg-stone-900 border-amber-600 ring-1 ring-amber-600/50'
-                                        : 'bg-stone-900/50 border-stone-800 hover:border-stone-700 hover:bg-stone-900'
-                                    }
-                                `}
+                        group flex items-center gap-3 p-2 rounded-xl border cursor-pointer transition-all duration-200
+                        ${
+                          selectedItem?.id === item.id
+                            ? 'bg-zinc-900 border-brand-600 ring-1 ring-brand-600/50'
+                            : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900'
+                        }
+                      `}
                     >
-                      <div className="w-12 h-12 rounded-lg bg-stone-800 overflow-hidden flex-shrink-0 relative">
-                        <img
-                          src={item.thumb}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="w-12 h-12 rounded-lg bg-zinc-800 overflow-hidden flex-shrink-0 relative">
+                        {item.thumb ? (
+                          <img
+                            src={item.thumb}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Box className="w-5 h-5 text-zinc-600" />
+                          </div>
+                        )}
                         {selectedItem?.id === item.id && (
-                          <div className="absolute inset-0 bg-amber-600/20 backdrop-blur-[1px] flex items-center justify-center">
-                            <div className="w-2 h-2 bg-amber-500 rounded-full shadow-lg shadow-amber-500/50" />
+                          <div className="absolute inset-0 bg-brand-600/20 backdrop-blur-[1px] flex items-center justify-center">
+                            <div className="w-2 h-2 bg-brand-400 rounded-full shadow-lg shadow-brand-500/50" />
                           </div>
                         )}
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <h4
-                          className={`text-sm font-bold truncate ${selectedItem?.id === item.id ? 'text-white' : 'text-stone-300'}`}
+                          className={`text-sm font-bold truncate ${selectedItem?.id === item.id ? 'text-white' : 'text-zinc-300'}`}
                         >
                           {item.name}
                         </h4>
-                        <p className="text-[10px] text-stone-500 truncate">{item.description}</p>
+                        <p className="text-[10px] text-zinc-500 truncate">{item.description}</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs font-mono text-amber-500">{item.price}</span>
-                          {item.isMain && (
-                            <span className="text-[8px] bg-stone-800 text-stone-400 px-1.5 py-0.5 rounded border border-stone-700">
+                          <span className="text-[10px] text-zinc-500 font-medium">{item.type}</span>
+                          {item.hasModel && (
+                            <span className="text-[8px] bg-zinc-800 text-brand-400 px-1.5 py-0.5 rounded border border-zinc-700 font-bold tracking-wide">
                               3D
                             </span>
                           )}
@@ -298,21 +287,22 @@ const SceneDashboard: React.FC = () => {
                             status: 'Published',
                           });
                         }}
-                        className="p-2 rounded-lg hover:bg-stone-800 text-stone-600 hover:text-white transition-colors"
+                        className="p-2 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-white transition-colors"
                       >
                         <QrCode className="w-4 h-4" />
                       </button>
                     </div>
-                  ))}
+                  ))
+                )}
 
-                <button className="w-full py-3 border border-dashed border-stone-800 rounded-xl text-stone-500 hover:text-white hover:bg-stone-900/50 hover:border-stone-700 transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wide">
-                  <Plus className="w-4 h-4" /> Add Item
+                <button className="w-full py-3 border border-dashed border-zinc-800 rounded-xl text-zinc-500 hover:text-white hover:bg-zinc-900/50 hover:border-zinc-700 transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wide">
+                  <Plus className="w-4 h-4" /> Add Scene Asset
                 </button>
               </div>
             </div>
 
             {/* RIGHT PANEL: Editor */}
-            <div className="flex-1 bg-stone-950 relative overflow-hidden flex flex-col">
+            <div className="flex-1 bg-zinc-950 relative overflow-hidden flex flex-col">
               {selectedItem ? (
                 <EmbeddedModelEditor
                   key={selectedItem.id}
@@ -320,9 +310,12 @@ const SceneDashboard: React.FC = () => {
                   initialData={selectedItem}
                 />
               ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-stone-500">
+                <div className="flex-1 flex flex-col items-center justify-center text-zinc-500">
                   <Box className="w-16 h-16 mb-4 opacity-20" />
-                  <p>Select an item to edit 3D scene</p>
+                  <p className="text-sm font-medium">Select an asset to open the editor</p>
+                  <p className="text-xs text-zinc-600 mt-1">
+                    Choose a scene asset from the panel on the left
+                  </p>
                 </div>
               )}
             </div>

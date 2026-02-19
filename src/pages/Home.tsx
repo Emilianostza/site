@@ -1,13 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Utensils, Landmark, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Store, MapPin, Sparkles, Smartphone } from 'lucide-react';
 import { HOW_IT_WORKS_STEPS } from '@/constants';
 import Accordion from '@/components/Accordion';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const Home: React.FC = () => {
-  const industriesRef = useScrollReveal<HTMLDivElement>();
-  const industriesGridRef = useScrollReveal<HTMLDivElement>();
   const howItWorksRef = useScrollReveal<HTMLDivElement>();
   const howItWorksGridRef = useScrollReveal<HTMLDivElement>();
   const faqRef = useScrollReveal<HTMLDivElement>();
@@ -72,10 +70,10 @@ const Home: React.FC = () => {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                to="/gallery"
+                to="/industries/restaurants"
                 className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-semibold text-base transition-all duration-200 backdrop-blur-sm"
               >
-                View 3D Gallery
+                See Examples
                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all duration-200" />
               </Link>
             </div>
@@ -135,90 +133,6 @@ const Home: React.FC = () => {
 
         {/* Bottom fade into next section */}
         <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-white dark:from-zinc-950 to-transparent pointer-events-none" />
-      </section>
-
-      {/* Industries */}
-      <section className="py-24 bg-white dark:bg-zinc-950 relative">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div ref={industriesRef} className="reveal text-center mb-14">
-            <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
-              Industries
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-4">
-              Built for your vertical
-            </h2>
-            <p className="text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto">
-              Specialized capture workflows, access controls, and deliverables — designed for each
-              industry.
-            </p>
-          </div>
-
-          <div
-            ref={industriesGridRef}
-            className="reveal-stagger grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            {[
-              {
-                icon: Utensils,
-                accent: 'text-orange-500 dark:text-orange-400',
-                iconBg: 'bg-orange-50 dark:bg-orange-500/10',
-                stat: '+35% avg. order value',
-                title: 'Restaurants',
-                desc: 'Turn signature dishes into interactive 3D models for digital menus, QR table experiences, and delivery apps.',
-                link: '/industries/restaurants',
-              },
-              {
-                icon: Landmark,
-                accent: 'text-purple-500 dark:text-purple-400',
-                iconBg: 'bg-purple-50 dark:bg-purple-500/10',
-                stat: 'Archival-grade accuracy',
-                title: 'Museums',
-                desc: 'Digitize sensitive artifacts with expert handling, strict access controls, and global accessibility.',
-                link: '/industries/museums',
-              },
-              {
-                icon: ShoppingBag,
-                accent: 'text-brand-600 dark:text-brand-400',
-                iconBg: 'bg-brand-50 dark:bg-brand-500/10',
-                stat: 'Up to 40% fewer returns',
-                title: 'E-commerce',
-                desc: 'Boost conversion and cut returns with true-to-life 3D and AR-ready product pages for iOS & Android.',
-                link: '/industries/ecommerce',
-              },
-            ].map((item, i) => (
-              <Link
-                key={i}
-                to={item.link}
-                className="group relative flex flex-col p-7 rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-200 dark:hover:border-zinc-700 hover:shadow-hover transition-all duration-300"
-              >
-                {/* Stat chip */}
-                <span
-                  className={`self-start text-xs font-semibold px-2.5 py-1 rounded-full ${item.iconBg} ${item.accent} mb-5`}
-                >
-                  {item.stat}
-                </span>
-
-                <div
-                  className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center ${item.accent} mb-4 group-hover:scale-105 transition-transform duration-300`}
-                >
-                  <item.icon className="w-6 h-6" />
-                </div>
-
-                <h3 className="font-display text-lg font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed flex-1">
-                  {item.desc}
-                </p>
-
-                <div className="flex items-center gap-1.5 text-sm font-semibold text-zinc-400 dark:text-zinc-600 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors mt-5">
-                  Learn more
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* How it Works */}
@@ -363,52 +277,156 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Trust / Social Proof */}
-      <section className="py-14 bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-800">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div ref={trustRef} className="reveal">
-            <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-8">
-              Trusted by industry leaders across 3 continents
+      {/* Roadmap */}
+      <section className="py-24 bg-zinc-950 relative overflow-hidden border-t border-zinc-800">
+        <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-brand-700/20 blur-[80px] rounded-full pointer-events-none" />
+        <div className="relative container mx-auto px-4 max-w-5xl">
+          <div className="text-center mb-14">
+            <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20">
+              Roadmap
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                {
-                  name: 'Louvre',
-                  suffix: 'Digital',
-                  style: 'font-serif',
-                  suffixColor: 'text-brand-500',
-                },
-                {
-                  name: 'NIKE',
-                  suffix: 'LAB',
-                  style: 'tracking-tight italic',
-                  suffixColor: 'text-zinc-400',
-                },
-                {
-                  name: 'UBER',
-                  suffix: 'EATS',
-                  style: 'font-mono',
-                  suffixColor: 'text-emerald-500',
-                },
-                {
-                  name: 'Shopify',
-                  suffix: 'Plus',
-                  style: 'font-light',
-                  suffixColor: 'text-zinc-500',
-                },
-              ].map((logo, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-center py-4 opacity-40 hover:opacity-100 transition-opacity duration-300"
-                >
-                  <span
-                    className={`text-lg md:text-xl font-bold text-zinc-700 dark:text-zinc-400 ${logo.style}`}
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+              What's coming next
+            </h2>
+            <p className="text-zinc-400 max-w-xl mx-auto text-base">
+              We're growing the platform across more industries, more countries, and with new tools
+              — built on your feedback.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              {
+                icon: Store,
+                bg: 'bg-purple-500/10',
+                border: 'border-purple-500/20',
+                iconCls: 'text-purple-400',
+                badge: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
+                dot: 'bg-purple-500',
+                label: 'New industries',
+                title: 'Retail, hospitality, real estate & more',
+                desc: 'Beyond restaurants — e-commerce product pages, hotel room showcases, real estate walkthroughs, and automotive showrooms are next.',
+                items: ['Retail & e-commerce', 'Hospitality & hotels', 'Real estate', 'Automotive'],
+              },
+              {
+                icon: MapPin,
+                bg: 'bg-cyan-500/10',
+                border: 'border-cyan-500/20',
+                iconCls: 'text-cyan-400',
+                badge: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
+                dot: 'bg-cyan-500',
+                label: 'Geographic expansion',
+                title: 'More EU countries',
+                desc: "We currently operate in Estonia, Greece, and France. We're expanding our capture network to cover more EU markets.",
+                items: ['Spain & Portugal', 'Netherlands & Belgium', 'Italy', 'Germany & Austria'],
+              },
+              {
+                icon: Sparkles,
+                bg: 'bg-brand-500/10',
+                border: 'border-brand-500/20',
+                iconCls: 'text-brand-400',
+                badge: 'bg-brand-500/10 border-brand-500/20 text-brand-400',
+                dot: 'bg-brand-500',
+                label: 'Platform features',
+                title: 'AI tools, analytics & integrations',
+                desc: 'Smarter dashboards, AI-assisted quality control, deeper analytics, ordering integrations, and a public API for enterprise customers.',
+                items: [
+                  'AI quality control',
+                  'Advanced analytics',
+                  'Ordering & POS integrations',
+                  'Public REST API',
+                ],
+              },
+              {
+                icon: Smartphone,
+                bg: 'bg-emerald-500/10',
+                border: 'border-emerald-500/20',
+                iconCls: 'text-emerald-400',
+                badge: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+                dot: 'bg-emerald-500',
+                label: 'Mobile app',
+                title: 'iOS & Android app',
+                desc: 'Manage your assets, track capture jobs, and share AR previews directly from your phone — without opening a browser.',
+                items: [
+                  'Asset management on the go',
+                  'Real-time job tracking',
+                  'AR preview & share',
+                  'Push notifications',
+                ],
+              },
+            ].map(({ icon: Icon, bg, border, iconCls, badge, dot, label, title, desc, items }) => (
+              <div
+                key={title}
+                className={`relative p-6 rounded-2xl border ${border} bg-zinc-900/60 backdrop-blur-sm hover:bg-zinc-900/80 transition-all`}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div
+                    className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}
                   >
-                    {logo.name}
-                    <span className={logo.suffixColor}>{logo.suffix}</span>
+                    <Icon className={`w-5 h-5 ${iconCls}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span
+                      className={`inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${badge} mb-2`}
+                    >
+                      {label}
+                    </span>
+                    <h3 className="font-bold text-white text-sm leading-snug">{title}</h3>
+                  </div>
+                  <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-zinc-600 border border-zinc-700 px-2 py-0.5 rounded-full">
+                    Coming soon
                   </span>
                 </div>
-              ))}
+                <p className="text-sm text-zinc-400 leading-relaxed mb-4">{desc}</p>
+                <ul className="space-y-1.5">
+                  {items.map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-xs text-zinc-500">
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <p className="text-zinc-500 text-sm">
+              Want early access or have a request?{' '}
+              <Link
+                to="/request"
+                className="text-brand-400 font-semibold hover:text-brand-300 underline underline-offset-4 transition-colors"
+              >
+                Get in touch →
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-800">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div ref={trustRef} className="reveal">
+            <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-10">
+              What our clients say
+            </p>
+            <div className="flex flex-col p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 border-t-2 border-t-orange-500/30 dark:border-t-orange-500/20 hover:shadow-hover transition-shadow duration-300">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed italic flex-1">
+                &ldquo;The 3D models they delivered boosted our online menu conversion by over a
+                third. Guests interact with the food before they order — it makes a real
+                difference.&rdquo;
+              </p>
+              <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <p className="text-sm font-semibold text-zinc-900 dark:text-white">
+                  Marie-Claire D.
+                </p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-0.5">Head of Digital</p>
+                <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-0.5">
+                  Restaurant Group · Paris, FR
+                </p>
+              </div>
             </div>
           </div>
         </div>

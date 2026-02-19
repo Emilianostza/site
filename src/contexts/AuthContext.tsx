@@ -160,8 +160,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setToken(response.token, user?.orgId);
           } catch (err) {
             console.error('[Auth] Automatic token refresh failed', err);
-            // Logout on refresh failure
-            await logout();
+            // Do NOT logout automatically on refresh failure
+            // Let the user stay "logged in" locally until they make an API call that fails
+            // await logout();
           }
         }
       }, TOKEN_REFRESH_INTERVAL);

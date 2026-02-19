@@ -102,24 +102,6 @@ const MOCK_USERS_MAP: Record<string, any> = {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
-  'user-client-museum': {
-    id: 'user-client-museum',
-    email: 'client@museum.com',
-    name: 'Museum Curator',
-    role: {
-      type: 'customer_viewer',
-      orgId: 'cust-museum',
-      customerId: 'cust-museum',
-      assignedProjectIds: [],
-    },
-    orgId: 'cust-museum',
-    customerId: 'cust-museum',
-    status: 'active' as const,
-    mfaEnabled: false,
-    failedLoginAttempts: 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
   'user-emiliano-admin': {
     id: 'user-emiliano-admin',
     email: 'emilianostza@gmail.com',
@@ -260,6 +242,44 @@ function mockGetTokenTTL(token: string): number {
   const now = Date.now();
   const remaining = Math.max(0, (expirationTime - now) / 1000);
   return Math.floor(remaining);
+}
+
+async function mockCreateUser(data: {
+  name: string;
+  email: string;
+  roleType: string;
+  orgId?: string;
+}): Promise<User> {
+  await delay(600);
+
+  const id = `user-${Date.now()}`;
+  const orgId = data.orgId || (data.roleType.startsWith('customer') ? `cust-${id}` : 'org-1');
+  const isCustomer = data.roleType === 'customer_owner' || data.roleType === 'customer_viewer';
+
+  const newUser: User = {
+    id,
+    email: data.email,
+    name: data.name,
+    orgId,
+    role: isCustomer
+      ? { type: data.roleType as any, orgId, customerId: orgId }
+      : data.roleType === 'technician'
+        ? { type: 'technician', orgId, assignedProjectIds: [] }
+        : { type: data.roleType as any, orgId },
+    status: 'active',
+    mfaEnabled: false,
+    failedLoginAttempts: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  MOCK_USERS_MAP[id] = newUser;
+  return newUser;
+}
+
+async function mockDeleteUser(id: string): Promise<void> {
+  await delay(400);
+  delete MOCK_USERS_MAP[id];
 }
 
 async function mockGetUsers(request: GetUsersRequest = {}): Promise<GetUsersResponse> {
@@ -625,7 +645,36 @@ export function getTokenTTL(token: string): number {
   return realGetTokenTTL(token);
 }
 
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  roleType: string;
+  orgId?: string;
+}
+
+/**
+ * Create a new user (Super Admin only)
+ */
+export async function createUser(request: CreateUserRequest): Promise<User> {
+  if (USE_MOCK_DATA) {
+    return mockCreateUser(request);
+  }
+  // Real implementation: create via Supabase admin API
+  throw new Error('Real createUser not yet implemented');
+}
+
+/**
+ * Delete a user by ID (Super Admin only)
+ */
+export async function deleteUser(id: string): Promise<void> {
+  if (USE_MOCK_DATA) {
+    return mockDeleteUser(id);
+  }
+  // Real implementation: delete via Supabase admin API
+  throw new Error('Real deleteUser not yet implemented');
+}
+
 // Unused but exported to maintain interface compatibility
-export function decodeJWT(token: string): any {
+export function decodeJWT(_token: string): any {
   return {};
 }

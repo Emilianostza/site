@@ -2,8 +2,6 @@ import { ProjectStatus } from '@/types/domain';
 
 export enum Industry {
   Restaurant = 'Restaurant',
-  Museum = 'Museum',
-  Ecommerce = 'Ecommerce',
   General = 'General',
 }
 
@@ -42,6 +40,7 @@ export interface IndustryConfig {
   outcomes: string[];
   permissions: string[];
   demoImage: string;
+  samples: { name: string; thumb: string; tag: string }[];
 }
 
 export interface RequestFormState {
@@ -53,8 +52,6 @@ export interface RequestFormState {
   country: string;
   preferred_window: string;
   deliverables: string[];
-  museum_access_control?: string;
-  handling_sensitivity?: string;
   contact: {
     full_name: string;
     email: string;
@@ -73,7 +70,6 @@ export enum ServiceTier {
   Basic = 'basic', // Entry level (limited models, no custom domain)
   Business = 'business', // Mid-tier (analytics, branding)
   Enterprise = 'enterprise', // High-end (API access, SLA)
-  Museum = 'museum', // Specialized (guided mode, kiosk, accessibility)
 }
 
 export type ProjectType = string;

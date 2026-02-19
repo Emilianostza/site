@@ -42,7 +42,6 @@ export const RATE_LIMITS: Record<
     basic: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
     business: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
     enterprise: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
-    museum: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
     unauthenticated: { requests_per_minute: 5, burst_size: 10, tier_aware: false },
   },
 
@@ -51,7 +50,6 @@ export const RATE_LIMITS: Record<
     basic: { requests_per_minute: 30, burst_size: 60, tier_aware: true },
     business: { requests_per_minute: 60, burst_size: 120, tier_aware: true },
     enterprise: { requests_per_minute: 300, burst_size: 500, tier_aware: true },
-    museum: { requests_per_minute: 100, burst_size: 200, tier_aware: true },
     unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
   },
 
@@ -60,7 +58,6 @@ export const RATE_LIMITS: Record<
     basic: { requests_per_minute: 5, burst_size: 10, tier_aware: true },
     business: { requests_per_minute: 20, burst_size: 40, tier_aware: true },
     enterprise: { requests_per_minute: 100, burst_size: 200, tier_aware: true },
-    museum: { requests_per_minute: 30, burst_size: 60, tier_aware: true },
     unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
   },
 
@@ -69,7 +66,6 @@ export const RATE_LIMITS: Record<
     basic: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
     business: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
     enterprise: { requests_per_minute: 1000, burst_size: 2000, tier_aware: true },
-    museum: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
     unauthenticated: { requests_per_minute: 0, burst_size: 0, tier_aware: false },
   },
 
@@ -78,7 +74,6 @@ export const RATE_LIMITS: Record<
     basic: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
     business: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
     enterprise: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
-    museum: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
     unauthenticated: { requests_per_minute: 60, burst_size: 120, tier_aware: false },
   },
 };

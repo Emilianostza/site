@@ -38,7 +38,19 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Industry, RequestFormState } from '@/types';
 import { ProjectStatus } from '@/types/domain';
-import { Check, ChevronRight, ChevronLeft, AlertCircle, ArrowRight } from 'lucide-react';
+import {
+  Check,
+  ChevronRight,
+  ChevronLeft,
+  AlertCircle,
+  ArrowRight,
+  Globe,
+  Code2,
+  Smartphone,
+  Tablet,
+  Package,
+  QrCode,
+} from 'lucide-react';
 import { ProjectsProvider } from '@/services/dataProvider';
 
 const INITIAL_STATE: RequestFormState = {
@@ -78,12 +90,8 @@ const RequestForm: React.FC = () => {
 
     const params = new URLSearchParams(location.search);
     const ind = params.get('industry');
-    if (ind) {
-      if (ind === 'restaurants')
-        setFormData((prev) => ({ ...prev, industry: Industry.Restaurant }));
-      else if (ind === 'museums') setFormData((prev) => ({ ...prev, industry: Industry.Museum }));
-      else if (ind === 'ecommerce')
-        setFormData((prev) => ({ ...prev, industry: Industry.Ecommerce }));
+    if (ind === 'restaurants') {
+      setFormData((prev) => ({ ...prev, industry: Industry.Restaurant }));
     }
   }, [location.search]);
 
@@ -319,8 +327,8 @@ const RequestForm: React.FC = () => {
                     We tailor our service to your specific needs.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {[Industry.Restaurant, Industry.Museum, Industry.Ecommerce].map((ind) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md">
+                  {[Industry.Restaurant, Industry.General].map((ind) => (
                     <button
                       key={ind}
                       type="button"
@@ -336,8 +344,7 @@ const RequestForm: React.FC = () => {
                       </span>
                       <span className="text-sm text-slate-500 dark:text-slate-400">
                         {ind === Industry.Restaurant && 'Menu items & food'}
-                        {ind === Industry.Museum && 'Artifacts & collections'}
-                        {ind === Industry.Ecommerce && 'Retail products'}
+                        {ind === Industry.General && 'Any other objects'}
                       </span>
                     </button>
                   ))}
@@ -403,34 +410,6 @@ const RequestForm: React.FC = () => {
                     <p className="text-red-600 text-sm mt-1">{errors.object_size_range}</p>
                   )}
                 </div>
-
-                {formData.industry === Industry.Museum && (
-                  <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                    <label className="block text-sm font-bold text-amber-900 mb-2">
-                      Handling Sensitivity
-                    </label>
-                    <div className="flex gap-4">
-                      <label className="flex items-center gap-2 text-amber-900">
-                        <input
-                          type="radio"
-                          name="sensitivity"
-                          value="standard"
-                          onChange={(e) => updateField('handling_sensitivity', e.target.value)}
-                        />{' '}
-                        Standard
-                      </label>
-                      <label className="flex items-center gap-2 text-amber-900">
-                        <input
-                          type="radio"
-                          name="sensitivity"
-                          value="fragile"
-                          onChange={(e) => updateField('handling_sensitivity', e.target.value)}
-                        />{' '}
-                        Fragile
-                      </label>
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 
@@ -504,80 +483,211 @@ const RequestForm: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3">
-                  {[
-                    {
-                      id: 'hosted_viewer_link',
-                      label: 'Hosted Viewer Link',
-                      desc: 'Direct link to your 3D model (no setup required)',
-                    },
-                    {
-                      id: 'website_embed',
-                      label: 'Website Embed Code',
-                      desc: 'Copy-paste iFrame for Shopify, WordPress, or custom sites',
-                    },
-                    {
-                      id: 'ar_ios_usdz',
-                      label: 'AR for iOS',
-                      desc: 'QuickLook file (.usdz) for iPhone/iPad',
-                    },
-                    {
-                      id: 'ar_android_glb',
-                      label: 'AR for Android',
-                      desc: 'Scene Viewer file (.glb) for Android devices',
-                    },
-                    {
-                      id: 'downloads_bundle',
-                      label: 'Raw Files Bundle',
-                      desc: 'OBJ, FBX, or other 3D formats for game engines',
-                    },
-                    {
-                      id: 'qr_codes',
-                      label: 'QR Codes',
-                      desc: 'Quick links to models (print on packaging/displays)',
-                    },
-                  ].map((item) => (
-                    <label
-                      key={item.id}
-                      className="flex items-start p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-brand-300 dark:hover:border-brand-600 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500 mt-0.5 flex-shrink-0"
-                        checked={formData.deliverables.includes(item.id)}
-                        onChange={() => toggleArrayField('deliverables', item.id)}
-                      />
-                      <div className="ml-3 flex-grow">
-                        <div className="font-medium text-slate-900 dark:text-white">
-                          {item.label}
-                        </div>
-                        <div className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                          {item.desc}
-                        </div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-                {errors.deliverables && (
-                  <p className="flex items-center text-red-600 text-sm mt-2">
-                    <AlertCircle className="w-4 h-4 mr-1" /> {errors.deliverables}
+                {/* Sharing & Embedding */}
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+                    Sharing & Embedding
                   </p>
-                )}
-
-                {formData.industry === Industry.Museum && (
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Default Access Control
-                    </label>
-                    <select
-                      className="w-full p-3 border border-slate-300 rounded-lg"
-                      onChange={(e) => updateField('museum_access_control', e.target.value)}
-                    >
-                      <option value="public">Public (Searchable)</option>
-                      <option value="unlisted">Unlisted (Link only)</option>
-                      <option value="restricted">Restricted (Login required)</option>
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      {
+                        id: 'hosted_viewer_link',
+                        label: 'Hosted Viewer Link',
+                        desc: 'Direct link to your 3D model — no setup required',
+                        icon: Globe,
+                        badge: 'Most popular',
+                      },
+                      {
+                        id: 'website_embed',
+                        label: 'Website Embed Code',
+                        desc: 'iFrame for Shopify, WordPress, or custom sites',
+                        icon: Code2,
+                      },
+                    ].map(({ id, label, desc, icon: Icon, badge }) => {
+                      const selected = formData.deliverables.includes(id);
+                      return (
+                        <label
+                          key={id}
+                          className={`relative flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            selected
+                              ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20 shadow-sm'
+                              : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-600 hover:bg-slate-50 dark:hover:bg-slate-700/40'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={selected}
+                            onChange={() => toggleArrayField('deliverables', id)}
+                          />
+                          <div
+                            className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+                              selected
+                                ? 'bg-brand-600 text-white'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                            }`}
+                          >
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                                {label}
+                              </span>
+                              {badge && (
+                                <span className="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300">
+                                  {badge}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                              {desc}
+                            </p>
+                          </div>
+                          {selected && (
+                            <Check className="absolute top-3 right-3 w-4 h-4 text-brand-600 flex-shrink-0" />
+                          )}
+                        </label>
+                      );
+                    })}
                   </div>
+                </div>
+
+                {/* AR Experiences */}
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+                    AR Experiences
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      {
+                        id: 'ar_ios_usdz',
+                        label: 'AR for iOS',
+                        desc: 'QuickLook (.usdz) — place models in your space with iPhone or iPad',
+                        icon: Smartphone,
+                        tag: 'iPhone / iPad',
+                      },
+                      {
+                        id: 'ar_android_glb',
+                        label: 'AR for Android',
+                        desc: 'Scene Viewer (.glb) — works natively on most Android devices',
+                        icon: Tablet,
+                        tag: 'Android',
+                      },
+                    ].map(({ id, label, desc, icon: Icon, tag }) => {
+                      const selected = formData.deliverables.includes(id);
+                      return (
+                        <label
+                          key={id}
+                          className={`relative flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            selected
+                              ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20 shadow-sm'
+                              : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-600 hover:bg-slate-50 dark:hover:bg-slate-700/40'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={selected}
+                            onChange={() => toggleArrayField('deliverables', id)}
+                          />
+                          <div
+                            className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+                              selected
+                                ? 'bg-brand-600 text-white'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                            }`}
+                          >
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                                {label}
+                              </span>
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                                {tag}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                              {desc}
+                            </p>
+                          </div>
+                          {selected && (
+                            <Check className="absolute top-3 right-3 w-4 h-4 text-brand-600 flex-shrink-0" />
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Files & Print */}
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+                    Files & Print
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      {
+                        id: 'downloads_bundle',
+                        label: 'Raw Files Bundle',
+                        desc: 'OBJ, FBX, and other formats — ready for game engines or pipelines',
+                        icon: Package,
+                      },
+                      {
+                        id: 'qr_codes',
+                        label: 'QR Codes',
+                        desc: 'Printable QR links — ideal for packaging, labels, or in-store displays',
+                        icon: QrCode,
+                      },
+                    ].map(({ id, label, desc, icon: Icon }) => {
+                      const selected = formData.deliverables.includes(id);
+                      return (
+                        <label
+                          key={id}
+                          className={`relative flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            selected
+                              ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/20 shadow-sm'
+                              : 'border-slate-200 dark:border-slate-700 hover:border-brand-300 dark:hover:border-brand-600 hover:bg-slate-50 dark:hover:bg-slate-700/40'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={selected}
+                            onChange={() => toggleArrayField('deliverables', id)}
+                          />
+                          <div
+                            className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+                              selected
+                                ? 'bg-brand-600 text-white'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                            }`}
+                          >
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div className="flex-grow min-w-0">
+                            <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                              {label}
+                            </span>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                              {desc}
+                            </p>
+                          </div>
+                          {selected && (
+                            <Check className="absolute top-3 right-3 w-4 h-4 text-brand-600 flex-shrink-0" />
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {errors.deliverables && (
+                  <p className="flex items-center text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0" /> {errors.deliverables}
+                  </p>
                 )}
               </div>
             )}

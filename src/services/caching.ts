@@ -14,7 +14,7 @@
  * - Basic tier: 5 minutes (limited cache)
  * - Business tier: 15 minutes (standard cache)
  * - Enterprise tier: 1 hour (extended cache)
- * - Museum tier: 30 minutes (cultural institutions need fresh data)
+
  */
 
 import { ServiceTier } from '@/types';
@@ -49,7 +49,6 @@ export const CACHE_TTLS: Record<ServiceTier, number> = {
   [ServiceTier.Basic]: 5 * 60 * 1000, // 5 minutes
   [ServiceTier.Business]: 15 * 60 * 1000, // 15 minutes
   [ServiceTier.Enterprise]: 60 * 60 * 1000, // 1 hour
-  [ServiceTier.Museum]: 30 * 60 * 1000, // 30 minutes
 };
 
 /**

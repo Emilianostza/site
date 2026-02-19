@@ -86,64 +86,66 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
         asset={selectedAssetForQR}
       />
 
-      {/* Controls Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-zinc-900 p-2 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm sticky top-20 z-10 backdrop-blur-xl bg-opacity-80 dark:bg-opacity-80">
-        {/* Category Filters */}
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar w-full md:w-auto p-1">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                activeCategory === category
-                  ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        {/* View & Sort Controls */}
-        <div className="flex items-center gap-2 w-full md:w-auto px-1">
-          <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-md transition-all ${
-                viewMode === 'grid'
-                  ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
-                  : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
-              }`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-md transition-all ${
-                viewMode === 'list'
-                  ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
-                  : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
-              }`}
-            >
-              <List className="w-4 h-4" />
-            </button>
+      {/* Controls Header — only for employee role */}
+      {role === 'employee' && (
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+          {/* Category Filters */}
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar w-full md:w-auto p-1">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                  activeCategory === category
+                    ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
 
-          <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 mx-1" />
+          {/* View & Sort Controls */}
+          <div className="flex items-center gap-2 w-full md:w-auto px-1">
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-md transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
+                }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-md transition-all ${
+                  viewMode === 'list'
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
+                }`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
 
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="bg-transparent text-sm font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none cursor-pointer hover:text-zinc-900 dark:hover:text-white transition-colors"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="views">Most Viewed</option>
-            <option value="name">Name (A-Z)</option>
-          </select>
+            <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-800 mx-1" />
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="bg-transparent text-sm font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none cursor-pointer hover:text-zinc-900 dark:hover:text-white transition-colors"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="views">Most Viewed</option>
+              <option value="name">Name (A-Z)</option>
+            </select>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Grid View */}
       {viewMode === 'grid' ? (
@@ -188,12 +190,20 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
                     className="transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75"
                   >
                     <button className="bg-white text-zinc-900 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-zinc-100 hover:scale-105 transition-all shadow-xl flex items-center gap-2">
-                      View 3D <ArrowUpRight className="w-4 h-4" />
+                      View <ArrowUpRight className="w-4 h-4" />
+                    </button>
+                  </Link>
+                  <Link
+                    to={`/project/${asset.project_id}/menu/edit`}
+                    className="transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-100"
+                  >
+                    <button className="bg-white text-zinc-900 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-zinc-100 hover:scale-105 transition-all shadow-xl flex items-center gap-2">
+                      Edit <Edit className="w-4 h-4" />
                     </button>
                   </Link>
                   <button
                     onClick={() => setSelectedAssetForQR(asset)}
-                    className="bg-zinc-900/80 text-white p-2.5 rounded-full hover:bg-black hover:scale-105 transition-all shadow-xl transform translate-y-4 group-hover:translate-y-0 duration-300 delay-100 backdrop-blur-sm border border-white/10"
+                    className="bg-zinc-900/80 text-white p-2.5 rounded-full hover:bg-black hover:scale-105 transition-all shadow-xl transform translate-y-4 group-hover:translate-y-0 duration-300 delay-150 backdrop-blur-sm border border-white/10"
                     title="Generate QR"
                   >
                     <Share2 className="w-5 h-5" />
@@ -213,8 +223,8 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
                     </p>
                   </div>
                   <Link to={`/project/${asset.project_id}/menu/edit`}>
-                    <button className="text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                      <MoreVertical className="w-4 h-4" />
+                    <button className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors px-2 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                      <Edit className="w-3.5 h-3.5" /> Edit
                     </button>
                   </Link>
                 </div>

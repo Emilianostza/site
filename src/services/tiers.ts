@@ -8,7 +8,6 @@
  * - Basic: Entry level, limited features
  * - Business: Mid-tier, analytics + branding
  * - Enterprise: High-end, API access + SLA
- * - Museum: Specialized, guided mode + accessibility
  *
  * Tiers are immutable once selected (no downgrade/upgrade mid-project).
  * To change tier, customer must create new project.
@@ -191,48 +190,6 @@ export const TIER_DEFINITIONS: Record<
       // Accessibility
       accessibility_enhanced: true,
       multi_language: 20,
-    },
-  },
-
-  [ServiceTier.Museum]: {
-    name: 'Museum',
-    description: 'Specialized for museums and cultural institutions',
-    price_usd_per_month: 299,
-    features: {
-      // Asset limits
-      max_models: 200,
-      max_model_size_mb: 1000,
-      max_concurrent_uploads: 10,
-
-      // Viewer
-      ar_enabled: true,
-      viewer_customization: true,
-      guided_mode: true,
-      kiosk_mode: true,
-      annotations: true,
-
-      // Analytics
-      analytics_basic: true,
-      analytics_advanced: false,
-      download_analytics: false,
-
-      // Branding
-      custom_domain: true,
-      custom_branding: true,
-      white_label: false,
-
-      // API
-      api_access: false,
-      webhook_support: false,
-      custom_integrations: false,
-
-      // Support
-      support_level: 'priority',
-      sla_uptime: 99.9,
-
-      // Accessibility (museums require high accessibility)
-      accessibility_enhanced: true,
-      multi_language: 10,
     },
   },
 };

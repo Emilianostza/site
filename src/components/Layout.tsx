@@ -214,11 +214,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div>
               <h4 className="text-sm font-semibold text-white mb-4">Industries</h4>
               <ul className="space-y-2.5 text-sm">
-                {[
-                  { label: 'Restaurants', path: '/industries/restaurants' },
-                  { label: 'Museums', path: '/industries/museums' },
-                  { label: 'E-commerce', path: '/industries/ecommerce' },
-                ].map((l) => (
+                {[{ label: 'Restaurants', path: '/industries/restaurants' }].map((l) => (
                   <li key={l.path}>
                     <Link to={l.path} className="hover:text-zinc-200 transition-colors">
                       {l.label}
@@ -235,7 +231,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 {[
                   { label: 'How it Works', path: '/how-it-works' },
                   { label: 'Pricing', path: '/pricing' },
-                  { label: 'Gallery', path: '/gallery' },
                   { label: 'Trust Center', path: '/security' },
                 ].map((l) => (
                   <li key={l.path}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { ProjectsProvider } from '@/services/dataProvider';
 import {
   ArrowLeft,
@@ -30,6 +30,7 @@ interface MenuItem {
 
 const RestaurantMenu: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewerState, setViewerState] = useState<{ index: number } | null>(null);
@@ -211,12 +212,12 @@ const RestaurantMenu: React.FC = () => {
       <div className="bg-stone-950 min-h-screen text-amber-50 flex flex-col items-center justify-center gap-4">
         <ChefHat className="w-12 h-12 text-stone-600" />
         <p className="text-stone-400">Menu Not Found</p>
-        <Link
-          to="/app/dashboard"
+        <button
+          onClick={() => navigate(-1)}
           className="text-amber-500 hover:text-amber-400 text-sm underline underline-offset-4"
         >
           Back to Dashboard
-        </Link>
+        </button>
       </div>
     );
   }
@@ -243,12 +244,12 @@ const RestaurantMenu: React.FC = () => {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-stone-950/80 backdrop-blur-md border-b border-stone-800">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link
-            to="/app/dashboard"
+          <button
+            onClick={() => navigate(-1)}
             className="text-stone-400 hover:text-white flex items-center gap-2 text-sm transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-          </Link>
+          </button>
           <div
             className="font-serif text-xl font-bold tracking-wider"
             style={{ color: menuSettings.brandColor }}
@@ -428,6 +429,20 @@ const RestaurantMenu: React.FC = () => {
                     <Smartphone className="w-3 h-3" /> Try AR
                   </button>
                 </div>
+
+                {isEditMode && (
+                  <div className="mt-4 pt-4 border-t border-stone-800">
+                    <label className="block text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                      <Box className="w-3 h-3" /> 3D Model URL
+                    </label>
+                    <input
+                      value={item.modelUrl}
+                      onChange={(e) => handleUpdateItem(idx, 'modelUrl', e.target.value)}
+                      placeholder="https://…/model.glb"
+                      className="bg-stone-800 text-stone-300 font-mono text-xs rounded px-2 py-1.5 w-full border border-stone-700 focus:border-amber-500 outline-none placeholder-stone-600 truncate"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -619,11 +634,22 @@ const RestaurantMenu: React.FC = () => {
                   <span className="text-stone-500">Calories</span>
                   <span className="text-stone-300 font-mono">{currentItem.calories}</span>
                 </div>
-                <div className="flex justify-between text-sm py-2 border-b border-stone-800/60">
+                <div className="flex justify-between items-center text-sm py-2 border-b border-stone-800/60">
                   <span className="text-stone-500">3D Model</span>
-                  <span className="text-green-500 font-mono text-xs flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full" /> Available
-                  </span>
+                  {isEditMode ? (
+                    <input
+                      value={currentItem.modelUrl}
+                      onChange={(e) =>
+                        handleUpdateItem(viewerState!.index, 'modelUrl', e.target.value)
+                      }
+                      placeholder="https://…/model.glb"
+                      className="bg-stone-800 text-stone-300 font-mono text-xs rounded px-2 py-1 w-48 border border-stone-700 focus:border-amber-500 outline-none truncate"
+                    />
+                  ) : (
+                    <span className="text-green-500 font-mono text-xs flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full" /> Available
+                    </span>
+                  )}
                 </div>
                 <div className="flex justify-between text-sm py-2 border-b border-stone-800/60">
                   <span className="text-stone-500">AR Experience</span>

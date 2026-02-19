@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Smartphone, RotateCcw, Box } from 'lucide-react';
+import { Smartphone, RotateCcw, Box, ArrowLeft } from 'lucide-react';
 import { AssetsProvider } from '@/services/dataProvider';
-
-// Extend JSX for model-viewer web component
-// (Removed: Already declared in src/types/model-viewer.d.ts)
 
 interface ViewerAsset {
   id: string;
@@ -43,7 +40,9 @@ const ARViewer: React.FC = () => {
           setAsset({
             id: raw.id,
             name: raw.name,
-            modelUrl: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
+            modelUrl: raw.file_key?.startsWith('http')
+              ? raw.file_key
+              : 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
             thumb: (raw as { thumb?: string }).thumb,
           });
         } else {
@@ -70,8 +69,8 @@ const ARViewer: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-950 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -79,18 +78,19 @@ const ARViewer: React.FC = () => {
   if (!asset) return null;
 
   return (
-    <div className="min-h-screen bg-stone-950 text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col overflow-hidden">
       {/* Minimal top bar */}
-      <header className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-stone-950/80 to-transparent pointer-events-none">
+      <header className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-zinc-950/80 to-transparent pointer-events-none">
         <Link
-          to="/"
-          className="flex items-center gap-2 pointer-events-auto"
-          aria-label="Managed Capture home"
+          to="/gallery"
+          className="flex items-center gap-2 pointer-events-auto hover:opacity-80 transition-opacity"
+          aria-label="Back to gallery"
         >
-          <Box className="w-5 h-5 text-amber-500" aria-hidden="true" />
-          <span className="text-sm font-bold tracking-wide">Managed Capture</span>
+          <ArrowLeft className="w-4 h-4 text-zinc-400" aria-hidden="true" />
+          <Box className="w-5 h-5 text-brand-400" aria-hidden="true" />
+          <span className="text-sm font-bold tracking-wide">Gallery</span>
         </Link>
-        <span className="text-xs text-stone-400 bg-stone-900/60 backdrop-blur-sm px-2 py-1 rounded-full border border-stone-700/50">
+        <span className="text-xs text-zinc-400 bg-zinc-900/60 backdrop-blur-sm px-2 py-1 rounded-full border border-zinc-700/50">
           {asset.name}
         </span>
       </header>
@@ -107,7 +107,7 @@ const ARViewer: React.FC = () => {
           shadow-intensity="1"
           exposure="1"
           loading="eager"
-          style={{ width: '100%', height: '100dvh', display: 'block', background: '#0c0a09' }}
+          style={{ width: '100%', height: '100dvh', display: 'block', background: '#09090b' }}
         />
 
         {/* Bottom controls */}
@@ -122,7 +122,7 @@ const ARViewer: React.FC = () => {
           </button>
           <button
             onClick={handleAR}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold shadow-lg shadow-amber-500/30 transition-all text-sm focus-visible:ring-2 focus-visible:ring-amber-300 focus:outline-none"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-bold shadow-lg shadow-brand-500/30 transition-all text-sm focus-visible:ring-2 focus-visible:ring-brand-300 focus:outline-none"
             aria-label="View in augmented reality"
           >
             <Smartphone className="w-4 h-4" aria-hidden="true" />

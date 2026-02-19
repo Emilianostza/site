@@ -8,6 +8,8 @@ interface SidebarProps {
   setActiveTab: (tab: 'dashboard' | 'projects' | 'customers') => void;
   isOpen?: boolean;
   onToggle?: () => void;
+  onSettings?: () => void;
+  onLogout?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -16,6 +18,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   isOpen = true,
   onToggle,
+  onSettings,
+  onLogout,
 }) => {
   return (
     <>
@@ -72,16 +76,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </nav>
 
-        <div className="p-4 border-t border-zinc-900">
-          <button className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-400 hover:text-white w-full rounded-lg focus-visible:ring-2 focus-visible:ring-brand-400 focus:outline-none">
+        <div className="p-4 border-t border-zinc-800">
+          <button
+            onClick={onSettings}
+            className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-400 hover:text-white w-full rounded-lg focus-visible:ring-2 focus-visible:ring-brand-400 focus:outline-none transition-colors"
+          >
             <Settings className="w-5 h-5" aria-hidden="true" /> Settings
           </button>
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 w-full rounded-lg focus-visible:ring-2 focus-visible:ring-red-400 focus:outline-none"
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 w-full rounded-lg focus-visible:ring-2 focus-visible:ring-red-400 focus:outline-none transition-colors"
           >
             <LogOut className="w-5 h-5" aria-hidden="true" /> Sign Out
-          </Link>
+          </button>
         </div>
       </aside>
     </>
