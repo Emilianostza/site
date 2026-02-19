@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Project } from '@/types';
 import { MenuSettingsModal } from '@/components/portal/MenuSettingsModal';
+import { useToast } from '@/contexts/ToastContext';
 
 interface MenuItem {
   name: string;
@@ -31,6 +32,7 @@ interface MenuItem {
 const RestaurantMenu: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { success } = useToast();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewerState, setViewerState] = useState<{ index: number } | null>(null);
@@ -141,7 +143,7 @@ const RestaurantMenu: React.FC = () => {
     // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
-      alert('Changes saved successfully!');
+      success('Changes saved successfully!');
     }, 1000);
   };
 

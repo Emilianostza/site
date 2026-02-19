@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 const response = await AuthAPI.refreshToken({
                   refresh_token: refreshToken, // Keep snake_case for API compatibility
                 });
-                setToken(response.token, user?.orgId);
+                setToken(response.token);
               } catch (err) {
                 console.log('[Auth] Refresh token failed, clearing session');
                 localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -157,7 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const response = await AuthAPI.refreshToken({
               refresh_token: refreshToken, // Keep snake_case for API compatibility
             });
-            setToken(response.token, user?.orgId);
+            setToken(response.token, user.orgId);
           } catch (err) {
             console.error('[Auth] Automatic token refresh failed', err);
             // Do NOT logout automatically on refresh failure

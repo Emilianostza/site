@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -13,7 +13,11 @@ import {
 } from 'lucide-react';
 import { Asset } from '@/types';
 import { QRCodeModal } from '@/components/portal/QRCodeModal';
-import { EmbeddedModelEditor } from '@/components/editor/EmbeddedModelEditor';
+const EmbeddedModelEditor = lazy(() =>
+  import('@/components/editor/EmbeddedModelEditor').then((m) => ({
+    default: m.EmbeddedModelEditor,
+  }))
+);
 import { AssetsProvider } from '@/services/dataProvider';
 import { NewCaptureWizard } from '@/components/editor/NewCaptureWizard';
 
@@ -304,11 +308,19 @@ const SceneDashboard: React.FC = () => {
             {/* RIGHT PANEL: Editor */}
             <div className="flex-1 bg-zinc-950 relative overflow-hidden flex flex-col">
               {selectedItem ? (
-                <EmbeddedModelEditor
-                  key={selectedItem.id}
-                  assetId={selectedItem.id}
-                  initialData={selectedItem}
-                />
+                <Suspense
+                  fallback={
+                    <div className="flex-1 flex items-center justify-center text-zinc-500">
+                      <Box className="w-8 h-8 animate-pulse opacity-40" />
+                    </div>
+                  }
+                >
+                  <EmbeddedModelEditor
+                    key={selectedItem.id}
+                    assetId={selectedItem.id}
+                    initialData={selectedItem}
+                  />
+                </Suspense>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-zinc-500">
                   <Box className="w-16 h-16 mb-4 opacity-20" />

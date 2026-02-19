@@ -4,25 +4,30 @@
  * This function proxies requests to the Google Gemini API on the server side,
  * keeping the API key secure and never exposing it to the client.
  *
- * Deployment Note:
- * Add GEMINI_API_KEY to your Netlify environment variables (Site Settings > Build & Deploy > Environment).
- * Do NOT commit the actual key to source control.
+ * Requires:
+ * - GEMINI_API_KEY: Google Gemini API key (Netlify env)
+ * - VITE_SUPABASE_URL: Supabase project URL (Netlify env)
+ * - SUPABASE_SERVICE_ROLE_KEY: Supabase service role key for server-side auth validation
  *
- * Usage (from frontend):
+ * Usage (from authenticated frontend):
  * const response = await fetch('/.netlify/functions/gemini-proxy', {
  *   method: 'POST',
+ *   headers: { Authorization: `Bearer ${token}` },
  *   body: JSON.stringify({ prompt: '...' })
  * });
  */
 
-// Netlify Function type (no external dependency needed)
-type Handler = (event: any) => Promise<{ statusCode: number; body: string }> | { statusCode: number; body: string };
+import { createClient } from '@supabase/supabase-js';
 
-const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+type Handler = (event: any) => Promise<{ statusCode: number; body: string }>;
+
+const GEMINI_API_ENDPOINT =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
+const MAX_PROMPT_BYTES = 8192; // 8 KB
 
 interface GeminiRequest {
   prompt: string;
-  [key: string]: any;
 }
 
 interface GeminiResponse {
@@ -33,10 +38,6 @@ interface GeminiResponse {
       }>;
     };
   }>;
-  error?: {
-    message: string;
-    code?: number;
-  };
 }
 
 const handler: Handler = async (event) => {
@@ -44,74 +45,108 @@ const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
+  }
+
+  // ── Auth: validate Supabase JWT ──────────────────────────────────────────────
+  const authHeader = event.headers?.authorization || event.headers?.Authorization || '';
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  if (!bearerToken) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ error: 'Authentication required' }),
+    };
+  }
+
+  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error('[Gemini Proxy] Supabase config missing');
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Server configuration error' }),
+    };
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const { data: authData, error: authError } = await supabase.auth.getUser(bearerToken);
+
+  if (authError || !authData?.user) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ error: 'Invalid or expired token' }),
+    };
+  }
+
+  // ── Parse and validate body ──────────────────────────────────────────────────
+  let parsed: GeminiRequest;
+  try {
+    parsed = JSON.parse(event.body || '{}');
+  } catch {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Invalid JSON body' }),
+    };
+  }
+
+  const { prompt } = parsed;
+
+  if (!prompt || typeof prompt !== 'string') {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Missing or invalid prompt parameter' }),
+    };
+  }
+
+  if (new Blob([prompt]).size > MAX_PROMPT_BYTES) {
+    return {
+      statusCode: 413,
+      body: JSON.stringify({ error: 'Prompt exceeds maximum allowed size (8 KB)' }),
+    };
+  }
+
+  // ── Gemini API call ──────────────────────────────────────────────────────────
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error('[Gemini Proxy] GEMINI_API_KEY not configured');
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Server configuration error' }),
     };
   }
 
   try {
-    const { prompt } = JSON.parse(event.body || '{}') as GeminiRequest;
-
-    if (!prompt) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing prompt parameter' })
-      };
-    }
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error('[Gemini Proxy] GEMINI_API_KEY not configured in environment');
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'API key not configured' })
-      };
-    }
-
-    // Call Gemini API (server-side, with secure key)
     const response = await fetch(`${GEMINI_API_ENDPOINT}?key=${apiKey}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt
-              }
-            ]
-          }
-        ]
-      })
+        contents: [{ parts: [{ text: prompt }] }],
+      }),
     });
 
-    const data: GeminiResponse = await response.json();
-
     if (!response.ok) {
-      console.error('[Gemini Proxy] API error:', data.error?.message);
+      console.error('[Gemini Proxy] Gemini API returned', response.status);
       return {
-        statusCode: response.status,
-        body: JSON.stringify({
-          error: data.error?.message || 'Gemini API error'
-        })
+        statusCode: 502,
+        body: JSON.stringify({ error: 'Upstream API error' }),
       };
     }
 
-    // Extract response text
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const data: GeminiResponse = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ result: text })
+      body: JSON.stringify({ result: text }),
     };
-  } catch (error) {
-    console.error('[Gemini Proxy] Exception:', error);
+  } catch (err) {
+    console.error('[Gemini Proxy] Exception:', err instanceof Error ? err.message : err);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        error: error instanceof Error ? error.message : 'Internal server error'
-      })
+      body: JSON.stringify({ error: 'Internal server error' }),
     };
   }
 };

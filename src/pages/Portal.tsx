@@ -10,14 +10,11 @@ import {
   Shield,
   CreditCard,
   Check,
-  Briefcase,
   Layers,
   ArrowUpRight,
   Clock,
   Camera,
   LifeBuoy,
-  Lock,
-  Inbox,
   MapPin,
   CheckCircle2,
   XCircle,
@@ -32,7 +29,6 @@ import { AssetGrid } from '@/components/portal/AssetGrid';
 import { ProjectsProvider, AssetsProvider } from '@/services/dataProvider';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
-import { AssetListTable } from '@/components/portal/AssetListTable';
 import { RecentAssetsStrip } from '@/components/portal/RecentAssetsStrip';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -40,7 +36,7 @@ import { SEO } from '@/components/common/SEO';
 import Skeleton, { SkeletonCard, SkeletonRow } from '@/components/Skeleton';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const { success, error: toastError } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
@@ -91,7 +87,6 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
-  const [expandedAssetId, setExpandedAssetId] = useState<string | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const filteredAssets = assets.filter(
@@ -797,9 +792,8 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                   <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Current Plan</h2>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
                     You are on the{' '}
-                    <span className="font-bold text-brand-600 dark:text-brand-400">
-                      Business Plan
-                    </span>
+                    <span className="font-bold text-amber-600 dark:text-amber-400">Pro Plan</span> ·
+                    Level B — Medium quality
                   </p>
                 </div>
                 <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold border border-emerald-200 dark:border-emerald-800">
@@ -808,9 +802,15 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
               </div>
               <div className="p-6">
                 <div className="flex items-end gap-2 mb-1">
-                  <span className="text-4xl font-bold text-zinc-900 dark:text-white">$49</span>
-                  <span className="text-zinc-500 dark:text-zinc-400 mb-1">/month</span>
+                  <span className="text-4xl font-bold text-amber-600 dark:text-amber-400">€35</span>
+                  <span className="text-zinc-500 dark:text-zinc-400 mb-1">/month · per menu</span>
                 </div>
+                <p className="text-xs text-zinc-400 font-mono mb-1">
+                  2,000 views included · 8 GB storage
+                </p>
+                <p className="text-xs text-zinc-400 font-mono mb-4">
+                  Overage: €4 / 1,000 views (next 10k) · €2 / 1,000 thereafter
+                </p>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
                   Next billing date:{' '}
                   <span className="font-medium text-zinc-700 dark:text-zinc-300">
@@ -819,31 +819,84 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                   {[
-                    { label: 'Unlimited Projects', icon: '∞' },
-                    { label: 'Advanced Analytics', icon: '📊' },
-                    { label: 'Priority Support', icon: '⚡' },
+                    'Unlimited 3D items (within 8 GB)',
+                    'Higher-detail 3D models (Level B)',
+                    'QR code for every item',
+                    'Printable QR sheets (PDF)',
+                    'Basic analytics',
+                    'Priority email support',
                   ].map((feat) => (
                     <div
-                      key={feat.label}
+                      key={feat}
                       className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800/50 px-4 py-3 rounded-xl border border-zinc-100 dark:border-zinc-700"
                     >
                       <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                       <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                        {feat.label}
+                        {feat}
                       </span>
                     </div>
                   ))}
                 </div>
                 <div className="flex gap-3">
-                  <button className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm">
-                    Upgrade Plan
-                  </button>
+                  <Link to="/pricing">
+                    <button className="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm">
+                      Upgrade to Ultra
+                    </button>
+                  </Link>
                   <button className="px-5 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
                     Change Plan
                   </button>
                   <button className="px-5 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
                     Cancel
                   </button>
+                </div>
+              </div>
+            </div>
+
+            {/* View Usage */}
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+              <div className="p-6 border-b border-zinc-200 dark:border-zinc-800">
+                <h2 className="text-lg font-bold text-zinc-900 dark:text-white">View Usage</h2>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
+                  Current billing cycle · Resets March 15, 2026
+                </p>
+              </div>
+              <div className="p-6 space-y-5">
+                <div>
+                  <div className="flex justify-between items-baseline mb-2">
+                    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                      Views used
+                    </span>
+                    <span className="text-sm font-bold text-zinc-900 dark:text-white font-mono">
+                      1,643 <span className="text-zinc-400 font-normal">/ 2,000</span>
+                    </span>
+                  </div>
+                  <div className="w-full h-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-500 rounded-full" style={{ width: '82.15%' }} />
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-1.5">
+                    357 views remaining · No overage charges this cycle
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { label: 'Total views', value: '1,643' },
+                    { label: 'Billable views', value: '1,643' },
+                    { label: 'Bots excluded', value: '38' },
+                    { label: 'Projected bill', value: '€35' },
+                  ].map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl px-4 py-3 border border-zinc-100 dark:border-zinc-700"
+                    >
+                      <div className="text-lg font-bold text-zinc-900 dark:text-white font-mono">
+                        {stat.value}
+                      </div>
+                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        {stat.label}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -893,31 +946,33 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                 {[
                   {
                     date: 'Feb 15, 2026',
-                    amount: '$49.00',
+                    amount: '€35.00',
                     status: 'Paid',
                     invoice: 'INV-2026-02',
                   },
                   {
                     date: 'Jan 15, 2026',
-                    amount: '$49.00',
+                    amount: '€75.00',
                     status: 'Paid',
                     invoice: 'INV-2026-01',
+                    note: '€35 plan + €40 overage (10k views)',
                   },
                   {
                     date: 'Dec 15, 2025',
-                    amount: '$49.00',
+                    amount: '€135.00',
                     status: 'Paid',
                     invoice: 'INV-2025-12',
+                    note: '€35 plan + €100 on-site capture (1 visit + 5 models)',
                   },
                   {
                     date: 'Nov 15, 2025',
-                    amount: '$49.00',
+                    amount: '€35.00',
                     status: 'Paid',
                     invoice: 'INV-2025-11',
                   },
                   {
                     date: 'Oct 15, 2025',
-                    amount: '$49.00',
+                    amount: '€35.00',
                     status: 'Paid',
                     invoice: 'INV-2025-10',
                   },
@@ -932,10 +987,11 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                       </div>
                       <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                         {inv.date}
+                        {inv.note ? ` · ${inv.note}` : ''}
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-white font-mono">
                         {inv.amount}
                       </span>
                       <span className="text-xs font-medium px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full border border-emerald-200 dark:border-emerald-800">
@@ -1281,7 +1337,10 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                           </h2>
                           <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
                             You are currently on the{' '}
-                            <span className="font-bold text-brand-600">Business Plan</span>
+                            <span className="font-bold text-amber-600 dark:text-amber-400">
+                              Pro Plan
+                            </span>{' '}
+                            · Level B — Medium quality
                           </p>
                         </div>
                         <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-bold border border-green-200 dark:border-green-800">
@@ -1289,30 +1348,47 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                         </span>
                       </div>
                       <div className="p-6">
-                        <div className="flex items-end gap-2 mb-2">
-                          <span className="text-3xl font-bold text-zinc-900 dark:text-white">
-                            $49
+                        <div className="flex items-end gap-2 mb-1">
+                          <span className="text-3xl font-bold text-amber-600 dark:text-amber-400">
+                            €35
                           </span>
-                          <span className="text-zinc-500 dark:text-zinc-400 mb-1">/month</span>
+                          <span className="text-zinc-500 dark:text-zinc-400 mb-1">
+                            /month · per menu
+                          </span>
                         </div>
+                        <p className="text-xs text-zinc-400 font-mono mb-1">
+                          2,000 views included · 8 GB storage
+                        </p>
+                        <p className="text-xs text-zinc-400 font-mono mb-4">
+                          Overage: €4 / 1,000 views (next 10k) · €2 / 1,000 thereafter
+                        </p>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
                           Next billing date: March 15, 2026
                         </p>
                         <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                            <Check className="w-4 h-4 text-green-500" />
-                            <span>Unlimited Projects</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                            <Check className="w-4 h-4 text-green-500" />
-                            <span>Advanced Analytics</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                            <Check className="w-4 h-4 text-green-500" />
-                            <span>Priority Support</span>
-                          </div>
+                          {[
+                            'Unlimited 3D items (within 8 GB)',
+                            'Higher-detail 3D models (Level B)',
+                            'QR code for every item',
+                            'Printable QR sheets (PDF)',
+                            'Basic analytics',
+                            'Priority email support',
+                          ].map((feat) => (
+                            <div
+                              key={feat}
+                              className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300"
+                            >
+                              <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                              <span>{feat}</span>
+                            </div>
+                          ))}
                         </div>
                         <div className="mt-6 flex gap-3">
+                          <Link to="/pricing">
+                            <button className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm">
+                              Upgrade to Ultra
+                            </button>
+                          </Link>
                           <button className="px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
                             Change Plan
                           </button>
