@@ -543,7 +543,7 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
 
                                 {/* Time */}
                                 <span className="hidden sm:block text-xs text-zinc-400 flex-shrink-0">
-                                  {timeAgo(req.created_at)}
+                                  {timeAgo(req.created_at ?? '')}
                                 </span>
 
                                 {/* Actions */}
