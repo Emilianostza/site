@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Store, MapPin, Sparkles, Smartphone } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { HOW_IT_WORKS_STEPS } from '@/constants';
 import Accordion from '@/components/Accordion';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -277,131 +277,29 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Roadmap */}
-      <section className="py-24 bg-zinc-950 relative overflow-hidden border-t border-zinc-800">
-        <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-brand-700/20 blur-[80px] rounded-full pointer-events-none" />
-        <div className="relative container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-14">
-            <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20">
-              Roadmap
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-              What's coming next
-            </h2>
-            <p className="text-zinc-400 max-w-xl mx-auto text-base">
-              We're growing the platform across more industries, more countries, and with new tools
-              — built on your feedback.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {[
-              {
-                icon: Store,
-                bg: 'bg-purple-500/10',
-                border: 'border-purple-500/20',
-                iconCls: 'text-purple-400',
-                badge: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
-                dot: 'bg-purple-500',
-                label: 'New industries',
-                title: 'Retail, hospitality, real estate & more',
-                desc: 'Beyond restaurants — e-commerce product pages, hotel room showcases, real estate walkthroughs, and automotive showrooms are next.',
-                items: ['Retail & e-commerce', 'Hospitality & hotels', 'Real estate', 'Automotive'],
-              },
-              {
-                icon: MapPin,
-                bg: 'bg-cyan-500/10',
-                border: 'border-cyan-500/20',
-                iconCls: 'text-cyan-400',
-                badge: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
-                dot: 'bg-cyan-500',
-                label: 'Geographic expansion',
-                title: 'More EU countries',
-                desc: "We currently operate in Estonia, Greece, and France. We're expanding our capture network to cover more EU markets.",
-                items: ['Spain & Portugal', 'Netherlands & Belgium', 'Italy', 'Germany & Austria'],
-              },
-              {
-                icon: Sparkles,
-                bg: 'bg-brand-500/10',
-                border: 'border-brand-500/20',
-                iconCls: 'text-brand-400',
-                badge: 'bg-brand-500/10 border-brand-500/20 text-brand-400',
-                dot: 'bg-brand-500',
-                label: 'Platform features',
-                title: 'AI tools, analytics & integrations',
-                desc: 'Smarter dashboards, AI-assisted quality control, deeper analytics, ordering integrations, and a public API for enterprise customers.',
-                items: [
-                  'AI quality control',
-                  'Advanced analytics',
-                  'Ordering & POS integrations',
-                  'Public REST API',
-                ],
-              },
-              {
-                icon: Smartphone,
-                bg: 'bg-emerald-500/10',
-                border: 'border-emerald-500/20',
-                iconCls: 'text-emerald-400',
-                badge: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-                dot: 'bg-emerald-500',
-                label: 'Mobile app',
-                title: 'iOS & Android app',
-                desc: 'Manage your assets, track capture jobs, and share AR previews directly from your phone — without opening a browser.',
-                items: [
-                  'Asset management on the go',
-                  'Real-time job tracking',
-                  'AR preview & share',
-                  'Push notifications',
-                ],
-              },
-            ].map(({ icon: Icon, bg, border, iconCls, badge, dot, label, title, desc, items }) => (
-              <div
-                key={title}
-                className={`relative p-6 rounded-2xl border ${border} bg-zinc-900/60 backdrop-blur-sm hover:bg-zinc-900/80 transition-all`}
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <div
-                    className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}
-                  >
-                    <Icon className={`w-5 h-5 ${iconCls}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <span
-                      className={`inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${badge} mb-2`}
-                    >
-                      {label}
-                    </span>
-                    <h3 className="font-bold text-white text-sm leading-snug">{title}</h3>
-                  </div>
-                  <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-zinc-600 border border-zinc-700 px-2 py-0.5 rounded-full">
-                    Coming soon
-                  </span>
-                </div>
-                <p className="text-sm text-zinc-400 leading-relaxed mb-4">{desc}</p>
-                <ul className="space-y-1.5">
-                  {items.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-xs text-zinc-500">
-                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10 text-center">
-            <p className="text-zinc-500 text-sm">
-              Want early access or have a request?{' '}
-              <Link
-                to="/request"
-                className="text-brand-400 font-semibold hover:text-brand-300 underline underline-offset-4 transition-colors"
-              >
-                Get in touch →
-              </Link>
-            </p>
-          </div>
+      {/* Roadmap teaser */}
+      <section className="py-16 bg-zinc-950 relative overflow-hidden border-t border-zinc-800">
+        <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[160px] bg-brand-700/15 blur-[80px] rounded-full pointer-events-none" />
+        <div className="relative container mx-auto px-4 max-w-3xl text-center">
+          <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-400 mb-4 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20">
+            Roadmap
+          </p>
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-3">
+            Four phases. Dozens of features.
+            <br className="hidden sm:block" /> All built for restaurants.
+          </h2>
+          <p className="text-zinc-400 text-sm mb-8 max-w-lg mx-auto">
+            From AI quality control to POS integrations, mobile apps, and EU expansion — see
+            everything we&apos;re building next.
+          </p>
+          <Link
+            to="/roadmap"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all shadow-xs hover:shadow-glow hover:-translate-y-px active:translate-y-0"
+          >
+            View full roadmap
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
       </section>
 

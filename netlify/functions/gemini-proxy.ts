@@ -19,12 +19,41 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-type Handler = (event: any) => Promise<{ statusCode: number; body: string }>;
+interface NetlifyEvent {
+  httpMethod: string;
+  headers: Record<string, string | undefined>;
+  body: string | null;
+}
+
+type Handler = (
+  event: NetlifyEvent
+) => Promise<{ statusCode: number; body: string; headers?: Record<string, string> }>;
 
 const GEMINI_API_ENDPOINT =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
 const MAX_PROMPT_BYTES = 8192; // 8 KB
+
+/** Roles allowed to use the Gemini proxy — employees only */
+const EMPLOYEE_ROLES = new Set(['technician', 'approver', 'sales_lead', 'admin', 'super_admin']);
+
+/** In-memory rate limiter — 10 requests per user per minute.
+ *  Note: resets on cold start. For persistent limits add Upstash Redis. */
+const _rateLimits = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+
+function consumeRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const existing = _rateLimits.get(userId);
+  if (!existing || now > existing.resetAt) {
+    _rateLimits.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (existing.count >= RATE_LIMIT_MAX) return false;
+  existing.count++;
+  return true;
+}
 
 interface GeminiRequest {
   prompt: string;
@@ -81,6 +110,28 @@ const handler: Handler = async (event) => {
     };
   }
 
+  // ── Role check: employees only ───────────────────────────────────────────────
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', authData.user.id)
+    .single();
+
+  if (!profile || !EMPLOYEE_ROLES.has(profile.role)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Access restricted to employees' }),
+    };
+  }
+
+  // ── Rate limit: 10 req / user / minute ──────────────────────────────────────
+  if (!consumeRateLimit(authData.user.id)) {
+    return {
+      statusCode: 429,
+      body: JSON.stringify({ error: 'Rate limit exceeded. Try again in a minute.' }),
+    };
+  }
+
   // ── Parse and validate body ──────────────────────────────────────────────────
   let parsed: GeminiRequest;
   try {
@@ -101,7 +152,7 @@ const handler: Handler = async (event) => {
     };
   }
 
-  if (new Blob([prompt]).size > MAX_PROMPT_BYTES) {
+  if (Buffer.byteLength(prompt, 'utf8') > MAX_PROMPT_BYTES) {
     return {
       statusCode: 413,
       body: JSON.stringify({ error: 'Prompt exceeds maximum allowed size (8 KB)' }),
@@ -140,6 +191,7 @@ const handler: Handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: { 'Cache-Control': 'no-store' },
       body: JSON.stringify({ result: text }),
     };
   } catch (err) {

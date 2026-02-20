@@ -1,4 +1,7 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+
+const SITE_ORIGIN = 'https://managed3d.com';
 
 interface SEOProps {
   title: string;
@@ -14,9 +17,11 @@ export const SEO: React.FC<SEOProps> = ({
   title,
   description = 'Managed Capture 3D Platform - Create and share immersive AR experiences.',
   image = '/og-image.jpg',
-  url = window.location.href,
+  url,
   type = 'website',
 }) => {
+  const { pathname } = useLocation();
+  const canonical = url ?? `${SITE_ORIGIN}${pathname}`;
   const siteTitle = 'Managed Capture';
   const fullTitle = `${title} | ${siteTitle}`;
 
@@ -26,12 +31,13 @@ export const SEO: React.FC<SEOProps> = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link rel="canonical" href={canonical} />
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
-      <meta property="og:url" content={url} />
+      <meta property="og:url" content={canonical} />
       <meta property="og:image" content={image} />
       <meta property="og:site_name" content={siteTitle} />
 

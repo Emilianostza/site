@@ -39,7 +39,6 @@ export interface TierFeatures {
   // Branding & customization
   custom_domain: boolean;
   custom_branding: boolean;
-  white_label: boolean;
 
   // API & integrations
   api_access: boolean;
@@ -92,7 +91,6 @@ export const TIER_DEFINITIONS: Record<
       // Branding
       custom_domain: false,
       custom_branding: false,
-      white_label: false,
 
       // API
       api_access: false,
@@ -134,7 +132,6 @@ export const TIER_DEFINITIONS: Record<
       // Branding
       custom_domain: true,
       custom_branding: true,
-      white_label: false,
 
       // API
       api_access: false,
@@ -176,7 +173,6 @@ export const TIER_DEFINITIONS: Record<
       // Branding
       custom_domain: true,
       custom_branding: true,
-      white_label: true,
 
       // API
       api_access: true,

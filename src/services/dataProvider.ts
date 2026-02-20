@@ -8,24 +8,14 @@
  * - VITE_USE_MOCK_DATA=true: Use in-memory mock data
  * - VITE_USE_MOCK_DATA=false: Use Supabase backend via REST API
  *
- * Role-Based Access Control (RBAC):
- * - ALL role-based filtering happens SERVER-SIDE
- * - Backend filters results based on JWT token claims
- * - Frontend receives only authorized data
- * - Client-side filtering is NOT performed (not your job)
- *
- * Security Model:
- * 1. User authenticates → JWT token generated with role + org_id
- * 2. Token sent with every API request (via Authorization header)
- * 3. Backend verifies token signature (can't be forged)
- * 4. Backend extracts role from token
- * 5. Backend filters results based on role:
- *    - Admin: All projects
- *    - Technician: Only assigned projects
- *    - Customer: Only own projects
- * 6. Backend returns 403 Forbidden if unauthorized
- *
- * This is secure because tokens are cryptographically signed.
+ * Authorization Model: RLS-first
+ * - Client talks directly to Supabase; all permissions enforced via Row Level Security policies.
+ * - Each table/storage bucket has RLS policies scoped to org_id and role.
+ * - Netlify Functions are used ONLY for privileged server-side operations:
+ *     • gemini-proxy  — AI features (employees only, rate-limited)
+ *     • assets-signed-url — private asset download URLs
+ *     • publish        — future: publish/deploy workflows
+ * - No client-side role filtering — Supabase returns only what the authenticated user may see.
  */
 
 import { env } from '@/config/env';

@@ -107,14 +107,7 @@ function validateEnv(): EnvConfig {
     // Log error in all environments
     console.error(message);
 
-    if (isDev) {
-      // In dev, show alert so user notices
-      if (typeof window !== 'undefined') {
-        setTimeout(() => {
-          alert(`Configuration Error:\n\n${errors.join('\n')}`);
-        }, 0);
-      }
-    } else {
+    if (!isDev) {
       // In production, log but do NOT throw to prevent blank/black screen
       // This allows the app to attempt loading in a degraded state
       console.warn(
@@ -149,7 +142,7 @@ export const env = validateEnv();
 // ============================================================================
 
 if (env.isDev) {
-  console.log('[Config] Environment initialized:', {
+  console.warn('[Config] Environment initialized:', {
     mode: env.isProd ? 'production' : 'development',
     useMockData: env.useMockData,
     apiBaseUrl: env.apiBaseUrl,

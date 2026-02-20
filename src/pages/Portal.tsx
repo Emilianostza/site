@@ -21,6 +21,11 @@ import {
   ChefHat,
   UtensilsCrossed,
   BookOpen,
+  X,
+  Star,
+  Crown,
+  ArrowRight,
+  Box,
 } from 'lucide-react';
 import { Asset, Project } from '@/types';
 import { NewProjectModal } from '@/components/portal/NewProjectModal';
@@ -32,12 +37,24 @@ import { AssetAnalyticsBoard } from '@/components/portal/AssetAnalyticsBoard';
 import { RecentAssetsStrip } from '@/components/portal/RecentAssetsStrip';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { SEO } from '@/components/common/SEO';
 import Skeleton, { SkeletonCard, SkeletonRow } from '@/components/Skeleton';
 
 const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const { logout } = useAuth();
   const { success, error: toastError } = useToast();
+  const { theme } = useTheme();
+
+  // Re-apply portal theme preference when entering the authenticated area
+  // (public Layout.tsx forces light mode; this restores the user's saved choice)
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
     'dashboard' | 'projects' | 'customers' | 'settings' | 'billing'
@@ -45,6 +62,9 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const [activeSettingsTab, setActiveSettingsTab] = useState<
     'profile' | 'security' | 'notifications' | 'billing'
   >('profile');
+
+  const [showUpgradePlanModal, setShowUpgradePlanModal] = useState(false);
+  const [selectedUpgradeTier, setSelectedUpgradeTier] = useState<'ultra' | 'enterprise'>('ultra');
 
   // Password Update State
   const [passwordForm, setPasswordForm] = useState({
@@ -85,15 +105,8 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-
-  const filteredAssets = assets.filter(
-    (asset) =>
-      asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // Derived stats from real data
   const activeProjectCount = projects.filter(
@@ -229,24 +242,20 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 flex items-center justify-between h-16 gap-4">
           {/* Brand */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
-              <svg
-                className="w-4 h-4 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"
-                />
-              </svg>
+            <div className="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center shadow-sm">
+              <Box className="w-4 h-4 text-white" strokeWidth={2.5} />
             </div>
-            <span className="font-bold text-zinc-900 dark:text-white text-base hidden sm:block">
-              {role === 'employee' ? 'Dashboard' : 'Dashboard'}
-            </span>
+            <div className="hidden sm:block">
+              <div className="font-bold text-zinc-900 dark:text-white text-base leading-tight">
+                Managed<span className="text-brand-600 dark:text-brand-400">3D</span>
+              </div>
+              <div className="text-xs leading-tight">
+                Welcome back,{' '}
+                <span className="font-bold text-sm text-zinc-900 dark:text-white">
+                  Bistro Owner
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Nav Tabs */}
@@ -285,10 +294,11 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                   </button>
                 </Link>
                 <button
-                  className="text-zinc-500 dark:text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 p-2 rounded-lg transition-colors"
-                  title="Support"
+                  className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-sm font-bold transition-colors"
+                  title="Help & Support"
                 >
-                  <LifeBuoy className="w-5 h-5" />
+                  <LifeBuoy className="w-4 h-4" />
+                  <span>Help</span>
                 </button>
               </>
             )}
@@ -346,44 +356,15 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
             </div>
           </div>
         )}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
-              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-            </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">
-              Welcome back, Bistro Owner.
-            </p>
-          </div>
-        </div>
-
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
             {role === 'customer' ? (
               // Client Dashboard View
               <>
-                {/* Analytics Board - locked expand for customers */}
-                <div className="mb-8">
-                  <AssetAnalyticsBoard assets={assets} locked />
-                </div>
-
                 {/* Assets Grid (Customer) */}
                 <div>
-                  <div className="flex justify-between items-end mb-6">
-                    <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Project</h2>
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder="Search scenes..."
-                          className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 w-64 text-zinc-900 dark:text-zinc-100"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <AssetGrid assets={filteredAssets} role={role} />
+                  <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-6">Project</h2>
+                  <AssetGrid assets={assets} role={role} />
                 </div>
               </>
             ) : (
@@ -838,11 +819,12 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                   ))}
                 </div>
                 <div className="flex gap-3">
-                  <Link to="/pricing">
-                    <button className="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm">
-                      Upgrade to Ultra
-                    </button>
-                  </Link>
+                  <button
+                    onClick={() => setShowUpgradePlanModal(true)}
+                    className="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
+                  >
+                    Upgrade to Ultra
+                  </button>
                   <button className="px-5 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
                     Change Plan
                   </button>
@@ -1384,11 +1366,12 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                           ))}
                         </div>
                         <div className="mt-6 flex gap-3">
-                          <Link to="/pricing">
-                            <button className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm">
-                              Upgrade to Ultra
-                            </button>
-                          </Link>
+                          <button
+                            onClick={() => setShowUpgradePlanModal(true)}
+                            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
+                          >
+                            Upgrade to Ultra
+                          </button>
                           <button className="px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
                             Change Plan
                           </button>
@@ -1435,6 +1418,190 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
           </div>
         )}
       </main>
+
+      {/* ── Upgrade Plan Modal ─────────────────────────────── */}
+      {showUpgradePlanModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowUpgradePlanModal(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4 border-b border-zinc-100 dark:border-zinc-800 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
+                  Upgrade your plan
+                </h2>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                  You are currently on the{' '}
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">Pro Plan</span>
+                  . Choose your next tier below.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowUpgradePlanModal(false)}
+                className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors flex-shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Tier cards */}
+            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Ultra */}
+              <button
+                onClick={() => setSelectedUpgradeTier('ultra')}
+                className={`relative text-left p-5 rounded-xl border-2 transition-all focus:outline-none ${
+                  selectedUpgradeTier === 'ultra'
+                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-md'
+                    : 'border-zinc-200 dark:border-zinc-700 hover:border-amber-300 dark:hover:border-amber-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                }`}
+              >
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-500 text-white whitespace-nowrap">
+                  Recommended
+                </span>
+                <div
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${
+                    selectedUpgradeTier === 'ultra'
+                      ? 'bg-amber-500 text-white'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                  }`}
+                >
+                  <Star className="w-4 h-4" />
+                </div>
+                <p className="font-bold text-zinc-900 dark:text-white text-sm mb-0.5">Ultra</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3 leading-snug">
+                  Level A quality · Full analytics · White-label viewer
+                </p>
+                <div className="flex items-baseline gap-0.5 mb-3">
+                  <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">€59</span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">/mo · per menu</span>
+                </div>
+                <ul className="space-y-1.5">
+                  {[
+                    'Everything in Pro',
+                    'Level A (high-detail) 3D models',
+                    'Full performance analytics',
+                    'White-label viewer',
+                    'Dedicated account manager',
+                  ].map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-zinc-400"
+                    >
+                      <Check className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                {selectedUpgradeTier === 'ultra' && (
+                  <div className="absolute top-3 right-3">
+                    <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                )}
+              </button>
+
+              {/* Enterprise */}
+              <button
+                onClick={() => setSelectedUpgradeTier('enterprise')}
+                className={`relative text-left p-5 rounded-xl border-2 transition-all focus:outline-none ${
+                  selectedUpgradeTier === 'enterprise'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
+                    : 'border-zinc-200 dark:border-zinc-700 hover:border-purple-300 dark:hover:border-purple-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                }`}
+              >
+                <div
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${
+                    selectedUpgradeTier === 'enterprise'
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                  }`}
+                >
+                  <Crown className="w-4 h-4" />
+                </div>
+                <p className="font-bold text-zinc-900 dark:text-white text-sm mb-0.5">Enterprise</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3 leading-snug">
+                  API access · Custom SLA · Fully bespoke
+                </p>
+                <div className="flex items-baseline gap-0.5 mb-3">
+                  <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    Custom
+                  </span>
+                </div>
+                <ul className="space-y-1.5">
+                  {[
+                    'Everything in Ultra',
+                    'API access & webhooks',
+                    'Custom integrations',
+                    'Dedicated SLA & uptime guarantee',
+                    'Volume pricing',
+                  ].map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-zinc-400"
+                    >
+                      <Check className="w-3.5 h-3.5 text-purple-500 flex-shrink-0 mt-0.5" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                {selectedUpgradeTier === 'enterprise' && (
+                  <div className="absolute top-3 right-3">
+                    <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                )}
+              </button>
+            </div>
+
+            {/* CTA footer */}
+            <div className="px-6 pb-6">
+              <div className="bg-zinc-50 dark:bg-zinc-800/60 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                    {selectedUpgradeTier === 'ultra'
+                      ? 'Ultra — €59/month per menu'
+                      : 'Enterprise — custom pricing'}
+                  </p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {selectedUpgradeTier === 'ultra'
+                      ? 'Billed monthly · cancel anytime · upgrade takes effect immediately'
+                      : 'Our team will reach out within 1 business day to discuss your needs'}
+                  </p>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => setShowUpgradePlanModal(false)}
+                    className="px-4 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                  >
+                    Not now
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowUpgradePlanModal(false);
+                      success(
+                        selectedUpgradeTier === 'ultra'
+                          ? 'Upgrade request sent! Our team will confirm within 24 h.'
+                          : 'Enterprise request sent! A specialist will contact you shortly.'
+                      );
+                    }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold transition-all shadow-sm hover:shadow-md"
+                  >
+                    {selectedUpgradeTier === 'ultra' ? 'Upgrade to Ultra' : 'Contact Sales'}
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

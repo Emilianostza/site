@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS } from '@/constants';
 import { Menu, X, Box, ShieldCheck, ArrowRight, ChevronDown } from 'lucide-react';
-import DarkModeToggle from '@/components/DarkModeToggle';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -13,6 +12,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Force dark mode on public pages without touching localStorage
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+  }, []);
 
   // Track scroll for header shadow
   useEffect(() => {
@@ -104,11 +108,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="hidden md:flex items-center gap-2 shrink-0">
             <Link
               to="/app/login"
-              className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 px-3 py-2 rounded-lg hover:bg-zinc-100 transition-colors"
             >
               Log in
             </Link>
-            <DarkModeToggle />
             <Link
               to="/request"
               className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all shadow-xs hover:shadow-glow hover:-translate-y-px active:translate-y-0"
@@ -120,7 +123,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
           {/* Mobile controls */}
           <div className="md:hidden flex items-center gap-1.5">
-            <DarkModeToggle />
             <button
               className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               onClick={() => setIsMobileMenuOpen((v) => !v)}

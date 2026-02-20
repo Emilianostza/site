@@ -20,6 +20,8 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
+const PRIORITY_SUPPORT_ADDON = { label: 'Priority support', price: 10 };
+
 // Subscription tiers shown in the upgrade modal
 const UPGRADE_TIERS = [
   {
@@ -58,14 +60,8 @@ const UPGRADE_TIERS = [
     addonMonthly: 20,
     icon: Crown,
     color: 'purple',
-    description: 'API access, white-label & SLA',
-    features: [
-      'Everything in Business',
-      'API access',
-      'White-label viewer',
-      'Dedicated SLA',
-      'Custom integrations',
-    ],
+    description: 'API access & dedicated SLA',
+    features: ['Everything in Business', 'API access', 'Dedicated SLA', 'Custom integrations'],
     current: false,
   },
 ];
@@ -84,6 +80,7 @@ export const AssetAnalyticsBoard: React.FC<AssetAnalyticsBoardProps> = ({
   const [selectedTier, setSelectedTier] = useState<'starter' | 'business' | 'enterprise'>(
     'business'
   );
+  const [addPrioritySupport, setAddPrioritySupport] = useState(false);
   const navigate = useNavigate();
   const stats = useMemo(() => {
     const totalViews = assets.reduce((sum, asset) => sum + (asset.viewCount || 0), 0);
@@ -576,12 +573,17 @@ export const AssetAnalyticsBoard: React.FC<AssetAnalyticsBoardProps> = ({
 
             {/* Summary + CTA */}
             {(() => {
-              const tier = UPGRADE_TIERS.find((t) => t.id === selectedTier)!;
+              const tier = UPGRADE_TIERS.find((t) => t.id === selectedTier);
+              if (!tier) return null;
               const perVisit = 100;
               const perItem = 20;
+              const addonCost =
+                !tier.current && addPrioritySupport ? PRIORITY_SUPPORT_ADDON.price : 0;
+              const exampleTotal = perVisit + 15 * perItem + tier.baseMonthly + addonCost;
               return (
                 <div className="px-6 pb-6">
-                  <div className="bg-zinc-50 dark:bg-zinc-800/60 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="bg-zinc-50 dark:bg-zinc-800/60 rounded-xl p-4 space-y-3">
+                    {/* Plan summary line */}
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                         {tier.name} plan summary
@@ -597,12 +599,43 @@ export const AssetAnalyticsBoard: React.FC<AssetAnalyticsBoardProps> = ({
                       </div>
                       {tier.baseMonthly > 0 && (
                         <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                          Example: 15 items → €{perVisit + 15 * perItem + tier.baseMonthly}/first
-                          month
+                          Example: 15 items → €{exampleTotal}/first month
                         </p>
                       )}
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
+
+                    {/* Add-on toggle — only for paid tiers */}
+                    {!tier.current && tier.baseMonthly > 0 && (
+                      <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3 flex items-center justify-between gap-3">
+                        <label
+                          htmlFor="addon-priority-support"
+                          className="flex items-center gap-2.5 cursor-pointer select-none"
+                        >
+                          <input
+                            id="addon-priority-support"
+                            type="checkbox"
+                            checked={addPrioritySupport}
+                            onChange={(e) => setAddPrioritySupport(e.target.checked)}
+                            className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                          />
+                          <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                            {PRIORITY_SUPPORT_ADDON.label}
+                          </span>
+                        </label>
+                        <span
+                          className={`text-xs font-semibold px-2 py-0.5 rounded-full transition-colors ${
+                            addPrioritySupport
+                              ? 'bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300'
+                              : 'bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400'
+                          }`}
+                        >
+                          +€{PRIORITY_SUPPORT_ADDON.price}/mo
+                        </span>
+                      </div>
+                    )}
+
+                    {/* CTA buttons */}
+                    <div className="flex gap-2 justify-end pt-1">
                       {tier.current ? (
                         <span className="px-5 py-2.5 rounded-lg text-sm font-medium text-zinc-400 bg-zinc-200 dark:bg-zinc-700 cursor-not-allowed">
                           Current plan

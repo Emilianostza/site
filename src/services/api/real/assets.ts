@@ -267,16 +267,23 @@ export async function getAssetDownloadUrl(assetId: string): Promise<string> {
   try {
     const asset = await getAsset(assetId);
 
-    // Generate signed URL from S3 (assuming S3 backend)
-    // This would be implemented in a Netlify Function or backend API
-    const response = await fetch('/api/assets/signed-url', {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) throw new Error('Not authenticated');
+
+    const response = await fetch('/.netlify/functions/assets-signed-url', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fileKey: asset.file_key,
-        expiresIn: 3600, // 1 hour
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ assetId, fileKey: asset.file_key }),
     });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error ?? `Signed URL request failed (${response.status})`);
+    }
 
     const { url } = await response.json();
     return url;

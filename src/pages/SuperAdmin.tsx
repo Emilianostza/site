@@ -13,10 +13,6 @@ import {
   FolderOpen,
   Image,
   ChevronRight,
-  DollarSign,
-  CreditCard,
-  Receipt,
-  AlertTriangle,
   Plus,
   Trash2,
   X,
@@ -54,6 +50,8 @@ const SuperAdmin: React.FC = () => {
   });
   const [addLoading, setAddLoading] = useState(false);
   const [addError, setAddError] = useState('');
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState('');
 
   const handleAddUser = async () => {
     if (!addForm.name.trim() || !addForm.email.trim()) {
@@ -75,12 +73,14 @@ const SuperAdmin: React.FC = () => {
   };
 
   const handleDeleteUser = async (id: string) => {
-    if (!window.confirm('Remove this user? This cannot be undone.')) return;
+    setDeleteError('');
     try {
       await deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
+      setPendingDeleteId(null);
     } catch {
-      alert('Failed to remove user.');
+      setDeleteError('Failed to remove user. Please try again.');
+      setPendingDeleteId(null);
     }
   };
 
@@ -251,7 +251,9 @@ const SuperAdmin: React.FC = () => {
                       <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
                         Active Users
                       </p>
-                      <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">1,248</h3>
+                      <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">
+                        {users.length.toLocaleString()}
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -262,9 +264,11 @@ const SuperAdmin: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
-                        Revenue (MRR)
+                        Published Assets
                       </p>
-                      <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">$48.2k</h3>
+                      <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">
+                        {assets.filter((a) => a.status === 'Published').length.toLocaleString()}
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -298,6 +302,9 @@ const SuperAdmin: React.FC = () => {
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     Total Users: {users.length}
                   </p>
+                  {deleteError && (
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">{deleteError}</p>
+                  )}
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
@@ -419,7 +426,7 @@ const SuperAdmin: React.FC = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                              {(user as any).customerId || user.orgId}
+                              {user.orgId}
                             </td>
                             <td className="px-6 py-4">
                               <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
@@ -461,16 +468,42 @@ const SuperAdmin: React.FC = () => {
                                 <ChevronRight
                                   className={`w-4 h-4 text-zinc-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
                                 />
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteUser(user.id);
-                                  }}
-                                  className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                  title="Remove user"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                {pendingDeleteId === user.id ? (
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                      Remove?
+                                    </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteUser(user.id);
+                                      }}
+                                      className="px-2 py-1 rounded text-xs font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors"
+                                    >
+                                      Confirm
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPendingDeleteId(null);
+                                      }}
+                                      className="px-2 py-1 rounded text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setPendingDeleteId(user.id);
+                                    }}
+                                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                    title="Remove user"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -568,7 +601,7 @@ const SuperAdmin: React.FC = () => {
                                     </div>
                                   ) : (
                                     <div className="text-xs text-zinc-400 italic">
-                                      No assets linked to this user's projects.
+                                      No assets linked to this user&apos;s projects.
                                     </div>
                                   )}
                                 </div>
@@ -1112,206 +1145,6 @@ const SuperAdmin: React.FC = () => {
                       </tbody>
                     </table>
                   </div>
-
-                  {/* Customer Payroll / Billing — only shown in customers view */}
-                  {analyticsView === 'customers' &&
-                    (() => {
-                      // Deterministic mock billing per customer derived from their id
-                      const seed = (s: string) =>
-                        s.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-
-                      type PayStatus = 'Paid' | 'Partial' | 'Overdue' | 'Pending';
-
-                      const billing = customers.map((u, i) => {
-                        const n = seed(u.id) + i * 137;
-                        const total = 800 + (n % 9) * 350;
-                        const paidPct = [100, 100, 50, 0, 75, 100, 0, 50][n % 8];
-                        const paid = Math.round((total * paidPct) / 100);
-                        const outstanding = total - paid;
-                        const daysAgo = (n % 45) - 5; // negative = overdue
-                        const dueDate = new Date(Date.now() + daysAgo * 86_400_000);
-                        const status: PayStatus =
-                          paidPct === 100
-                            ? 'Paid'
-                            : daysAgo < 0
-                              ? 'Overdue'
-                              : paidPct === 0
-                                ? 'Pending'
-                                : 'Partial';
-                        const invoice = `INV-${2025000 + (seed(u.id) % 999)}`;
-                        return { user: u, total, paid, outstanding, status, dueDate, invoice };
-                      });
-
-                      const totalBilled = billing.reduce((s, b) => s + b.total, 0);
-                      const totalPaid = billing.reduce((s, b) => s + b.paid, 0);
-                      const totalOutstanding = billing.reduce((s, b) => s + b.outstanding, 0);
-                      const overdueCount = billing.filter((b) => b.status === 'Overdue').length;
-
-                      const fmt = (n: number) =>
-                        n.toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'EUR',
-                          maximumFractionDigits: 0,
-                        });
-
-                      const statusStyle: Record<PayStatus, string> = {
-                        Paid: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                        Partial:
-                          'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                        Overdue: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-                        Pending: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400',
-                      };
-
-                      return (
-                        <div className="space-y-4">
-                          {/* Payroll header */}
-                          <div className="flex items-center gap-2 pt-2">
-                            <Receipt className="w-4 h-4 text-zinc-400" />
-                            <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300">
-                              Customer Payroll
-                            </h3>
-                            {overdueCount > 0 && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                <AlertTriangle className="w-3 h-3" />
-                                {overdueCount} overdue
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Payroll summary strip */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            {[
-                              {
-                                label: 'Total Billed',
-                                value: fmt(totalBilled),
-                                icon: Receipt,
-                                color:
-                                  'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
-                              },
-                              {
-                                label: 'Collected',
-                                value: fmt(totalPaid),
-                                icon: CreditCard,
-                                color:
-                                  'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-                              },
-                              {
-                                label: 'Outstanding',
-                                value: fmt(totalOutstanding),
-                                icon: DollarSign,
-                                color:
-                                  totalOutstanding > 0
-                                    ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                                    : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-                              },
-                            ].map((s) => (
-                              <div
-                                key={s.label}
-                                className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 flex items-center gap-3"
-                              >
-                                <div className={`p-2.5 rounded-lg ${s.color}`}>
-                                  <s.icon className="w-4 h-4" />
-                                </div>
-                                <div>
-                                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                    {s.label}
-                                  </p>
-                                  <p className="text-lg font-bold text-zinc-900 dark:text-white">
-                                    {s.value}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Payroll table */}
-                          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                            <table className="w-full text-sm text-left text-zinc-700 dark:text-zinc-300">
-                              <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-xs uppercase font-semibold text-zinc-500 dark:text-zinc-400">
-                                <tr>
-                                  <th className="px-6 py-3">Customer</th>
-                                  <th className="px-6 py-3">Invoice</th>
-                                  <th className="px-6 py-3">Total</th>
-                                  <th className="px-6 py-3">Paid</th>
-                                  <th className="px-6 py-3">Outstanding</th>
-                                  <th className="px-6 py-3">Due Date</th>
-                                  <th className="px-6 py-3 text-right">Status</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                                {billing.length === 0 && (
-                                  <tr>
-                                    <td
-                                      colSpan={7}
-                                      className="px-6 py-10 text-center text-zinc-400"
-                                    >
-                                      No billing records found.
-                                    </td>
-                                  </tr>
-                                )}
-                                {billing.map(
-                                  ({
-                                    user: u,
-                                    total,
-                                    paid,
-                                    outstanding,
-                                    status,
-                                    dueDate,
-                                    invoice,
-                                  }) => (
-                                    <tr
-                                      key={u.id}
-                                      className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors"
-                                    >
-                                      <td className="px-6 py-3">
-                                        <div className="flex items-center gap-2">
-                                          <div className="w-7 h-7 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                                            {u.name.charAt(0).toUpperCase()}
-                                          </div>
-                                          <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate max-w-[140px]">
-                                            {u.name}
-                                          </span>
-                                        </div>
-                                      </td>
-                                      <td className="px-6 py-3 font-mono text-xs text-zinc-500 dark:text-zinc-400">
-                                        {invoice}
-                                      </td>
-                                      <td className="px-6 py-3 font-semibold">{fmt(total)}</td>
-                                      <td className="px-6 py-3 text-green-700 dark:text-green-400 font-medium">
-                                        {fmt(paid)}
-                                      </td>
-                                      <td className="px-6 py-3">
-                                        {outstanding > 0 ? (
-                                          <span className="font-semibold text-amber-600 dark:text-amber-400">
-                                            {fmt(outstanding)}
-                                          </span>
-                                        ) : (
-                                          <span className="text-zinc-400">—</span>
-                                        )}
-                                      </td>
-                                      <td className="px-6 py-3 text-xs text-zinc-500 dark:text-zinc-400">
-                                        {dueDate.toLocaleDateString('en-GB', {
-                                          day: '2-digit',
-                                          month: 'short',
-                                          year: 'numeric',
-                                        })}
-                                      </td>
-                                      <td className="px-6 py-3 text-right">
-                                        <span
-                                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${statusStyle[status]}`}
-                                        >
-                                          {status}
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  )
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      );
-                    })()}
                 </div>
               );
             })()}
@@ -1326,7 +1159,7 @@ const SuperAdmin: React.FC = () => {
                   {[
                     { name: 'API Gateway', status: 'Operational', color: 'green' },
                     { name: 'Database (Main)', status: 'Operational', color: 'green' },
-                    { name: 'Storage (S3)', status: 'Operational', color: 'green' },
+                    { name: 'Storage (Supabase)', status: 'Operational', color: 'green' },
                     { name: 'Rendering Engine', status: 'Processing', color: 'blue' },
                   ].map((sys, i) => (
                     <div

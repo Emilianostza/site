@@ -29,6 +29,7 @@ const Terms = lazy(() => import('./pages/Terms'));
 const Security = lazy(() => import('./pages/Security'));
 const ARViewer = lazy(() => import('./pages/viewer/ARViewer'));
 const RestaurantPricing = lazy(() => import('./pages/RestaurantPricing'));
+const Roadmap = lazy(() => import('./pages/Roadmap'));
 
 // Loading component
 const LoadingFallback: React.FC = () => (
@@ -67,6 +68,7 @@ const AppContent: React.FC = () => {
                 <Route path="/security" element={<Security />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/roadmap" element={<Roadmap />} />
 
                 {/* Auth Routes (public) */}
                 <Route path="/app/login" element={<Login />} />

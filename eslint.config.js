@@ -73,6 +73,7 @@ export default [
         __filename: 'readonly',
         performance: 'readonly',
         process: 'readonly',
+        Buffer: 'readonly',
       },
       parser: tseslint.parser,
       parserOptions: {

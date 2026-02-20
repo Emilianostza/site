@@ -1,5 +1,5 @@
 import React from 'react';
-import { Industry, IndustryConfig } from '@/types';
+import { IndustryConfig } from '@/types';
 import { Box, Scan, Globe, ShoppingBag } from 'lucide-react';
 
 type NavItem = { label: string; path: string; children?: { label: string; path: string }[] };
@@ -8,6 +8,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Restaurants', path: '/industries/restaurants' },
   { label: 'How it Works', path: '/how-it-works' },
   { label: 'Pricing', path: '/pricing' },
+  { label: 'Roadmap', path: '/roadmap' },
 ];
 
 export const INDUSTRIES: Record<string, IndustryConfig> = {

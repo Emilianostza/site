@@ -16,7 +16,7 @@
  * Result: 403 Limit Exceeded, "Upgrade to Business to add more models"
  */
 
-import { ServiceTier, Project, Asset } from '@/types';
+import type { ServiceTier } from '@/types';
 import { getTierFeatures, isTierFeatureEnabled, getTierLimit, getTierInfo } from '@/services/tiers';
 
 /**
@@ -87,10 +87,10 @@ export function canUseFeature(
     | 'api_access'
     | 'guided_mode'
     | 'kiosk_mode'
+    | 'analytics_basic'
     | 'analytics_advanced'
-    | 'white_label'
 ): TierValidationResult {
-  if (!isTierFeatureEnabled(tier, feature as any)) {
+  if (!isTierFeatureEnabled(tier, feature)) {
     const tierInfo = getTierInfo(tier);
     return {
       allowed: false,
@@ -117,13 +117,6 @@ export function canUseAPI(tier: ServiceTier): TierValidationResult {
 }
 
 /**
- * Check if white-label mode is allowed (Enterprise only)
- */
-export function canUseWhiteLabel(tier: ServiceTier): TierValidationResult {
-  return canUseFeature(tier, 'white_label');
-}
-
-/**
  * Check if guided mode is available
  */
 export function canUseGuidedMode(tier: ServiceTier): TierValidationResult {
@@ -145,7 +138,7 @@ export function canUseAnalytics(
   type: 'basic' | 'advanced'
 ): TierValidationResult {
   const feature = type === 'advanced' ? 'analytics_advanced' : 'analytics_basic';
-  return canUseFeature(tier, feature as any);
+  return canUseFeature(tier, feature);
 }
 
 /**
@@ -169,7 +162,7 @@ export function getSLAUptime(tier: ServiceTier): number {
 /**
  * Get upgrade message (what user needs to do to enable feature)
  */
-export function getUpgradeMessage(currentTier: ServiceTier, featureNeeded: string): string {
+export function getUpgradeMessage(currentTier: ServiceTier, _featureNeeded: string): string {
   const tierInfo = getTierInfo(currentTier);
   return `This feature requires a higher tier than ${tierInfo.name}. Please upgrade your plan.`;
 }
@@ -207,7 +200,7 @@ export function validateProjectOperation(
 
     case 'customize':
       // Check if customization features are available
-      return canUseFeature(tier, 'white_label');
+      return canUseFeature(tier, 'custom_domain');
 
     case 'api_access':
       // Only Enterprise allows API access
