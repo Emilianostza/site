@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { HOW_IT_WORKS_STEPS } from '@/constants';
 import Accordion from '@/components/Accordion';
+import { SEO } from '@/components/common/SEO';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const Home: React.FC = () => {
@@ -18,6 +19,10 @@ const Home: React.FC = () => {
         'data-file': 'src/pages/Home.tsx',
       })}
     >
+      <SEO
+        title="3D Capture for Restaurants"
+        description="Professional managed 3D capture for restaurants. We photograph your dishes on-site and deliver web-ready 3D & AR assets with QR codes — no equipment or expertise needed."
+      />
       {/* Hero */}
       <section className="relative bg-zinc-950 text-white overflow-hidden min-h-[92vh] flex items-center">
         {/* Background layers */}
@@ -42,9 +47,9 @@ const Home: React.FC = () => {
             {/* Headline */}
             <div className="animate-slide-up">
               <h1 className="font-display text-5xl md:text-[4.5rem] font-bold tracking-tight leading-[1.08] text-white">
-                Expert 3D capture,
+                3D dishes for your menu,
                 <br />
-                <span className="text-gradient">delivered to you.</span>
+                <span className="text-gradient">delivered in days.</span>
               </h1>
             </div>
 
@@ -53,8 +58,8 @@ const Home: React.FC = () => {
               className="text-lg md:text-xl text-zinc-400 max-w-md leading-relaxed animate-fade-in-up"
               style={{ animationDelay: '150ms' }}
             >
-              We come to your location, capture your objects, and deliver production-ready 3D &amp;
-              AR assets in under a week. No equipment. No expertise needed.
+              We come to your restaurant, photograph your dishes, and deliver production-ready
+              3D &amp; AR assets in 5–8 business days. No equipment. No expertise needed.
             </p>
 
             {/* CTAs */}
@@ -78,14 +83,21 @@ const Home: React.FC = () => {
               </Link>
             </div>
 
+            <p
+              className="text-xs text-zinc-500 animate-fade-in-up"
+              style={{ animationDelay: '300ms' }}
+            >
+              No credit card required. Free consultation included.
+            </p>
+
             {/* Stats strip */}
             <div
               className="flex flex-wrap gap-6 pt-2 animate-fade-in-up"
               style={{ animationDelay: '350ms' }}
             >
               {[
-                { value: '500+', label: 'Photographers' },
-                { value: '10k+', label: 'Projects delivered' },
+                { value: '500+', label: 'Capture specialists' },
+                { value: '10k+', label: 'Dishes delivered' },
                 { value: '3', label: 'EU countries' },
               ].map((s) => (
                 <div key={s.label} className="flex flex-col">
@@ -152,8 +164,8 @@ const Home: React.FC = () => {
               From request to <span className="text-gradient">live 3D asset</span>
             </h2>
             <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-              We manage every step — no learning curve, no equipment, no risk. You get
-              production-ready 3D in days.
+              We manage every step — no learning curve, no equipment, no hassle. You get
+              production-ready 3D in 5–8 business days.
             </p>
           </div>
 
@@ -228,9 +240,9 @@ const Home: React.FC = () => {
                 title: 'How does the capture process work?',
                 content: (
                   <p>
-                    We handle everything from logistics to processing. You simply request a capture,
-                    our team comes to your location (or you ship items to us), we scan your objects,
-                    and deliver web-ready 3D models within days.
+                    We handle everything from scheduling to delivery. You request a capture,
+                    our team comes to your restaurant, photographs your dishes, and delivers
+                    web-ready 3D models in 5–8 business days.
                   </p>
                 ),
               },
@@ -238,9 +250,9 @@ const Home: React.FC = () => {
                 title: 'What is the quality of the 3D models?',
                 content: (
                   <p>
-                    We provide high-fidelity, photorealistic 3D models optimized for web and AR. Our
-                    pipelines use advanced photogrammetry and laser scanning to ensure
-                    sub-millimeter accuracy and realistic textures.
+                    We deliver high-fidelity, photorealistic 3D models optimized for web and AR.
+                    Our team uses professional photogrammetry to capture every texture and detail
+                    of your dishes accurately.
                   </p>
                 ),
               },
@@ -248,19 +260,18 @@ const Home: React.FC = () => {
                 title: 'Do I need an app to view the models?',
                 content: (
                   <p>
-                    No app required! Our 3D viewer runs directly in any modern web browser. For AR
+                    No app required. Our 3D viewer runs directly in any modern web browser. For AR
                     experiences on mobile, it uses native iOS (QuickLook) and Android (Scene Viewer)
-                    capabilities.
+                    capabilities — your guests just scan a QR code.
                   </p>
                 ),
               },
               {
-                title: 'Can I integrate this into my existing website?',
+                title: 'Can I integrate this into my existing website or menu?',
                 content: (
                   <p>
-                    Yes, we provide a simple embed code (iframe) or a React component that you can
-                    drop into any website. It works with Shopify, WordPress, Squarespace, and custom
-                    stacks.
+                    Yes. We provide a simple embed code, QR codes for each dish, and printable
+                    QR sheets you can place on tables or menus. It works with any website platform.
                   </p>
                 ),
               },
@@ -287,7 +298,7 @@ const Home: React.FC = () => {
           </p>
           <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-3">
             Four phases. Dozens of features.
-            <br className="hidden sm:block" /> All built for restaurants.
+            <br className="hidden sm:block" /> Built for restaurants.
           </h2>
           <p className="text-zinc-400 text-sm mb-8 max-w-lg mx-auto">
             From AI quality control to POS integrations, mobile apps, and EU expansion — see

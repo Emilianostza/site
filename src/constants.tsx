@@ -7,6 +7,7 @@ type NavItem = { label: string; path: string; children?: { label: string; path: 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Restaurants', path: '/industries/restaurants' },
   { label: 'How it Works', path: '/how-it-works' },
+  { label: 'Gallery', path: '/gallery' },
   { label: 'Pricing', path: '/pricing' },
   { label: 'Roadmap', path: '/roadmap' },
 ];
@@ -15,7 +16,7 @@ export const INDUSTRIES: Record<string, IndustryConfig> = {
   restaurants: {
     id: 'restaurants',
     title: 'Turn your signature items into interactive 3D',
-    subtitle: 'Managed capture by employees + web/AR-ready delivery for menus and marketing.',
+    subtitle: 'Our team captures your dishes on-site and delivers web/AR-ready 3D models for menus and marketing.',
     heroImage: 'https://picsum.photos/seed/restaurant_hero/1200/600',
     demoImage: 'https://picsum.photos/seed/burger_3d/800/600',
     outcomes: [
@@ -59,8 +60,8 @@ export const HOW_IT_WORKS_STEPS = [
     icon: <Box className="w-6 h-6" />,
   },
   {
-    title: 'Employee Capture',
-    desc: 'Our trained experts arrive on-site or receive your shipment.',
+    title: 'Expert Capture',
+    desc: 'Our trained team arrives on-site and photographs your items.',
     icon: <Scan className="w-6 h-6" />,
   },
   {

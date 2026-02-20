@@ -341,6 +341,7 @@ p {
   animation: spin 1s linear infinite;
 }
 
+/* slideInRight toast variant — overrides the earlier page transition version */
 @keyframes slideInRight {
   from {
     opacity: 0;

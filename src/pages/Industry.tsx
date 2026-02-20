@@ -2,23 +2,29 @@ import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { INDUSTRIES } from '@/constants';
 import { Check, Shield, ArrowRight, Eye } from 'lucide-react';
+import { SEO } from '@/components/common/SEO';
+import Accordion from '@/components/Accordion';
 
 const Industry: React.FC = () => {
   const { type } = useParams<{ type: string }>();
   const config = type ? INDUSTRIES[type] : null;
 
   if (!config) {
-    return <Navigate to="/industries" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
     <div>
+      <SEO
+        title={config.title}
+        description={config.subtitle}
+      />
       {/* Industry Hero */}
       <section className="bg-zinc-900 text-white py-20">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <div className="inline-block px-3 py-1 rounded-full bg-brand-900/50 text-brand-200 text-sm font-semibold mb-6 border border-brand-700">
-              For {config.title}
+              For {config.id.charAt(0).toUpperCase() + config.id.slice(1)}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{config.title}</h1>
             <p className="text-lg text-zinc-300 mb-8">{config.subtitle}</p>
@@ -38,7 +44,7 @@ const Industry: React.FC = () => {
             </div>
           </div>
           <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-zinc-700">
-            <img src={config.heroImage} alt={config.title} className="w-full h-auto object-cover" />
+            <img src={config.heroImage} alt={config.title} className="w-full h-auto object-cover" loading="eager" />
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 to-transparent"></div>
           </div>
         </div>
@@ -82,8 +88,8 @@ const Industry: React.FC = () => {
               Models we've delivered
             </h2>
             <p className="text-zinc-500 dark:text-zinc-400 mt-3 max-w-xl mx-auto">
-              Browse real assets captured for {config.id} clients — rotate, zoom, and explore every
-              detail.
+              Browse real assets captured for restaurant clients — rotate, zoom, and explore
+              every detail.
             </p>
           </div>
 
@@ -91,13 +97,16 @@ const Industry: React.FC = () => {
             {config.samples.map((sample, idx) => (
               <div
                 key={idx}
-                className="group relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer"
+                role="img"
+                aria-label={`${sample.name} — ${sample.tag}`}
+                className="group relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1"
               >
                 <div className="aspect-square overflow-hidden">
                   <img
                     src={sample.thumb}
                     alt={sample.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
                   />
                 </div>
                 {/* Hover overlay */}
@@ -135,7 +144,7 @@ const Industry: React.FC = () => {
       <section className="py-20 bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-16 items-center">
           <div className="order-2 md:order-1 relative">
-            <img src={config.demoImage} alt="Demo 3D Model" className="rounded-xl shadow-lg" />
+            <img src={config.demoImage} alt="Interactive 3D model demo" className="rounded-xl shadow-lg" loading="lazy" />
             <div className="absolute -bottom-6 -right-6 bg-white dark:bg-zinc-800 p-4 rounded-lg shadow-xl border border-zinc-100 dark:border-zinc-700 max-w-xs">
               <div className="text-sm font-bold text-zinc-900 dark:text-white mb-1">
                 Interactive Viewer
@@ -150,8 +159,8 @@ const Industry: React.FC = () => {
               What your team can do
             </h2>
             <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-              We manage the capture, you control the distribution. Our portal gives you specific
-              permissions tailored to the {config.id} workflow.
+              We manage the capture, you control the distribution. Our portal gives you
+              permissions tailored to your restaurant workflow.
             </p>
             <ul className="space-y-4">
               {config.permissions.map((perm, idx) => (
@@ -179,26 +188,28 @@ const Industry: React.FC = () => {
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-8 text-center">
             Frequently Asked Questions
           </h2>
-          <div className="space-y-4">
-            <details className="group border border-zinc-200 dark:border-zinc-800 rounded-lg open:bg-zinc-50 dark:open:bg-zinc-900">
-              <summary className="flex cursor-pointer items-center justify-between p-4 font-medium text-zinc-900 dark:text-white">
-                How long does capture take?
-              </summary>
-              <div className="p-4 pt-0 text-zinc-600 dark:text-zinc-400">
-                On-site capture typically takes 1–2 hours per 10 objects. Processing and QA take 3–5
-                business days.
-              </div>
-            </details>
-            <details className="group border border-zinc-200 dark:border-zinc-800 rounded-lg open:bg-zinc-50 dark:open:bg-zinc-900">
-              <summary className="flex cursor-pointer items-center justify-between p-4 font-medium text-zinc-900 dark:text-white">
-                Do I need to prepare the objects?
-              </summary>
-              <div className="p-4 pt-0 text-zinc-600 dark:text-zinc-400">
-                Yes, items should be clean and staged. For reflective items, our team will bring
-                specialized scanning sprays if permitted.
-              </div>
-            </details>
-          </div>
+          <Accordion
+            items={[
+              {
+                title: 'How long does capture take?',
+                content: (
+                  <p>
+                    On-site capture typically takes 1–2 hours per 10 dishes. Processing and QA take 3–5
+                    business days, with total delivery in 5–8 business days.
+                  </p>
+                ),
+              },
+              {
+                title: 'Do I need to prepare the dishes?',
+                content: (
+                  <p>
+                    Yes, dishes should be freshly plated and presented as you would serve them.
+                    Our team handles all the photography equipment and lighting.
+                  </p>
+                ),
+              },
+            ]}
+          />
         </div>
       </section>
     </div>

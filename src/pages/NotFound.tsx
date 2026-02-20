@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import Button from '@/components/Button';
+import { SEO } from '@/components/common/SEO';
 
 const NotFound: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800 px-4">
+      <SEO title="Page Not Found" description="The page you're looking for doesn't exist." />
       <div className="max-w-2xl w-full text-center">
         {/* 404 Number */}
         <div className="mb-8">

@@ -15,8 +15,8 @@ interface SEOProps {
 // they are automatically hoisted to <head> without a provider.
 export const SEO: React.FC<SEOProps> = ({
   title,
-  description = 'Managed Capture 3D Platform - Create and share immersive AR experiences.',
-  image = '/og-image.jpg',
+  description = 'Professional 3D capture for restaurants. We photograph your dishes and deliver web-ready 3D & AR assets with QR codes.',
+  image,
   url,
   type = 'website',
 }) => {
@@ -24,6 +24,7 @@ export const SEO: React.FC<SEOProps> = ({
   const canonical = url ?? `${SITE_ORIGIN}${pathname}`;
   const siteTitle = 'Managed Capture';
   const fullTitle = `${title} | ${siteTitle}`;
+  const fullImage = image ? (image.startsWith('http') ? image : `${SITE_ORIGIN}${image}`) : undefined;
 
   return (
     <>
@@ -38,14 +39,14 @@ export const SEO: React.FC<SEOProps> = ({
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonical} />
-      <meta property="og:image" content={image} />
+      {fullImage && <meta property="og:image" content={fullImage} />}
       <meta property="og:site_name" content={siteTitle} />
 
       {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={fullImage ? 'summary_large_image' : 'summary'} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
+      {fullImage && <meta name="twitter:image" content={fullImage} />}
     </>
   );
 };

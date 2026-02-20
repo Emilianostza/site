@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Asset } from '@/types';
 import { AssetsProvider } from '@/services/dataProvider';
 import { Box, PlayCircle, X, Search, Loader2 } from 'lucide-react';
+import { SEO } from '@/components/common/SEO';
 
 // Declare model-viewer type for TypeScript
 declare global {
@@ -23,6 +24,12 @@ const Gallery: React.FC = () => {
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<string>(initialFilter ?? 'All');
+  const [copied, setCopied] = useState(false);
+
+  // Reset copied state when switching assets
+  useEffect(() => {
+    setCopied(false);
+  }, [selectedAsset]);
 
   useEffect(() => {
     import('@google/model-viewer');
@@ -55,6 +62,10 @@ const Gallery: React.FC = () => {
 
   return (
     <div className="bg-zinc-50 dark:bg-zinc-900 min-h-screen py-8 md:py-16">
+      <SEO
+        title="3D Gallery"
+        description="Browse our collection of high-fidelity 3D food and product captures. Interact with models in 3D and AR."
+      />
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600 mb-4 animate-fade-in-up">
@@ -108,7 +119,15 @@ const Gallery: React.FC = () => {
             {filteredAssets.map((asset) => (
               <div
                 key={asset.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => setSelectedAsset(asset)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedAsset(asset);
+                  }
+                }}
                 className="group break-inside-avoid bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-2xl hover:shadow-brand-500/20 transition-all duration-300 cursor-pointer transform hover:-translate-y-2 hover:scale-[1.02]"
               >
                 <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-700">
@@ -167,8 +186,14 @@ const Gallery: React.FC = () => {
       {selectedAsset && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`3D viewer: ${selectedAsset.name}`}
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedAsset(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setSelectedAsset(null);
           }}
         >
           <div className="relative w-full max-w-6xl bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-[85vh] md:h-[75vh] animate-slide-up">
@@ -206,9 +231,7 @@ const Gallery: React.FC = () => {
               {!selectedAsset.file_key?.startsWith('http') && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white p-6 text-center">
                   <p>
-                    Model preview not available in this demo environment.
-                    <br />
-                    (Local file path: {selectedAsset.file_key})
+                    3D preview is loading or not yet available for this asset.
                   </p>
                 </div>
               )}
@@ -225,7 +248,7 @@ const Gallery: React.FC = () => {
                 </h2>
                 <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed mb-6">
                   High-fidelity 3D capture optimized for web and AR experiences. Photorealistic
-                  textures with sub-millimeter accuracy.
+                  textures with true-to-life detail.
                 </p>
               </div>
 
@@ -266,8 +289,17 @@ const Gallery: React.FC = () => {
                   View in AR
                   <Box className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                 </button>
-                <button className="group w-full py-3.5 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-xl font-bold hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-brand-300 dark:hover:border-brand-700 transition-all hover:scale-105 active:scale-100">
-                  Share Model
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/view/${selectedAsset.id}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }).catch(() => {});
+                  }}
+                  className="group w-full py-3.5 border-2 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-xl font-bold hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-brand-300 dark:hover:border-brand-700 transition-all hover:scale-105 active:scale-100"
+                >
+                  {copied ? 'Copied!' : 'Copy Share Link'}
                 </button>
               </div>
             </div>

@@ -11,6 +11,7 @@ import {
   Rocket,
 } from 'lucide-react';
 import { HOW_IT_WORKS_STEPS } from '@/constants';
+import { SEO } from '@/components/common/SEO';
 
 /* ─── Timeline data ─────────────────────────────────────── */
 const TIMELINE = [
@@ -18,7 +19,7 @@ const TIMELINE = [
     day: 'Day 1',
     label: 'Submit Request',
     description:
-      'Fill out our intake form with object details, logistics preferences, and delivery goals. A dedicated project coordinator confirms within 2 hours.',
+      'Fill out our intake form with object details, logistics preferences, and delivery goals. A dedicated project coordinator responds within one business day.',
     icon: ClipboardList,
     color: 'brand',
   },
@@ -96,6 +97,10 @@ const colorMap: Record<string, { icon: string; ring: string; label: string }> = 
 const HowItWorks: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
+      <SEO
+        title="How It Works"
+        description="From your first request to live 3D assets in 5–8 business days. See our step-by-step managed capture process."
+      />
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="relative bg-zinc-950 overflow-hidden pt-24 pb-28">
         <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
@@ -112,7 +117,7 @@ const HowItWorks: React.FC = () => {
           </h1>
           <p className="text-xl text-zinc-400 leading-relaxed mb-10 max-w-2xl mx-auto">
             From your first request to live, embeddable 3D assets — we handle every step. No
-            equipment, no expertise, no risk on your end.
+            equipment, no expertise, no hassle on your end.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -268,7 +273,7 @@ const HowItWorks: React.FC = () => {
             Ready to get started?
           </h2>
           <p className="text-zinc-400 text-lg mb-10">
-            Submit a capture request — we&apos;ll confirm within 2 hours. No credit card required.
+            Submit a capture request — we&apos;ll respond within one business day. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link

@@ -151,41 +151,51 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          {/* Demo User Quick Links */}
-          <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600">
-            <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-3 uppercase tracking-wide">
-              Demo Users
-            </p>
-            <div className="space-y-2">
-              {mockUsers
-                .filter((u) => u.role === selectedRole)
-                .map((user, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setEmail(user.email);
-                      setPassword('demo');
-                    }}
-                    disabled={loading}
-                    className="w-full text-left p-2 text-sm rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-brand-400 dark:hover:border-brand-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <div className="font-medium text-slate-900 dark:text-white">{user.name}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">{user.email}</div>
-                  </button>
-                ))}
+          {/* Demo User Quick Links — dev only */}
+          {import.meta.env.DEV && (
+            <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600">
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-3 uppercase tracking-wide">
+                Demo Users (dev only)
+              </p>
+              <div className="space-y-2">
+                {mockUsers
+                  .filter((u) => u.role === selectedRole)
+                  .map((user, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setEmail(user.email);
+                        setPassword('demo');
+                      }}
+                      disabled={loading}
+                      className="w-full text-left p-2 text-sm rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-brand-400 dark:hover:border-brand-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <div className="font-medium text-slate-900 dark:text-white">{user.name}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{user.email}</div>
+                    </button>
+                  ))}
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
+                Click any user to auto-fill credentials, then press Sign In
+              </p>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
-              Click any user to auto-fill credentials, then press Sign In
-            </p>
-          </div>
+          )}
 
-          <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-            {selectedRole === 'customer' ? (
-              <p>No account? Contact your project manager for an invite.</p>
-            ) : (
-              <p>Employee access only. Unauthorized access is prohibited.</p>
-            )}
+          <div className="mt-6 text-center space-y-2">
+            <a
+              href="mailto:hello@managedcapture.com?subject=Password%20Reset%20Request"
+              className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 hover:underline"
+            >
+              Forgot your password?
+            </a>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {selectedRole === 'customer' ? (
+                <>No account? Contact your project manager for an invite.</>
+              ) : (
+                <>Team member access. Contact your admin if you need help.</>
+              )}
+            </p>
           </div>
         </div>
       </div>
