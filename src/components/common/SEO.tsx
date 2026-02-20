@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-const SITE_ORIGIN = 'https://managed3d.com';
+const SITE_ORIGIN = 'https://managedcapture3d.com';
 
 interface SEOProps {
   title: string;

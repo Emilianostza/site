@@ -116,7 +116,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               to="/request"
               className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all shadow-xs hover:shadow-glow hover:-translate-y-px active:translate-y-0"
             >
-              Request Capture
+              Get a Free Quote
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
@@ -179,7 +179,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 to="/request"
                 className="mt-1 px-4 py-3 rounded-full bg-brand-600 text-white text-sm font-semibold text-center hover:bg-brand-700 transition-colors shadow-xs"
               >
-                Request Capture
+                Get a Free Quote
               </Link>
             </div>
           </div>
@@ -208,7 +208,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </p>
               <div className="flex items-center gap-1.5 text-xs text-emerald-500">
                 <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
-                SOC 2 Type II Compliant
+                <Link to="/security" className="hover:text-emerald-400 transition-colors">SOC 2 Compliant</Link>
               </div>
             </div>
 
@@ -264,8 +264,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
           <div className="border-t border-zinc-800/60 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-zinc-600">© 2026 Managed Capture 3D. All rights reserved.</p>
-            <p className="text-xs text-zinc-700">
-              Bringing the physical world into the digital age.
+            <p className="text-xs text-zinc-600">
+              Questions?{' '}
+              <a href="mailto:hello@managedcapture.com" className="text-zinc-400 hover:text-zinc-200 transition-colors underline underline-offset-2">
+                hello@managedcapture.com
+              </a>
             </p>
           </div>
         </div>

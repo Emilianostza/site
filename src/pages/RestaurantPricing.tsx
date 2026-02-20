@@ -316,7 +316,7 @@ const RestaurantPricing: React.FC = () => {
                       variant={plan.highlighted ? 'primary' : 'outline'}
                       className={`w-full ${plan.highlighted ? 'bg-amber-600 hover:bg-amber-500 border-amber-600' : ''}`}
                     >
-                      Get started <ArrowRight className="w-4 h-4" />
+                      Get a free quote <ArrowRight className="w-4 h-4" />
                     </Button>
                   </Link>
                 </Card>
@@ -721,7 +721,7 @@ const RestaurantPricing: React.FC = () => {
                 size="lg"
                 className="bg-amber-600 hover:bg-amber-500 border-amber-600 text-white"
               >
-                Request capture <ArrowRight className="w-5 h-5" />
+                Get a free quote <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <Link to="/pricing/platform">

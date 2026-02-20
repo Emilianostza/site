@@ -301,7 +301,7 @@ const Pricing: React.FC = () => {
                   </ul>
 
                   {plan.enterpriseCustom ? (
-                    <Link to="/#contact">
+                    <Link to="/request">
                       <Button
                         variant="outline"
                         className="w-full border-zinc-600 text-white hover:bg-zinc-700"
@@ -312,7 +312,7 @@ const Pricing: React.FC = () => {
                   ) : (
                     <Link to="/request">
                       <Button variant={plan.highlighted ? 'primary' : 'outline'} className="w-full">
-                        Get started <ArrowRight className="w-4 h-4" />
+                        Get a free quote <ArrowRight className="w-4 h-4" />
                       </Button>
                     </Link>
                   )}
@@ -600,7 +600,7 @@ const Pricing: React.FC = () => {
             </div>
             <Link to="/request" className="flex-shrink-0">
               <Button variant="outline" size="sm">
-                Book a visit <ArrowRight className="w-4 h-4" />
+                Request an on-site visit <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
@@ -782,14 +782,14 @@ const Pricing: React.FC = () => {
             hosting, compliance, and bespoke SLA.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/#contact">
+            <Link to="/request">
               <Button variant="outline" size="lg">
                 Contact Sales <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <Link to="/request">
               <Button size="lg" className="bg-brand-500 hover:bg-brand-600 text-white">
-                Start with a plan <ChevronRight className="w-5 h-5" />
+                Request a quote <ChevronRight className="w-5 h-5" />
               </Button>
             </Link>
           </div>

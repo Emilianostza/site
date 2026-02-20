@@ -69,7 +69,8 @@ const Privacy: React.FC = () => {
           <div className="pt-8 border-t border-slate-200 dark:border-slate-700">
             <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
               Last updated: February 15, 2026. If you have questions or comments about this policy,
-              you may email us at privacy@managedcapture.com.
+              you may email us at{' '}
+              <a href="mailto:privacy@managedcapture.com" className="text-brand-600 dark:text-brand-400 underline underline-offset-2 hover:text-brand-700">privacy@managedcapture.com</a>.
             </p>
           </div>
         </div>

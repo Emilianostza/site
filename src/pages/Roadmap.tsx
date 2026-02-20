@@ -415,14 +415,15 @@ const Roadmap: React.FC = () => (
           Have a feature request?
         </h2>
         <p className="text-zinc-400 text-sm mb-8 leading-relaxed">
-          Our roadmap is driven by restaurant owners. If there&apos;s a tool that would make a real
-          difference to your business, we want to hear it.
+          Our roadmap is driven by restaurant owners. Share your ideas through a capture request or
+          email us at{' '}
+          <a href="mailto:hello@managedcapture.com" className="text-brand-400 underline underline-offset-2 hover:text-brand-300">hello@managedcapture.com</a>.
         </p>
         <Link
           to="/request"
           className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all shadow-xs hover:shadow-glow hover:-translate-y-px active:translate-y-0"
         >
-          Get in touch
+          Get a free quote
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
         </Link>
       </div>

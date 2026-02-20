@@ -151,10 +151,11 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          {/* Demo User Quick Links */}
+          {/* Demo User Quick Links — only shown in development */}
+          {import.meta.env.DEV && (
           <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600">
             <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-3 uppercase tracking-wide">
-              Demo Users
+              Demo Users (Dev Only)
             </p>
             <div className="space-y-2">
               {mockUsers
@@ -179,6 +180,7 @@ const Login: React.FC = () => {
               Click any user to auto-fill credentials, then press Sign In
             </p>
           </div>
+          )}
 
           <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
             {selectedRole === 'customer' ? (

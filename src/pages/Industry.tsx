@@ -27,7 +27,7 @@ const Industry: React.FC = () => {
                 to={`/request?industry=${config.id}`}
                 className="px-6 py-3 rounded-lg bg-brand-600 font-bold hover:bg-brand-500 transition-colors text-center"
               >
-                Request Capture
+                Get a Free Quote
               </Link>
               <a
                 href="#gallery"
@@ -124,7 +124,7 @@ const Industry: React.FC = () => {
               to={`/request?industry=${config.id}`}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm transition-all shadow-sm hover:shadow-lg hover:-translate-y-0.5"
             >
-              Get your own assets captured
+              Get a free quote for your assets
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

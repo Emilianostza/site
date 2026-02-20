@@ -66,7 +66,7 @@ const Home: React.FC = () => {
                 to="/request"
                 className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold text-base transition-all duration-200 hover:-translate-y-px hover:shadow-glow shadow-xs"
               >
-                Start a Request
+                Get a Free Quote
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
@@ -77,6 +77,13 @@ const Home: React.FC = () => {
                 <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all duration-200" />
               </Link>
             </div>
+
+            <p
+              className="text-xs text-zinc-500 animate-fade-in-up"
+              style={{ animationDelay: '300ms' }}
+            >
+              No credit card required. You&apos;ll receive a confirmed quote after a free consultation.
+            </p>
 
             {/* Stats strip */}
             <div
@@ -197,7 +204,7 @@ const Home: React.FC = () => {
                 to="/request"
                 className="group inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold text-base transition-all duration-200 hover:-translate-y-px hover:shadow-glow"
               >
-                Request a Capture
+                Get a Free Quote
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
@@ -308,7 +315,7 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4 max-w-2xl">
           <div ref={trustRef} className="reveal">
             <p className="text-center text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-10">
-              What our clients say
+              Client feedback
             </p>
             <div className="flex flex-col p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 border-t-2 border-t-orange-500/30 dark:border-t-orange-500/20 hover:shadow-hover transition-shadow duration-300">
               <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed italic flex-1">

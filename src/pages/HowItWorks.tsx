@@ -119,7 +119,7 @@ const HowItWorks: React.FC = () => {
               to="/request"
               className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold transition-all hover:-translate-y-px hover:shadow-glow"
             >
-              Start a Request
+              Get a Free Quote
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
@@ -275,7 +275,7 @@ const HowItWorks: React.FC = () => {
               to="/request"
               className="group inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold text-base transition-all hover:-translate-y-px hover:shadow-glow"
             >
-              Request a Capture
+              Get a Free Quote
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link

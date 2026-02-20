@@ -263,7 +263,7 @@ const RequestForm: React.FC = () => {
               <Check className="w-10 h-10" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Request Confirmed!
+              Quote Request Received
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 leading-relaxed">
               Thank you, <span className="font-semibold">{formData.contact.full_name}</span>.
@@ -817,11 +817,14 @@ const RequestForm: React.FC = () => {
                     </div>
 
                     <div className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400 mt-4">
-                      <input type="checkbox" required className="mt-1" />
-                      <span>
-                        I agree to the Terms of Service and Privacy Policy. I understand this is a
-                        request for a quote and consultation.
-                      </span>
+                      <input type="checkbox" required className="mt-1" id="consent-checkbox" />
+                      <label htmlFor="consent-checkbox">
+                        I agree to the{' '}
+                        <Link to="/terms" target="_blank" className="text-brand-600 dark:text-brand-400 underline underline-offset-2 hover:text-brand-700">Terms of Service</Link>{' '}
+                        and{' '}
+                        <Link to="/privacy" target="_blank" className="text-brand-600 dark:text-brand-400 underline underline-offset-2 hover:text-brand-700">Privacy Policy</Link>.
+                        This is a request for a free quote — no payment required.
+                      </label>
                     </div>
                   </div>
                 )}
@@ -862,7 +865,7 @@ const RequestForm: React.FC = () => {
                         </>
                       ) : (
                         <>
-                          Submit Request{' '}
+                          Submit Free Quote Request{' '}
                           <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                         </>
                       )}

@@ -44,18 +44,19 @@
     <priority>0.7</priority>
   </url>
 
+
   <url>
-    <loc>https://managedcapture3d.com/industries/museums</loc>
-    <lastmod>2026-02-11</lastmod>
+    <loc>https://managedcapture3d.com/pricing/platform</loc>
+    <lastmod>2026-02-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://managedcapture3d.com/industries/ecommerce</loc>
-    <lastmod>2026-02-11</lastmod>
+    <loc>https://managedcapture3d.com/roadmap</loc>
+    <lastmod>2026-02-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
   </url>
 
   <!-- Legal Pages -->
