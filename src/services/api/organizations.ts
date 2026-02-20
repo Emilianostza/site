@@ -5,7 +5,7 @@
  */
 
 import { apiClient } from '@/services/api/client';
-import { Organization, organizationFromDTO } from '@/types/auth';
+import { Organization, organizationFromDTO, organizationToDTO } from '@/types/auth';
 
 /**
  * Fetch a single organization by ID
@@ -32,7 +32,12 @@ export async function create(org: {
   countryCode: string;
   region: string;
 }): Promise<Organization> {
-  const data = await apiClient.post('/organizations', org);
+  const data = await apiClient.post('/organizations', {
+    name: org.name,
+    slug: org.slug,
+    country_code: org.countryCode,
+    region: org.region,
+  });
   return organizationFromDTO(data);
 }
 
@@ -40,6 +45,13 @@ export async function create(org: {
  * Update organization settings (admin only)
  */
 export async function update(orgId: string, updates: Partial<Organization>): Promise<Organization> {
-  const data = await apiClient.patch(`/organizations/${orgId}`, updates);
+  // Convert camelCase domain model to snake_case DTO for the API
+  const dto = organizationToDTO(updates as Organization);
+  // Only include defined fields
+  const payload: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(dto)) {
+    if (value !== undefined) payload[key] = value;
+  }
+  const data = await apiClient.patch(`/organizations/${orgId}`, payload);
   return organizationFromDTO(data);
 }

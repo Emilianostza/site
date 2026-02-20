@@ -86,7 +86,7 @@ export async function createAsset(data: Partial<Asset>) {
     name: data.name || 'Untitled Scene',
     project_id: data.project_id,
     thumb: data.thumb || 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-    status: 'in_review' as any,
+    status: 'In Review',
     type: data.type || '3D Model',
     size: data.size || 'Unknown',
     file_size: data.file_size || 0,
@@ -128,7 +128,7 @@ export async function updateAsset(id: string, data: Partial<Asset>) {
  * Publish an asset (transitions from in_review to published)
  */
 export async function publishAsset(id: string) {
-  return updateAsset(id, { status: 'published' as any });
+  return updateAsset(id, { status: 'Published' });
 }
 
 /**

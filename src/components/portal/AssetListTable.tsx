@@ -126,7 +126,7 @@ export const AssetListTable: React.FC<AssetListTableProps> = ({
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-xs font-bold text-white">
-                        {assignee.slice(-4, -1)}
+                        {assignee.match(/\((\w+)\)/)?.[1] ?? assignee.slice(0, 2)}
                       </div>
                       <div className="text-sm text-zinc-800 dark:text-zinc-300">{assignee}</div>
                     </div>
@@ -158,20 +158,24 @@ export const AssetListTable: React.FC<AssetListTableProps> = ({
                   {/* Actions */}
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => onEditProject?.(asset.project_id || '')}
-                        className="p-1.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-colors"
-                        title="Edit asset"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <Link
-                        to={`/project/${asset.project_id}/menu`}
-                        className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors"
-                        title="View in menu"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </Link>
+                      {asset.project_id && (
+                        <button
+                          onClick={() => onEditProject?.(asset.project_id!)}
+                          className="p-1.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded transition-colors"
+                          title="Edit asset"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                      )}
+                      {asset.project_id && (
+                        <Link
+                          to={`/project/${asset.project_id}/menu`}
+                          className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors"
+                          title="View in menu"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </Link>
+                      )}
                     </div>
                   </td>
                 </tr>

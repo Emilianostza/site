@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { Upload, FileType, AlertCircle, X } from 'lucide-react';
 
 interface AssetUploaderProps {
@@ -10,6 +10,16 @@ export const AssetUploader: React.FC<AssetUploaderProps> = ({ onUpload, maxSizeM
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0); // Mock progress
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
+
+  // Clean up interval and object URL on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    };
+  }, []);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -23,9 +33,9 @@ export const AssetUploader: React.FC<AssetUploaderProps> = ({ onUpload, maxSizeM
 
   const processFile = (file: File) => {
     setError(null);
+    setProgress(0);
 
     // Validate type
-    const validTypes = ['.glb', '.usdz'];
     const isGlb = file.name.toLowerCase().endsWith('.glb');
     const isUsdz = file.name.toLowerCase().endsWith('.usdz');
 
@@ -40,14 +50,23 @@ export const AssetUploader: React.FC<AssetUploaderProps> = ({ onUpload, maxSizeM
       return;
     }
 
+    // Clean up previous object URL
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+
     // Simulate upload progress
     let p = 0;
-    const interval = setInterval(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
       p += 10;
       setProgress(p);
       if (p >= 100) {
-        clearInterval(interval);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = null;
         const url = URL.createObjectURL(file);
+        objectUrlRef.current = url;
         onUpload(url, file);
       }
     }, 150);

@@ -122,7 +122,16 @@ export class ApiClient {
     } catch (error: any) {
       clearTimeout(timeoutId);
 
-      // Network/timeout errors
+      // Timeout (AbortController signal)
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw {
+          status: 0,
+          message: 'Request timed out',
+          code: 'TIMEOUT_ERROR',
+        } as ApiError;
+      }
+
+      // Network errors
       if (error instanceof TypeError) {
         throw {
           status: 0,

@@ -16,12 +16,10 @@ export const CustomerDetailsModal: React.FC<CustomerDetailsModalProps> = ({
   project,
   onSave,
 }) => {
-  if (!isOpen || !project) return null;
-
   const [formData, setFormData] = React.useState({
-    client: project.client || '',
-    phone: project.phone || '',
-    address: project.address || '',
+    client: '',
+    phone: '',
+    address: '',
   });
 
   const [isSaving, setIsSaving] = React.useState(false);
@@ -40,6 +38,8 @@ export const CustomerDetailsModal: React.FC<CustomerDetailsModalProps> = ({
       });
     }
   }, [project]);
+
+  if (!isOpen || !project) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

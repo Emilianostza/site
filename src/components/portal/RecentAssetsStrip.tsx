@@ -45,7 +45,7 @@ export const RecentAssetsStrip: React.FC<RecentAssetsStripProps> = ({ assets }) 
 
       <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
         {recentAssets.map((asset) => (
-          <Link key={asset.id} to={`/app/editor/${asset.id}`} className="group flex-shrink-0 w-36">
+          <Link key={asset.id} to={asset.project_id ? `/project/${asset.project_id}/menu` : `/app/editor/${asset.id}`} className="group flex-shrink-0 w-36">
             <div className="relative aspect-square rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 mb-2 border border-zinc-200 dark:border-zinc-700 group-hover:border-brand-400 dark:group-hover:border-brand-600 transition-all duration-300 shadow-sm group-hover:shadow-lg group-hover:-translate-y-0.5">
               <img
                 src={asset.thumb}

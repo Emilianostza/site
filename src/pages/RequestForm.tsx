@@ -246,9 +246,8 @@ const RequestForm: React.FC = () => {
       setSubmitted(true);
       window.scrollTo(0, 0);
     } catch (error) {
-      console.error('Failed to click submit', error);
-      // Fallback or error handling if needed
-      setSubmitted(true); // For demo purposes, still show success
+      console.error('Failed to submit request', error);
+      setErrors({ submit: 'Something went wrong. Please try again.' });
     } finally {
       setSubmitting(false);
     }
@@ -327,8 +326,8 @@ const RequestForm: React.FC = () => {
       ? CAPTURE_RATES.general.complex
       : CAPTURE_RATES.general.standard;
 
-  const captureLo = hasQty ? Math.round(qtyLo * captureRate * (1 - batchDiscount(qtyHi))) : 0;
-  const captureHi = hasQty ? Math.round(qtyHi * captureRate * (1 - batchDiscount(qtyLo))) : 0;
+  const captureLo = hasQty ? Math.round(qtyLo * captureRate * (1 - batchDiscount(qtyLo))) : 0;
+  const captureHi = hasQty ? Math.round(qtyHi * captureRate * (1 - batchDiscount(qtyHi))) : 0;
   const captureDiscountPct = hasQty ? Math.round(batchDiscount(qtyMid) * 100) : 0;
 
   const onSiteLo = isRestaurant
@@ -823,6 +822,15 @@ const RequestForm: React.FC = () => {
                         request for a quote and consultation.
                       </span>
                     </div>
+                  </div>
+                )}
+
+                {errors.submit && (
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 mt-4">
+                    <p className="flex items-center text-red-600 dark:text-red-400 text-sm font-medium">
+                      <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                      {errors.submit}
+                    </p>
                   </div>
                 )}
 

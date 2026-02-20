@@ -41,18 +41,19 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
     isOpen
   );
 
+  // Only reset form when the modal opens — not while it is already open
+  // This prevents a parent re-render (new project object reference) from wiping user edits
   useEffect(() => {
+    if (!isOpen) return;
     if (project) {
       setName(project.name);
       setClient(project.client);
       setType(project.type || 'standard');
       setAddress(project.address || '');
       setPhone(project.phone || '');
-      setDescription(''); // Project type doesn't have description field in interface?
-      setDueDate(''); // Project type doesn't have dueDate field in interface?
-      // Wait, looking at types.ts Project interface, it doesn't have description or dueDate.
-      // But the previous create form used them. I'll keep them as state but they might not be in project object.
-      setPriority('Medium'); // Project doesn't have priority? It has tier.
+      setDescription('');
+      setDueDate('');
+      setPriority('Medium');
     } else {
       setName('');
       setClient('');
@@ -63,7 +64,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
       setDueDate('');
       setPriority('Medium');
     }
-  }, [project, isOpen]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -228,7 +229,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
               className="px-6 py-2 bg-brand-600 text-white font-bold rounded-lg hover:bg-brand-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {loading ? 'Creating...' : project ? 'Update Project' : 'Create Project'}
+              {loading ? (project ? 'Updating...' : 'Creating...') : project ? 'Update Project' : 'Create Project'}
             </button>
           </div>
         </form>

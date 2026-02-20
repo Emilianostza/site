@@ -81,7 +81,7 @@ export async function fetchAssets(filter: FetchAssetsFilter = {}): Promise<{
  */
 export async function getAsset(id: string): Promise<AssetDTO> {
   try {
-    const { data, error } = await supabase.from('assets').select('*').eq('id', id).single();
+    const { data, error } = await supabase.from('assets').select('*').eq('id', id).is('deleted_at', null).single();
 
     if (error) {
       throw new Error(`Failed to get asset: ${error.message}`);
@@ -156,22 +156,20 @@ export interface UpdateAssetRequest {
 
 export async function updateAsset(id: string, updates: UpdateAssetRequest): Promise<AssetDTO> {
   try {
+    // Only include defined fields to avoid overwriting existing data with NULL
+    const payload: Record<string, unknown> = {};
+    if (updates.name !== undefined) payload.name = updates.name;
+    if (updates.description !== undefined) payload.description = updates.description;
+    if (updates.status !== undefined) payload.status = updates.status;
+    if (updates.thumbnailUrl !== undefined) payload.thumbnail_url = updates.thumbnailUrl;
+    if (updates.previewUrl !== undefined) payload.preview_url = updates.previewUrl;
+    if (updates.processingMetadata !== undefined) payload.processing_metadata = updates.processingMetadata;
+    if (updates.status === 'processing') payload.processing_started_at = new Date().toISOString();
+    if (updates.status === 'published') payload.processing_completed_at = new Date().toISOString();
+
     const { data, error } = await supabase
       .from('assets')
-      .update({
-        name: updates.name,
-        description: updates.description,
-        status: updates.status,
-        thumbnail_url: updates.thumbnailUrl,
-        preview_url: updates.previewUrl,
-        processing_metadata: updates.processingMetadata,
-        ...(updates.status === 'processing' && {
-          processing_started_at: new Date().toISOString(),
-        }),
-        ...(updates.status === 'published' && {
-          processing_completed_at: new Date().toISOString(),
-        }),
-      })
+      .update(payload)
       .eq('id', id)
       .select()
       .single();
@@ -222,7 +220,7 @@ export async function failAsset(id: string, reason?: string): Promise<AssetDTO> 
       .from('assets')
       .update({
         status: 'failed',
-        metadata: { failure_reason: reason },
+        processing_error: reason,
       })
       .eq('id', id)
       .select()
@@ -313,7 +311,7 @@ export async function getProjectAssetStats(projectId: string) {
   try {
     const { data, error } = await supabase
       .from('assets')
-      .select('type, status')
+      .select('type, status, file_size')
       .eq('project_id', projectId)
       .is('deleted_at', null);
 
@@ -352,7 +350,16 @@ export async function batchUpdateAssets(
   updates: UpdateAssetRequest
 ): Promise<AssetDTO[]> {
   try {
-    const { data, error } = await supabase.from('assets').update(updates).in('id', ids).select();
+    // Map camelCase field names to snake_case DB columns
+    const mapped: Record<string, unknown> = {};
+    if (updates.name !== undefined) mapped.name = updates.name;
+    if (updates.description !== undefined) mapped.description = updates.description;
+    if (updates.status !== undefined) mapped.status = updates.status;
+    if (updates.thumbnailUrl !== undefined) mapped.thumbnail_url = updates.thumbnailUrl;
+    if (updates.previewUrl !== undefined) mapped.preview_url = updates.previewUrl;
+    if (updates.processingMetadata !== undefined) mapped.processing_metadata = updates.processingMetadata;
+
+    const { data, error } = await supabase.from('assets').update(mapped).in('id', ids).select();
 
     if (error) {
       throw new Error(`Failed to batch update assets: ${error.message}`);
@@ -370,7 +377,8 @@ export async function batchUpdateAssets(
  */
 export async function searchAssets(query: string, projectId?: string): Promise<AssetDTO[]> {
   try {
-    let q = supabase.from('assets').select('*').is('deleted_at', null).ilike('name', `%${query}%`);
+    const escapedQuery = query.replace(/%/g, '\\%').replace(/_/g, '\\_');
+    let q = supabase.from('assets').select('*').is('deleted_at', null).ilike('name', `%${escapedQuery}%`);
 
     if (projectId) {
       q = q.eq('project_id', projectId);

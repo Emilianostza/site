@@ -106,9 +106,9 @@ const OVERAGE_TIERS = [
   },
   {
     band: 'Above 60,000 overage views',
-    standard: '€1.50 / 1,000',
-    pro: '€2.00 / 1,000',
-    ultra: '€2.50 / 1,000',
+    standard: '€1.00 / 1,000',
+    pro: '€1.50 / 1,000',
+    ultra: '€2.00 / 1,000',
   },
 ];
 

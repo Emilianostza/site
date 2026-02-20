@@ -227,7 +227,7 @@ export const cache = new CacheManager();
  * Get cache TTL for tier
  */
 export function getCacheTTL(tier: ServiceTier, overrideTTL?: number): number {
-  if (overrideTTL) {
+  if (overrideTTL !== undefined) {
     return overrideTTL;
   }
   return CACHE_TTLS[tier];

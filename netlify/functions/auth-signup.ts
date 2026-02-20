@@ -48,8 +48,9 @@ const handler: Handler = async (event) => {
       };
     }
 
-    const supabaseUrl = process.env.VITE_SUPABASE_URL;
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+    // Prefer non-VITE_ prefixed vars (server-side convention), fall back to VITE_ for dev compat
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
       console.error('[Auth SignUp] Missing Supabase configuration');

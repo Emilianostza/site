@@ -77,9 +77,11 @@ const SceneDashboard: React.FC = () => {
     const loadAsset = async () => {
       // Early return for 'new' or no ID
       if (!assetId || assetId === 'new') {
-        if (!selectedItem && sceneItems.length > 0) {
-          setSelectedItem(sceneItems[0]);
-        }
+        setSelectedItem((prev) => {
+          if (prev) return prev;
+          // Auto-select first item if none selected
+          return sceneItems.length > 0 ? sceneItems[0] : null;
+        });
         return;
       }
 
@@ -104,7 +106,11 @@ const SceneDashboard: React.FC = () => {
             category: 'Models',
             hasModel: true,
           };
-          setSceneItems((prev) => [...prev, newItem]);
+          setSceneItems((prev) => {
+            // Prevent duplicates
+            if (prev.some((i) => i.id === newItem.id)) return prev;
+            return [...prev, newItem];
+          });
           setSelectedItem(newItem);
           setActiveCategory('Models');
         }
@@ -113,7 +119,7 @@ const SceneDashboard: React.FC = () => {
       }
     };
     loadAsset();
-  }, [assetId]);
+  }, [assetId, sceneItems]);
 
   const filteredItems =
     activeCategory === 'All'

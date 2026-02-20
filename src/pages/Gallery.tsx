@@ -33,7 +33,7 @@ const Gallery: React.FC = () => {
       try {
         setLoading(true);
         const data = await AssetsProvider.list();
-        const publishedAssets = (data as Asset[]).filter((a) => (a.status as any) === 'published');
+        const publishedAssets = (data as Asset[]).filter((a) => a.status === 'Published');
         setAssets(publishedAssets);
       } catch (error) {
         console.error('Failed to load gallery assets:', error);

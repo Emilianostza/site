@@ -124,15 +124,7 @@ const handler: Handler = async (event) => {
     };
   }
 
-  // ── Rate limit: 10 req / user / minute ──────────────────────────────────────
-  if (!consumeRateLimit(authData.user.id)) {
-    return {
-      statusCode: 429,
-      body: JSON.stringify({ error: 'Rate limit exceeded. Try again in a minute.' }),
-    };
-  }
-
-  // ── Parse and validate body ──────────────────────────────────────────────────
+  // ── Parse and validate body (before consuming rate limit) ───────────────────
   let parsed: GeminiRequest;
   try {
     parsed = JSON.parse(event.body || '{}');
@@ -156,6 +148,14 @@ const handler: Handler = async (event) => {
     return {
       statusCode: 413,
       body: JSON.stringify({ error: 'Prompt exceeds maximum allowed size (8 KB)' }),
+    };
+  }
+
+  // ── Rate limit: 10 req / user / minute (after validation) ─────────────────
+  if (!consumeRateLimit(authData.user.id)) {
+    return {
+      statusCode: 429,
+      body: JSON.stringify({ error: 'Rate limit exceeded. Try again in a minute.' }),
     };
   }
 

@@ -182,7 +182,7 @@ export const EmbeddedModelEditor: React.FC<EmbeddedModelEditorProps> = ({
         <div
           className="w-full h-full"
           style={{
-            transform: `translate3d(${position.x}m, ${position.y}m, ${position.z}m)`,
+            transform: `translate3d(${position.x}px, ${position.y}px, ${position.z}px)`,
           }}
         >
           {/* @ts-ignore */}
@@ -273,7 +273,7 @@ export const EmbeddedModelEditor: React.FC<EmbeddedModelEditorProps> = ({
                         className="bg-stone-950 w-full text-xs p-1.5 rounded border border-stone-800 outline-none focus:border-amber-500/50"
                         value={(scale as any)[axis]}
                         onChange={(e) =>
-                          setScale({ ...scale, [axis]: parseFloat(e.target.value) || 0 })
+                          setScale({ ...scale, [axis]: parseFloat(e.target.value) || 1 })
                         }
                       />
                     </div>

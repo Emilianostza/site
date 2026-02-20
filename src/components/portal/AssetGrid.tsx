@@ -42,7 +42,7 @@ export const AssetGrid: React.FC<AssetGridProps> = ({ assets, role }) => {
   const processedAssets = useMemo(() => {
     const filtered =
       activeCategory === 'All'
-        ? assets
+        ? [...assets]
         : assets.filter((a) => (a.type || 'Uncategorized') === activeCategory);
 
     return filtered.sort((a, b) => {

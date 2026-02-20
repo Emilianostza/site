@@ -69,6 +69,10 @@ const handler: Handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
+  if (!assetId || typeof assetId !== 'string') {
+    return { statusCode: 400, body: JSON.stringify({ error: 'assetId is required' }) };
+  }
+
   if (!fileKey || typeof fileKey !== 'string') {
     return { statusCode: 400, body: JSON.stringify({ error: 'fileKey is required' }) };
   }
@@ -84,22 +88,28 @@ const handler: Handler = async (event) => {
     return { statusCode: 403, body: JSON.stringify({ error: 'User profile not found' }) };
   }
 
-  if (profile.role !== 'super_admin' && assetId) {
-    const { data: asset } = await supabase
-      .from('assets')
-      .select('org_id')
-      .eq('id', assetId)
-      .single();
+  // Always verify asset ownership (super_admin bypasses org check)
+  const { data: asset } = await supabase
+    .from('assets')
+    .select('org_id, file_key')
+    .eq('id', assetId)
+    .single();
 
-    if (!asset || asset.org_id !== profile.org_id) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'Access denied' }) };
-    }
+  if (!asset) {
+    return { statusCode: 404, body: JSON.stringify({ error: 'Asset not found' }) };
   }
+
+  if (profile.role !== 'super_admin' && asset.org_id !== profile.org_id) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Access denied' }) };
+  }
+
+  // Use the file_key from the database, not the client-supplied value
+  const verifiedFileKey = asset.file_key || fileKey;
 
   // ── Generate signed URL ──────────────────────────────────────────────────────
   const { data: signedData, error: signedError } = await supabase.storage
     .from(storageBucket)
-    .createSignedUrl(fileKey, SIGNED_URL_TTL);
+    .createSignedUrl(verifiedFileKey, SIGNED_URL_TTL);
 
   if (signedError || !signedData?.signedUrl) {
     console.error('[SignedURL] Failed:', signedError?.message);

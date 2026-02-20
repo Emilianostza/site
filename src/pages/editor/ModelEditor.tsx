@@ -196,7 +196,7 @@ const ModelEditor: React.FC = () => {
       <header className="fixed top-0 w-full h-14 bg-stone-900 border-b border-stone-800 flex items-center justify-between px-4 z-50">
         <div className="flex items-center gap-4">
           <Link
-            to={`/app/editor/${assetId}`}
+            to="/app/dashboard"
             className="p-2 hover:bg-stone-800 rounded-md text-stone-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -297,7 +297,7 @@ const ModelEditor: React.FC = () => {
           <div
             className="w-full h-full"
             style={{
-              transform: `translate3d(${position.x}m, ${position.y}m, ${position.z}m)`,
+              transform: `translate3d(${position.x}px, ${position.y}px, ${position.z}px)`,
             }}
           >
             {/* @ts-ignore */}

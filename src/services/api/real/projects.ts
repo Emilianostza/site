@@ -36,6 +36,7 @@ export async function fetchProjects(filter: FetchProjectsFilter = {}): Promise<{
     let query = supabase
       .from('projects')
       .select('*')
+      .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .limit(filter.limit || 20);
 
@@ -154,16 +155,17 @@ export async function updateProject(
   updates: UpdateProjectRequest
 ): Promise<ProjectDTO> {
   try {
+    const payload: Record<string, unknown> = {};
+    if (updates.name !== undefined) payload.name = updates.name;
+    if (updates.description !== undefined) payload.description = updates.description;
+    if (updates.status !== undefined) payload.status = updates.status;
+    if (updates.tier !== undefined) payload.tier = updates.tier;
+    if (updates.assignedTo !== undefined) payload.assigned_to = updates.assignedTo;
+    if (updates.customFields !== undefined) payload.custom_fields = updates.customFields;
+
     const { data, error } = await supabase
       .from('projects')
-      .update({
-        name: updates.name,
-        description: updates.description,
-        status: updates.status,
-        tier: updates.tier,
-        assigned_to: updates.assignedTo,
-        custom_fields: updates.customFields,
-      })
+      .update(payload)
       .eq('id', id)
       .select()
       .single();
@@ -262,11 +264,18 @@ export async function deliverProject(id: string): Promise<ProjectDTO> {
  */
 export async function rejectProject(id: string, reason?: string): Promise<ProjectDTO> {
   try {
+    // Fetch existing project to preserve metadata
+    const { data: existing } = await supabase
+      .from('projects')
+      .select('metadata')
+      .eq('id', id)
+      .single();
+
     const { data, error } = await supabase
       .from('projects')
       .update({
         status: 'rejected',
-        metadata: { rejection_reason: reason },
+        metadata: { ...(existing?.metadata as Record<string, unknown> || {}), rejection_reason: reason },
       })
       .eq('id', id)
       .select()
@@ -373,7 +382,7 @@ export async function exportProjects(
       ]);
 
       content = [headers, ...rows]
-        .map((row) => row.map((cell) => `"${cell}"`).join(','))
+        .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
         .join('\n');
 
       filename = `projects-${new Date().toISOString().split('T')[0]}.csv`;

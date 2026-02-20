@@ -63,8 +63,10 @@ export async function getQACheck(projectId: string): Promise<QACheckResponse | n
   try {
     const response = await apiClient.get<QACheckResponse>(`/qa/checks?project_id=${projectId}`);
     return response;
-  } catch {
-    return null; // No QA check yet
+  } catch (err: any) {
+    // Only treat 404 as "no QA check yet"; re-throw actual errors
+    if (err?.status === 404) return null;
+    throw err;
   }
 }
 

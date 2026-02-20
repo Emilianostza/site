@@ -47,7 +47,9 @@ function validateEnv(): EnvConfig {
   const isProd = import.meta.env.PROD;
 
   // Feature flags
-  const useMockData = import.meta.env.VITE_USE_MOCK_DATA !== 'false';
+  const useMockData = isProd
+    ? import.meta.env.VITE_USE_MOCK_DATA === 'true'
+    : import.meta.env.VITE_USE_MOCK_DATA !== 'false';
 
   // API Configuration
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';

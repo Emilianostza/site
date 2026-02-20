@@ -159,7 +159,7 @@ export function calculateFinancialMetrics(events: any[]) {
 
   // Estimate metrics (will be fetched from real data in Phase 3)
   const totalRevenue = payoutPaid * 50000; // $500 per payout (estimate)
-  const avgPayoutAmount = payoutApproved > 0 ? Math.round(totalRevenue / payoutApproved) : 0;
+  const avgPayoutAmount = payoutPaid > 0 ? Math.round(totalRevenue / payoutPaid) : 0;
   const uniquePhotographers = new Set(
     events
       .filter((e) => ['payout_requested', 'payout_approved', 'payout_paid'].includes(e.eventType))

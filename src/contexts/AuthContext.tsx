@@ -151,7 +151,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user && token) {
       const id = setInterval(async () => {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
-        if (refreshToken && AuthAPI.isTokenExpired(token)) {
+        const currentToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+        if (refreshToken && currentToken && AuthAPI.isTokenExpired(currentToken)) {
           console.log('[Auth] Refreshing token automatically...');
           try {
             const response = await AuthAPI.refreshToken({
@@ -162,7 +163,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error('[Auth] Automatic token refresh failed', err);
             // Do NOT logout automatically on refresh failure
             // Let the user stay "logged in" locally until they make an API call that fails
-            // await logout();
           }
         }
       }, TOKEN_REFRESH_INTERVAL);

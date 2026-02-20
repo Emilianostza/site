@@ -1066,11 +1066,14 @@ interface FilterSheetProps {
   open: boolean;
   onClose: () => void;
   brandColor: string;
+  activeFilters: string[];
+  onApply: (filters: string[]) => void;
 }
 
-const FilterSheet: React.FC<FilterSheetProps> = ({ open, onClose, brandColor }) => {
+const FilterSheet: React.FC<FilterSheetProps> = ({ open, onClose, brandColor, activeFilters, onApply }) => {
   const FILTERS = ['Vegetarian', 'Vegan', 'Gluten-free', 'Spicy', "Chef's Pick", 'New'];
-  const [active, setActive] = useState<string[]>([]);
+  const [active, setActive] = useState<string[]>(activeFilters);
+  useEffect(() => { setActive(activeFilters); }, [activeFilters]);
   const toggle = (f: string) =>
     setActive((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]));
 
@@ -1120,7 +1123,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ open, onClose, brandColor }) 
             ))}
           </div>
           <button
-            onClick={onClose}
+            onClick={() => { onApply(active); onClose(); }}
             className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95"
             style={{ backgroundColor: brandColor }}
           >
@@ -1281,6 +1284,7 @@ const RestaurantMenu: React.FC = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [showHowAR, setShowHowAR] = useState(false);
   const [showQRPanel, setShowQRPanel] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -1373,14 +1377,20 @@ const RestaurantMenu: React.FC = () => {
     [viewerItem, menuItems]
   );
 
-  const filteredItems = searchQuery.trim()
-    ? menuItems.filter(
-        (i) =>
-          i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          i.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          i.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    : menuItems;
+  const filteredItems = menuItems.filter((i) => {
+    if (activeFilters.length > 0 && !activeFilters.some((f) => i.tags.includes(f))) {
+      return false;
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      return (
+        i.name.toLowerCase().includes(q) ||
+        i.desc.toLowerCase().includes(q) ||
+        i.tags.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+    return true;
+  });
 
   const brand = menuSettings.brandColor;
 
@@ -1602,6 +1612,8 @@ const RestaurantMenu: React.FC = () => {
         open={showFilterSheet}
         onClose={() => setShowFilterSheet(false)}
         brandColor={brand}
+        activeFilters={activeFilters}
+        onApply={setActiveFilters}
       />
       <HowARSheet open={showHowAR} onClose={() => setShowHowAR(false)} brandColor={brand} />
       <QRPanel open={showQRPanel} onClose={() => setShowQRPanel(false)} brandColor={brand} />

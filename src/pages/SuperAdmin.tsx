@@ -38,6 +38,7 @@ const SuperAdmin: React.FC = () => {
     'overview' | 'users' | 'projects' | 'assets' | 'system' | 'analytics'
   >('overview');
   const [userFilter, setUserFilter] = useState<'all' | 'employee' | 'customer'>('all');
+  const [userSearch, setUserSearch] = useState('');
   const [analyticsView, setAnalyticsView] = useState<'customers' | 'team'>('customers');
   const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
   const [assetSearch, setAssetSearch] = useState('');
@@ -331,6 +332,8 @@ const SuperAdmin: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Search users..."
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
                       className="pl-9 pr-4 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 border-none text-sm focus:ring-2 focus:ring-brand-500 w-64"
                     />
                   </div>
@@ -367,6 +370,11 @@ const SuperAdmin: React.FC = () => {
                       );
                       return userFilter === 'customer' ? isCustomer : !isCustomer;
                     })
+                    .filter((u) =>
+                      !userSearch ||
+                      u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+                      u.email.toLowerCase().includes(userSearch.toLowerCase())
+                    )
                     .map((user) => {
                       const isCustomer = ['customer_owner', 'customer_viewer'].includes(
                         user.role.type
@@ -853,7 +861,7 @@ const SuperAdmin: React.FC = () => {
                 ['customer_owner', 'customer_viewer'].includes(u.role.type)
               );
               const teamMembers = users.filter((u) =>
-                ['admin', 'approver', 'technician', 'sales_lead'].includes(u.role.type)
+                ['admin', 'approver', 'technician', 'sales_lead', 'super_admin'].includes(u.role.type)
               );
 
               const projectsForClient = (user: User) =>
@@ -861,7 +869,7 @@ const SuperAdmin: React.FC = () => {
 
               const assetsForProjects = (clientProjects: typeof projects) => {
                 const ids = new Set(clientProjects.map((p) => p.id));
-                return assets.filter((a) => ids.has((a as { projectId?: string }).projectId ?? ''));
+                return assets.filter((a) => ids.has(a.project_id ?? ''));
               };
 
               const assignedProjects = (user: User) => {
@@ -1054,7 +1062,7 @@ const SuperAdmin: React.FC = () => {
                                     roleColors[user.role.type] ?? ''
                                   }`}
                                 >
-                                  {user.role.type.replace('_', ' ')}
+                                  {user.role.type.replace(/_/g, ' ')}
                                 </span>
                               </td>
 
@@ -1173,7 +1181,11 @@ const SuperAdmin: React.FC = () => {
                         </span>
                       </div>
                       <span
-                        className={`text-xs font-bold px-2 py-1 rounded-md bg-${sys.color}-100 text-${sys.color}-700 dark:bg-${sys.color}-900/30 dark:text-${sys.color}-400`}
+                        className={`text-xs font-bold px-2 py-1 rounded-md ${
+                          sys.color === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                          sys.color === 'blue' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                          'bg-zinc-100 text-zinc-700 dark:bg-zinc-900/30 dark:text-zinc-400'
+                        }`}
                       >
                         {sys.status}
                       </span>

@@ -33,7 +33,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return <>{children}</>;
   }
 
-  const isActive = (path: string) => path !== '/industries' && location.pathname.startsWith(path);
+  const isActive = (path: string) =>
+    path === '/'
+      ? location.pathname === '/'
+      : path !== '/industries' && location.pathname.startsWith(path);
 
   return (
     <div

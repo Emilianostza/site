@@ -34,15 +34,6 @@ export interface TierValidationResult {
  * Check if user can upload a model
  */
 export function canUploadModel(tier: ServiceTier, currentModelCount: number): TierValidationResult {
-  // Check if AR is enabled (all tiers have this)
-  if (!isTierFeatureEnabled(tier, 'ar_enabled')) {
-    return {
-      allowed: false,
-      reason: 'Feature not available in this tier',
-      message: 'Model uploads are not available in your tier',
-    };
-  }
-
   // Check model count limit
   const maxModels = getTierLimit(tier, 'max_models');
   if (currentModelCount >= maxModels) {
@@ -89,6 +80,7 @@ export function canUseFeature(
     | 'kiosk_mode'
     | 'analytics_basic'
     | 'analytics_advanced'
+    | 'viewer_customization'
 ): TierValidationResult {
   if (!isTierFeatureEnabled(tier, feature)) {
     const tierInfo = getTierInfo(tier);
@@ -199,8 +191,8 @@ export function validateProjectOperation(
       return { allowed: true };
 
     case 'customize':
-      // Check if customization features are available
-      return canUseFeature(tier, 'custom_domain');
+      // Check if viewer customization is available
+      return canUseFeature(tier, 'viewer_customization');
 
     case 'api_access':
       // Only Enterprise allows API access

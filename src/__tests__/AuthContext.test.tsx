@@ -367,11 +367,14 @@ describe('AuthContext', () => {
 
   describe('Permission Checking', () => {
     it('should check user permissions', () => {
-      const { hasPermission } = useAuth();
-
-      // This would need actual implementation to test
-      // For now, verify the hook exists and is callable
-      expect(typeof hasPermission).toBe('function');
+      const TestComponent = () => {
+        const { hasPermission } = useAuth();
+        return <div data-testid="result">{typeof hasPermission}</div>;
+      };
+      const { getByTestId } = render(
+        <AuthProvider><TestComponent /></AuthProvider>
+      );
+      expect(getByTestId('result').textContent).toBe('function');
     });
   });
 

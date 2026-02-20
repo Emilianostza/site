@@ -36,6 +36,7 @@ export interface RefreshTokenRequest {
 
 export interface RefreshTokenResponse {
   token: string;
+  refreshToken?: string;
   expiresIn: number;
 }
 
@@ -341,6 +342,8 @@ function buildRoleFromProfile(profileData: any): User['role'] {
         customerId: profileData.customer_id || orgId,
         assignedProjectIds: profileData.assigned_project_ids || [],
       };
+    case 'super_admin':
+      return { type: 'super_admin', orgId };
     case 'public_visitor':
       return { type: 'public_visitor', orgId };
     default:
@@ -482,6 +485,7 @@ async function realRefreshToken(request: RefreshTokenRequest): Promise<RefreshTo
 
   return {
     token: data.session.access_token,
+    refreshToken: data.session.refresh_token,
     expiresIn: 3600,
   };
 }

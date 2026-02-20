@@ -30,6 +30,7 @@ export const USER_ROLES = [
   'approver',
   'technician',
   'sales_lead',
+  'super_admin',
   'customer_owner',
   'customer_viewer',
   'public_visitor',
@@ -94,6 +95,7 @@ export type UserRole =
   | { type: 'approver'; orgId: string }
   | { type: 'technician'; orgId: string; assignedProjectIds: string[] }
   | { type: 'sales_lead'; orgId: string }
+  | { type: 'super_admin'; orgId: string }
   | { type: 'customer_owner'; orgId: string; customerId: string }
   | { type: 'customer_viewer'; orgId: string; customerId: string; assignedProjectIds: string[] }
   | { type: 'public_visitor'; orgId: string };
@@ -111,8 +113,8 @@ export function isCustomerRole(
 
 export function isEmployeeRole(
   role: UserRole
-): role is Extract<UserRole, { type: 'admin' | 'approver' | 'technician' | 'sales_lead' }> {
-  return ['admin', 'approver', 'technician', 'sales_lead'].includes(role.type);
+): role is Extract<UserRole, { type: 'admin' | 'approver' | 'technician' | 'sales_lead' | 'super_admin' }> {
+  return ['admin', 'approver', 'technician', 'sales_lead', 'super_admin'].includes(role.type);
 }
 
 // --- User ---
@@ -474,14 +476,18 @@ export function hasPermission(user: User, permission: Permission): boolean {
 
   const role = user.role;
 
-  // Admin has all permissions in their org
-  if (isAdmin(role)) {
+  // Admin and super_admin have all permissions in their org
+  if (isAdmin(role) || role.type === 'super_admin') {
     return true;
   }
 
   // Resource-specific checks
   switch (permission.resource) {
     case 'project':
+      // Approvers and sales leads can read/update projects
+      if (role.type === 'approver' || role.type === 'sales_lead') {
+        return ['read', 'update'].includes(permission.action);
+      }
       if (role.type === 'technician') {
         // Technicians can only access assigned projects
         return (

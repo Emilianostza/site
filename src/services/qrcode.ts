@@ -86,7 +86,7 @@ export async function generateQRCodeBlob(
  */
 export function generateProjectQRUrl(projectId: string, baseUrl?: string): string {
   const url = baseUrl || window.location.origin;
-  return `${url}/#/app/project/${projectId}`;
+  return `${url}/app/project/${projectId}`;
 }
 
 /**
@@ -94,7 +94,7 @@ export function generateProjectQRUrl(projectId: string, baseUrl?: string): strin
  */
 export function generateAssetQRUrl(assetId: string, baseUrl?: string): string {
   const url = baseUrl || window.location.origin;
-  return `${url}/#/gallery/${assetId}`;
+  return `${url}/view/${assetId}`;
 }
 
 /**

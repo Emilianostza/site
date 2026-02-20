@@ -435,7 +435,9 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
                   if (pendingRequests.length === 0) return null;
 
                   const timeAgo = (iso: string) => {
+                    if (!iso) return 'Unknown';
                     const diff = Date.now() - new Date(iso).getTime();
+                    if (isNaN(diff)) return 'Unknown';
                     const h = Math.floor(diff / 3600000);
                     const m = Math.floor(diff / 60000);
                     if (h >= 24) return `${Math.floor(h / 24)}d ago`;
@@ -524,11 +526,15 @@ const Portal: React.FC<{ role: 'employee' | 'customer' }> = ({ role }) => {
 
                                 {/* Actions */}
                                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                                  <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors border border-emerald-200 dark:border-emerald-800/50">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleUpdateProject(req.id, { status: 'approved' as Project['status'] }); }}
+                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors border border-emerald-200 dark:border-emerald-800/50">
                                     <CheckCircle2 className="w-3.5 h-3.5" />
                                     Accept
                                   </button>
-                                  <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors border border-zinc-200 dark:border-zinc-700">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleUpdateProject(req.id, { status: 'archived' as Project['status'] }); }}
+                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors border border-zinc-200 dark:border-zinc-700">
                                     <XCircle className="w-3.5 h-3.5" />
                                     Decline
                                   </button>

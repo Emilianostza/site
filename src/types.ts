@@ -164,6 +164,8 @@ export function portalRoleToUserRole(
         customerId,
         assignedProjectIds: assignedProjectIds || [],
       };
+    case PortalRole.SuperAdmin:
+      return { type: 'super_admin', orgId };
     case PortalRole.PublicVisitor:
     default:
       return { type: 'public_visitor', orgId };
