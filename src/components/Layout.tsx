@@ -77,21 +77,23 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                   }`}
                   {...(isActive(item.path) ? { 'aria-current': 'page' as const } : {})}
+                  {...(item.children ? { 'aria-haspopup': 'true' as const, 'aria-expanded': false } : {})}
                 >
                   {item.label}
                   {item.children && (
-                    <ChevronDown className="w-3.5 h-3.5 opacity-60 group-hover:rotate-180 transition-transform duration-200" />
+                    <ChevronDown className="w-3.5 h-3.5 opacity-60 group-hover:rotate-180 transition-transform duration-200" aria-hidden="true" />
                   )}
                 </Link>
 
                 {/* Dropdown */}
                 {item.children && (
                   <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 translate-y-1 group-hover:translate-y-0 z-50">
-                    <div className="w-44 bg-white dark:bg-zinc-900 rounded-xl shadow-hover border border-zinc-100 dark:border-zinc-800 overflow-hidden py-1">
+                    <div className="w-44 bg-white dark:bg-zinc-900 rounded-xl shadow-hover border border-zinc-100 dark:border-zinc-800 overflow-hidden py-1" role="menu">
                       {item.children.map((child) => (
                         <Link
                           key={child.path}
                           to={child.path}
+                          role="menuitem"
                           className="flex items-center px-4 py-2.5 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                         >
                           {child.label}
@@ -203,12 +205,21 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </div>
                 Managed<span className="text-brand-500">3D</span>
               </Link>
-              <p className="text-sm text-zinc-500 leading-relaxed max-w-[200px]">
-                Professional 3D capture services for enterprise. We digitize the physical world.
+              <p className="text-sm text-zinc-500 leading-relaxed max-w-[220px]">
+                Professional 3D capture for restaurants. We photograph your dishes and deliver AR-ready
+                3D models.
               </p>
               <div className="flex items-center gap-1.5 text-xs text-emerald-500">
                 <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
                 SOC 2 Type II Compliant
+              </div>
+              <div className="pt-2 space-y-1.5 text-xs text-zinc-500">
+                <a
+                  href="mailto:hello@managedcapture.com"
+                  className="block hover:text-zinc-300 transition-colors"
+                >
+                  hello@managedcapture.com
+                </a>
               </div>
             </div>
 
@@ -232,6 +243,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <ul className="space-y-2.5 text-sm">
                 {[
                   { label: 'How it Works', path: '/how-it-works' },
+                  { label: 'Gallery', path: '/gallery' },
                   { label: 'Pricing', path: '/pricing' },
                   { label: 'Trust Center', path: '/security' },
                 ].map((l) => (

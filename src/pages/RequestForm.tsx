@@ -35,7 +35,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Industry, RequestFormState } from '@/types';
 import { ProjectStatus } from '@/types/domain';
 import {
@@ -246,9 +246,8 @@ const RequestForm: React.FC = () => {
       setSubmitted(true);
       window.scrollTo(0, 0);
     } catch (error) {
-      console.error('Failed to click submit', error);
-      // Fallback or error handling if needed
-      setSubmitted(true); // For demo purposes, still show success
+      console.error('Failed to submit request', error);
+      setErrors({ submit: 'Something went wrong. Please try again or email us at hello@managedcapture.com.' });
     } finally {
       setSubmitting(false);
     }
@@ -288,13 +287,13 @@ const RequestForm: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-brand-600 font-bold flex-shrink-0 mt-0.5">3.</span>
-                  <span>We schedule your capture session within 24–48 hours</span>
+                  <span>We schedule your capture session within a few business days</span>
                 </li>
               </ul>
             </div>
 
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
-              💡 Keep an eye on your email for next steps. No spam, just updates about your project.
+              Keep an eye on your email for next steps. No spam, just updates about your project.
             </p>
 
             <button
@@ -785,6 +784,7 @@ const RequestForm: React.FC = () => {
                         <input
                           type="text"
                           required
+                          placeholder="Jane Smith"
                           className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                           value={formData.contact.full_name}
                           onChange={(e) => updateContact('full_name', e.target.value)}
@@ -797,6 +797,7 @@ const RequestForm: React.FC = () => {
                         <input
                           type="email"
                           required
+                          placeholder="jane@restaurant.com"
                           className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                           value={formData.contact.email}
                           onChange={(e) => updateContact('email', e.target.value)}
@@ -809,6 +810,7 @@ const RequestForm: React.FC = () => {
                         <input
                           type="text"
                           required
+                          placeholder="Bistro La Maison"
                           className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
                           value={formData.contact.company}
                           onChange={(e) => updateContact('company', e.target.value)}
@@ -817,12 +819,25 @@ const RequestForm: React.FC = () => {
                     </div>
 
                     <div className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400 mt-4">
-                      <input type="checkbox" required className="mt-1" />
-                      <span>
-                        I agree to the Terms of Service and Privacy Policy. I understand this is a
-                        request for a quote and consultation.
-                      </span>
+                      <input type="checkbox" required className="mt-1" id="consent-checkbox" />
+                      <label htmlFor="consent-checkbox">
+                        I agree to the{' '}
+                        <Link to="/terms" target="_blank" className="underline text-brand-600 dark:text-brand-400 hover:text-brand-700">
+                          Terms of Service
+                        </Link>{' '}
+                        and{' '}
+                        <Link to="/privacy" target="_blank" className="underline text-brand-600 dark:text-brand-400 hover:text-brand-700">
+                          Privacy Policy
+                        </Link>
+                        . I understand this is a request for a quote and consultation.
+                      </label>
                     </div>
+
+                    {errors.submit && (
+                      <p className="flex items-center text-red-600 text-sm mt-2">
+                        <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0" /> {errors.submit}
+                      </p>
+                    )}
                   </div>
                 )}
 

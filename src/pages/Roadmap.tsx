@@ -67,7 +67,7 @@ const PHASES: Phase[] = [
   {
     number: '01',
     quarter: 'Q1',
-    year: '2025',
+    year: '2026',
     status: 'live',
     headline: 'Foundation',
     sub: 'The core platform is live — restaurants can capture, deliver, and showcase 3D dish assets today.',
@@ -109,7 +109,7 @@ const PHASES: Phase[] = [
   {
     number: '02',
     quarter: 'Q2',
-    year: '2025',
+    year: '2026',
     status: 'in-progress',
     headline: 'Intelligence',
     sub: "We're adding smart tools to save time, surface insights, and connect your 3D assets to the rest of your restaurant stack.",
@@ -151,7 +151,7 @@ const PHASES: Phase[] = [
   {
     number: '03',
     quarter: 'Q3',
-    year: '2025',
+    year: '2026',
     status: 'coming-soon',
     headline: 'Reach',
     sub: 'Put your 3D assets everywhere your customers are — your app, your website, your whole menu.',
@@ -193,7 +193,7 @@ const PHASES: Phase[] = [
   {
     number: '04',
     quarter: 'Q4',
-    year: '2025',
+    year: '2026',
     status: 'planned',
     headline: 'Scale',
     sub: 'Enterprise-grade tools and geographic expansion — built for restaurant groups, chains, and franchises operating across Europe.',
@@ -307,7 +307,7 @@ const Roadmap: React.FC = () => (
 
       <div className="relative container mx-auto px-4 max-w-4xl text-center">
         <p className="inline-block text-xs font-bold uppercase tracking-widest text-brand-400 mb-5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20">
-          Product Roadmap · 2025
+          Product Roadmap · 2026
         </p>
         <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
           The future of
@@ -317,7 +317,7 @@ const Roadmap: React.FC = () => (
           </span>
         </h1>
         <p className="text-zinc-400 text-lg max-w-xl mx-auto mb-12 leading-relaxed">
-          Four phases. Dozens of features. Every single one built exclusively for restaurants.
+          Four phases. Dozens of features. Built for restaurants first.
         </p>
         <PhaseProgressBar />
       </div>

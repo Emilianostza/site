@@ -17,6 +17,7 @@ import {
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import Accordion from '@/components/Accordion';
+import { SEO } from '@/components/common/SEO';
 
 // ─── Plans ────────────────────────────────────────────────────────────────────
 
@@ -41,7 +42,7 @@ const PLANS: RestaurantPlan[] = [
     tagline: 'Perfect for small menus',
     monthlyPrice: 18,
     annualPrice: 180,
-    quality: 'Level A — Minimum',
+    quality: 'Standard Quality',
     qualityLevel: 'A',
     storage: '2 GB',
     includedViews: 1000,
@@ -59,7 +60,7 @@ const PLANS: RestaurantPlan[] = [
     tagline: 'Best for most restaurants',
     monthlyPrice: 35,
     annualPrice: 350,
-    quality: 'Level B — Medium',
+    quality: 'Enhanced Quality',
     qualityLevel: 'B',
     storage: '8 GB',
     includedViews: 2000,
@@ -79,7 +80,7 @@ const PLANS: RestaurantPlan[] = [
     tagline: 'Signature dining experience',
     monthlyPrice: 48,
     annualPrice: 480,
-    quality: 'Level C — Best / Premium',
+    quality: 'Premium Quality',
     qualityLevel: 'C',
     storage: '25 GB',
     includedViews: 5000,
@@ -161,12 +162,12 @@ const FAQ_ITEMS = [
   {
     question: 'How does on-site 3D capture work?',
     answer:
-      'We send our team to your restaurant. Each visit has a flat €100 fee covering travel and setup, then €20 per 3D model captured. The model quality (A, B, or C) is determined by your plan. Models are published to your menu within 48 hours.',
+      'We send our team to your restaurant. Each visit has a flat €100 fee covering travel and setup, then €20 per 3D model captured. The model quality (Standard, Enhanced, or Premium) is determined by your plan. Models are published to your menu within 5–8 business days.',
   },
   {
-    question: 'What is the difference between quality levels A, B, and C?',
+    question: 'What is the difference between quality levels?',
     answer:
-      'Level A (Standard) produces clean, web-ready models suitable for most dishes. Level B (Pro) adds extra detail passes for a sharper, more realistic result. Level C (Ultra) uses our full production pipeline — maximum texture resolution, multi-angle refinement, and premium retouching — ideal for signature dishes.',
+      'Standard quality produces clean, web-ready models suitable for most dishes. Enhanced (Pro plan) adds extra detail passes for a sharper, more realistic result. Premium (Ultra plan) uses our full production pipeline — maximum texture resolution, multi-angle refinement, and premium retouching — ideal for signature dishes.',
   },
   {
     question: 'Can I upgrade or downgrade my plan?',
@@ -192,6 +193,10 @@ const RestaurantPricing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-900">
+      <SEO
+        title="Restaurant Pricing"
+        description="3D menu pricing for restaurants. Per-menu subscription with unlimited items, QR codes, and on-site capture. Starting at €18/month."
+      />
       {/* Hero */}
       <section className="relative bg-stone-950 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
@@ -316,7 +321,7 @@ const RestaurantPricing: React.FC = () => {
                       variant={plan.highlighted ? 'primary' : 'outline'}
                       className={`w-full ${plan.highlighted ? 'bg-amber-600 hover:bg-amber-500 border-amber-600' : ''}`}
                     >
-                      Get started <ArrowRight className="w-4 h-4" />
+                      Request a quote <ArrowRight className="w-4 h-4" />
                     </Button>
                   </Link>
                 </Card>
@@ -520,8 +525,8 @@ const RestaurantPricing: React.FC = () => {
               ))}
             </div>
             <p className="text-xs text-zinc-400 mt-4 text-center">
-              Model quality is determined by your subscription plan (Standard = Level A · Pro =
-              Level B · Ultra = Level C).
+              Model quality is determined by your subscription plan (Standard · Pro = Enhanced ·
+              Ultra = Premium).
             </p>
           </div>
         </div>
@@ -544,21 +549,21 @@ const RestaurantPricing: React.FC = () => {
               [
                 {
                   level: 'A',
-                  name: 'Minimum',
+                  name: 'Standard',
                   plan: 'Standard',
                   color: 'zinc' as const,
                   desc: 'Clean, web-ready models suitable for everyday dishes. Optimized for fast load and smooth interaction.',
                 },
                 {
                   level: 'B',
-                  name: 'Medium',
+                  name: 'Enhanced',
                   plan: 'Pro',
                   color: 'blue' as const,
                   desc: 'Extra detail passes for a sharper, more realistic result. Great for featured dishes and regular menus.',
                 },
                 {
                   level: 'C',
-                  name: 'Best / Premium',
+                  name: 'Premium',
                   plan: 'Ultra',
                   color: 'amber' as const,
                   desc: 'Maximum texture resolution, multi-angle refinement, and premium retouching. Ideal for signature dishes.',
@@ -589,24 +594,13 @@ const RestaurantPricing: React.FC = () => {
                   </div>
                   <div>
                     <p className="font-bold text-sm text-zinc-900 dark:text-white">
-                      Level {level} — {name}
+                      {name}
                     </p>
                     <p className="text-xs text-zinc-500">{plan} plan</p>
                   </div>
                 </div>
 
-                {/* Placeholder for 3D model preview */}
-                <div className="aspect-square rounded-xl bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center mb-4 border border-zinc-300 dark:border-zinc-600">
-                  <div className="text-center">
-                    <Box
-                      className={`w-10 h-10 mx-auto mb-2 ${color === 'amber' ? 'text-amber-400' : color === 'blue' ? 'text-blue-400' : 'text-zinc-400'}`}
-                    />
-                    <p className="text-xs text-zinc-400 font-mono">3D model preview</p>
-                    <p className="text-[10px] text-zinc-500">coming soon</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{desc}</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>

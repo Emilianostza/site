@@ -72,8 +72,11 @@ const Security: React.FC = () => {
             </h3>
             <p>
               If you believe you have found a security vulnerability in our platform, please contact
-              our security team immediately at security@managedcapture.com. We operate a bug bounty
-              program for responsible disclosure.
+              our security team immediately at{' '}
+              <a href="mailto:security@managedcapture.com" className="text-brand-600 dark:text-brand-400 hover:underline font-medium">
+                security@managedcapture.com
+              </a>
+              . We operate a bug bounty program for responsible disclosure.
             </p>
           </div>
         </div>

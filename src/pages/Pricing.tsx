@@ -20,6 +20,7 @@ import {
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import Accordion from '@/components/Accordion';
+import { SEO } from '@/components/common/SEO';
 
 // ─── Platform Plans ───────────────────────────────────────────────────────────
 
@@ -173,6 +174,10 @@ const Pricing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-900">
+      <SEO
+        title="Platform Pricing"
+        description="Simple, transparent pricing for hosting and delivering 3D & AR experiences. Platform subscriptions plus optional managed capture."
+      />
       {/* Hero */}
       <section className="relative bg-zinc-950 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
@@ -301,7 +306,7 @@ const Pricing: React.FC = () => {
                   </ul>
 
                   {plan.enterpriseCustom ? (
-                    <Link to="/#contact">
+                    <Link to="/request">
                       <Button
                         variant="outline"
                         className="w-full border-zinc-600 text-white hover:bg-zinc-700"
@@ -312,7 +317,7 @@ const Pricing: React.FC = () => {
                   ) : (
                     <Link to="/request">
                       <Button variant={plan.highlighted ? 'primary' : 'outline'} className="w-full">
-                        Get started <ArrowRight className="w-4 h-4" />
+                        Request a quote <ArrowRight className="w-4 h-4" />
                       </Button>
                     </Link>
                   )}
@@ -437,7 +442,7 @@ const Pricing: React.FC = () => {
                 <span className="text-4xl font-bold text-zinc-900 dark:text-white">€290</span>
                 <span className="text-sm text-zinc-500">/item</span>
               </div>
-              <p className="text-[11px] text-zinc-400 font-mono">48h turnaround · 1 QR per item</p>
+              <p className="text-[11px] text-zinc-400 font-mono">5–8 day turnaround · 1 QR per item</p>
             </Card>
 
             {/* Complex */}
@@ -461,7 +466,7 @@ const Pricing: React.FC = () => {
                 <span className="text-sm text-zinc-500">/item</span>
               </div>
               <p className="text-[11px] text-zinc-400 font-mono">
-                48h turnaround · 2 revision rounds
+                5–8 day turnaround · 2 revision rounds
               </p>
             </Card>
           </div>
@@ -782,16 +787,16 @@ const Pricing: React.FC = () => {
             hosting, compliance, and bespoke SLA.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/#contact">
-              <Button variant="outline" size="lg">
-                Contact Sales <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
             <Link to="/request">
               <Button size="lg" className="bg-brand-500 hover:bg-brand-600 text-white">
-                Start with a plan <ChevronRight className="w-5 h-5" />
+                Request a Quote <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
+            <a href="mailto:hello@managedcapture.com">
+              <Button variant="outline" size="lg">
+                Email Us <ChevronRight className="w-5 h-5" />
+              </Button>
+            </a>
           </div>
         </div>
       </section>
